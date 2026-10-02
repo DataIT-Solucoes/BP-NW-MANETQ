@@ -1,1 +1,1088 @@
-/* Coloque aqui seu codigo CSS */
+/*
+ * widget_nw_manutEtiq - Manutenção Embalagens (mockup)
+ * Mesma paleta e mesmas medidas do widget_nw_embalagens / widget_nw_itensComCtrllDeEmb (prefixo aqui: nwm).
+ * Todos os seletores começam com ".fluig-style-guide.nwm": sem isso as regras do Style Guide
+ * (ex.: ".fluig-style-guide h2", ".fluig-style-guide table") têm especificidade maior e vencem.
+ */
+
+/* Paleta Branco Peres (6 cores oficiais + tons derivados para hover, bordas e texto secundário) */
+.fluig-style-guide.nwm {
+    --nwm-verde: #006B35;               /* Verde institucional: ação principal, foco, seleção */
+    --nwm-verde-escuro: #00552A;        /* hover do verde */
+    --nwm-amarelo: #FFD200;             /* Amarelo solar: flash da linha alterada */
+    --nwm-vermelho: #ED1C24;            /* Vermelho da marca: ação destrutiva (descartar) */
+    --nwm-vermelho-escuro: #C4161C;     /* texto de erro e hover (o vermelho puro tem contraste baixo em letra pequena) */
+    --nwm-tinta: #20201E;               /* Carvão: texto e ícones */
+    --nwm-tinta-suave: #5E5D57;         /* texto secundário (derivado do carvão) */
+    --nwm-marfim: #F7F5EE;              /* Marfim: superfícies (filtros, cabeçalho/rodapé da tabela) */
+    --nwm-nevoa: #E5EDE3;               /* Verde névoa: fundo de seleção e hover */
+    --nwm-linha: #E3E1D8;               /* bordas (derivado do marfim) */
+    --nwm-borda-campo: #D3D1C7;         /* borda dos campos */
+
+    padding: 28px;
+    font-family: "Mulish", "Open Sans", Helvetica, Arial, sans-serif;
+    color: var(--nwm-tinta);
+}
+
+/* ---------- Cabeçalho ---------- */
+.fluig-style-guide.nwm .nwm-cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 24px;
+}
+
+/* Selo redondo: anel verde e centro transparente */
+.fluig-style-guide.nwm .nwm-selo {
+    flex: 0 0 auto;
+    display: inline-flex;
+    box-sizing: border-box;
+    width: 56px;
+    height: 56px;
+    border: 3px solid var(--nwm-verde);
+    border-radius: 50%;
+}
+
+.fluig-style-guide.nwm .nwm-selo-miolo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    color: var(--nwm-tinta);
+    font-size: 24px;
+}
+
+.fluig-style-guide.nwm .nwm-cabecalho-texto {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.fluig-style-guide.nwm .nwm-cabecalho-acoes {
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
+.fluig-style-guide.nwm .nwm-cabecalho-titulo {
+    margin: 0;
+    font-family: inherit;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-cabecalho-subtitulo {
+    margin: 6px 0 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--nwm-tinta-suave);
+}
+
+/* ---------- Filtros ---------- */
+/* 8 faixas De/Até em 4 colunas; a Nota Fiscal ocupa duas (tem os rádios em cima) */
+.fluig-style-guide.nwm .nwm-filtros {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px 20px;
+    margin: 0 0 24px;
+    padding: 20px;
+    border: 1px solid var(--nwm-linha);
+    border-radius: 14px;
+    background-color: var(--nwm-marfim);
+}
+
+.fluig-style-guide.nwm .nwm-faixa-nf {
+    grid-column: span 2;
+}
+
+/* o botão Buscar alinha pela base da última linha de campos */
+.fluig-style-guide.nwm .nwm-filtros-acoes {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
+    height: 100%;
+    min-height: 70px;
+}
+
+.fluig-style-guide.nwm .nwm-campo-rotulo {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-obrigatorio {
+    border: 0;
+    text-decoration: none;
+    color: var(--nwm-vermelho-escuro);
+    cursor: help;
+}
+
+.fluig-style-guide.nwm .nwm-campo-caixa {
+    position: relative;
+}
+
+/* par De/Até: dois campos de largura igual separados por um traço */
+.fluig-style-guide.nwm .nwm-faixa-caixa {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fluig-style-guide.nwm .nwm-faixa-caixa > .nwm-campo-caixa,
+.fluig-style-guide.nwm .nwm-faixa-caixa > .nwm-campo-input {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.fluig-style-guide.nwm .nwm-faixa-tracinho {
+    flex: 0 0 auto;
+    font-size: 15px;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-campo-input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 44px;
+    margin: 0;
+    padding: 0 14px;
+    border: 1px solid var(--nwm-borda-campo);
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: none;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--nwm-tinta);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fluig-style-guide.nwm .nwm-campo-input::placeholder {
+    color: #8E8C84;
+    opacity: 1;
+}
+
+.fluig-style-guide.nwm .nwm-campo-input:hover {
+    border-color: #B5B3A9;
+}
+
+.fluig-style-guide.nwm .nwm-campo-input:focus {
+    outline: none;
+    border-color: var(--nwm-verde);
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.18);
+}
+
+.fluig-style-guide.nwm .nwm-campo-input[type="date"] {
+    padding-right: 10px;
+}
+
+.fluig-style-guide.nwm .nwm-campo-dica {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-campo-estreito {
+    width: 130px;
+    flex: 0 0 130px;
+}
+
+.fluig-style-guide.nwm .nwm-campo-input.is-invalido,
+.fluig-style-guide.nwm .nwm-campo-input.is-invalido:hover {
+    border-color: var(--nwm-vermelho-escuro);
+}
+
+.fluig-style-guide.nwm .nwm-campo-input.is-invalido:focus {
+    border-color: var(--nwm-vermelho-escuro);
+    box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.18);
+}
+
+/* ---------- Select ---------- */
+.fluig-style-guide.nwm .nwm-campo-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 0 38px 0 14px;
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-campo-caixa-select::after {
+    content: "";
+    position: absolute;
+    top: 22px;
+    right: 16px;
+    width: 0;
+    height: 0;
+    margin-top: -2px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--nwm-tinta-suave);
+    pointer-events: none;
+}
+
+/* ---------- Rádios (Nota Fiscal: Intervalo x Específicas) ---------- */
+.fluig-style-guide.nwm .nwm-nf-rotulo {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+}
+
+.fluig-style-guide.nwm .nwm-radios {
+    display: flex;
+    gap: 14px;
+    margin: 0 0 6px;
+}
+
+.fluig-style-guide.nwm .nwm-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--nwm-tinta-suave);
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-radio input {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: var(--nwm-verde);
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-radio input:focus-visible {
+    outline: 2px solid var(--nwm-verde);
+    outline-offset: 2px;
+}
+
+.fluig-style-guide.nwm .nwm-radio input:checked + span {
+    font-weight: 700;
+    color: var(--nwm-tinta);
+}
+
+/* ---------- Autocomplete ---------- */
+.fluig-style-guide.nwm .nwm-sugestoes {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    min-width: 240px;
+    max-height: 260px;
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid var(--nwm-linha);
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 12px 32px rgba(32, 32, 30, 0.16);
+}
+
+.fluig-style-guide.nwm .nwm-sugestoes[hidden] {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-sugestao {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--nwm-tinta);
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-sugestao-codigo {
+    margin-right: 6px;
+    font-weight: 700;
+}
+
+.fluig-style-guide.nwm .nwm-sugestao-descricao {
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-sugestao:hover,
+.fluig-style-guide.nwm .nwm-sugestao.is-ativa {
+    background-color: var(--nwm-nevoa);
+}
+
+.fluig-style-guide.nwm .nwm-sugestao-vazia,
+.fluig-style-guide.nwm .nwm-sugestao-vazia:hover {
+    padding: 10px 12px;
+    background-color: transparent;
+    font-size: 14px;
+    color: var(--nwm-tinta-suave);
+    cursor: default;
+}
+
+/* ---------- Botões ---------- */
+.fluig-style-guide.nwm .nwm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    height: 44px;
+    margin: 0;
+    padding: 0 20px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.fluig-style-guide.nwm .nwm-btn i {
+    font-size: 15px;
+}
+
+.fluig-style-guide.nwm .nwm-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
+}
+
+.fluig-style-guide.nwm .nwm-btn:active {
+    transform: translateY(1px);
+}
+
+/* Gerar etiquetas / Confirmar: ação principal */
+.fluig-style-guide.nwm .nwm-btn-destaque {
+    background-color: var(--nwm-verde);
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-btn-destaque:hover {
+    background-color: var(--nwm-verde-escuro);
+}
+
+/* Buscar / Aplicar / Cancelar: contorno verde */
+.fluig-style-guide.nwm .nwm-btn-contorno {
+    border-color: var(--nwm-verde);
+    background-color: #fff;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-btn-contorno:hover {
+    background-color: var(--nwm-nevoa);
+}
+
+.fluig-style-guide.nwm .nwm-btn-perigo {
+    background-color: var(--nwm-vermelho);
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-btn-perigo:hover {
+    background-color: var(--nwm-vermelho-escuro);
+}
+
+/* ---------- Barra de seleção (contador + itens marcados + ações) ---------- */
+.fluig-style-guide.nwm .nwm-selecao {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px 28px;
+    margin: 0 0 18px;
+}
+
+.fluig-style-guide.nwm .nwm-selecao-resumo {
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+.fluig-style-guide.nwm .nwm-selecao-contador {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-selecao-contador.is-vazio {
+    font-weight: 400;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-selecao-itens {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--nwm-linha);
+    border-radius: 14px;
+    background-color: var(--nwm-marfim);
+}
+
+.fluig-style-guide.nwm .nwm-selecao-itens[hidden] {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-selecao-itens-titulo {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--nwm-tinta-suave);
+}
+
+/* tabela "Itens selecionados": resumo do que está marcado, não é Tabulator */
+.fluig-style-guide.nwm .nwm-tabelinha {
+    width: 100%;
+    max-width: 520px;
+    margin: 0;
+    border-collapse: collapse;
+    background-color: transparent;
+    font-size: 14px;
+}
+
+.fluig-style-guide.nwm .nwm-tabelinha th,
+.fluig-style-guide.nwm .nwm-tabelinha td {
+    padding: 6px 10px;
+    border: 0;
+    border-bottom: 1px solid var(--nwm-linha);
+    background-color: transparent;
+    text-align: left;
+    vertical-align: middle;
+    line-height: 1.35;
+}
+
+.fluig-style-guide.nwm .nwm-tabelinha th {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-tabelinha tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.fluig-style-guide.nwm .nwm-tabelinha .nwm-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.fluig-style-guide.nwm .nwm-selecao-acoes {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fluig-style-guide.nwm .nwm-acao-linha {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.fluig-style-guide.nwm .nwm-acao-linha .nwm-campo {
+    min-width: 190px;
+}
+
+.fluig-style-guide.nwm .nwm-selecao-ajuda {
+    max-width: 520px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--nwm-tinta-suave);
+}
+
+/* ---------- Tabela (Tabulator, tema "simple" sobrescrito com a paleta da tela) ---------- */
+.fluig-style-guide.nwm .nwm-tabela.tabulator {
+    border: 1px solid var(--nwm-linha);
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header {
+    border-bottom: 1px solid var(--nwm-linha);
+    background-color: var(--nwm-marfim);
+    color: var(--nwm-tinta-suave);
+    font-weight: 700;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col {
+    border-right: 0;
+    background-color: transparent;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
+    padding: 14px 12px;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col .tabulator-col-title {
+    font-size: 13px;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col.tabulator-sortable:hover {
+    background-color: rgba(32, 32, 30, 0.04);
+    color: var(--nwm-tinta);
+}
+
+/* seta de ordenação: cinza quente quando inativa, verde na coluna ordenada */
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col[aria-sort="none"] .tabulator-col-content .tabulator-col-sorter .tabulator-arrow {
+    border-bottom-color: #C4C2B8;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col[aria-sort="ascending"] .tabulator-col-sorter .tabulator-arrow {
+    border-bottom-color: var(--nwm-verde);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col[aria-sort="descending"] .tabulator-col-sorter .tabulator-arrow {
+    border-top-color: var(--nwm-verde);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row {
+    border-bottom: 1px solid #EEECE4;
+    background-color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row:hover {
+    background-color: var(--nwm-nevoa);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row .tabulator-cell {
+    padding: 12px;
+    border-right: 0;
+}
+
+/* linha marcada: fundo verde névoa e uma barra verde na borda esquerda */
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-marcada {
+    background-color: var(--nwm-nevoa);
+    box-shadow: inset 3px 0 0 var(--nwm-verde);
+}
+
+.fluig-style-guide.nwm .nwm-codigo {
+    font-weight: 700;
+}
+
+.fluig-style-guide.nwm .nwm-descricao {
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-num-celula {
+    font-variant-numeric: tabular-nums;
+}
+
+/* saldo zerado chama atenção sem gritar */
+.fluig-style-guide.nwm .nwm-saldo-zero {
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-placeholder .tabulator-placeholder-contents {
+    padding: 32px 16px;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-footer {
+    border-top: 1px solid var(--nwm-linha);
+    background-color: var(--nwm-marfim);
+    color: var(--nwm-tinta-suave);
+    font-weight: 400;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-footer .tabulator-footer-contents {
+    padding: 10px 16px;
+}
+
+.fluig-style-guide.nwm .nwm-tabela-contador {
+    font-size: 13px;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-tabela-erro {
+    margin: 0;
+    padding: 24px;
+    border: 1px solid var(--nwm-linha);
+    border-radius: 14px;
+    color: var(--nwm-tinta-suave);
+}
+
+/* ---------- Caixa de marcação (coluna de seleção) ---------- */
+.fluig-style-guide.nwm .nwm-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.fluig-style-guide.nwm .nwm-check input {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    accent-color: var(--nwm-verde);
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-check input:focus-visible {
+    outline: 2px solid var(--nwm-verde);
+    outline-offset: 2px;
+}
+
+/* ---------- Chip de status (substitui a linha colorida da tela antiga) ---------- */
+.fluig-style-guide.nwm .nwm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 12px 4px 10px;
+    border: 1px solid var(--nwm-linha);
+    border-radius: 999px;
+    background-color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-chip-ponto {
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+/* cores da legenda da tela antiga, em tom pastel no fundo e o ponto na cor cheia */
+.fluig-style-guide.nwm .nwm-chip-nao-impresso { border-color: #BFE3C8; background-color: #EAF6EC; }
+.fluig-style-guide.nwm .nwm-chip-nao-impresso .nwm-chip-ponto { background-color: #4CAF72; }
+
+.fluig-style-guide.nwm .nwm-chip-impressa { border-color: #F4C2C4; background-color: #FDECEC; }
+.fluig-style-guide.nwm .nwm-chip-impressa .nwm-chip-ponto { background-color: var(--nwm-vermelho); }
+
+.fluig-style-guide.nwm .nwm-chip-em-estoque { border-color: #BBD7EC; background-color: #EAF3FA; }
+.fluig-style-guide.nwm .nwm-chip-em-estoque .nwm-chip-ponto { background-color: #2B7CB8; }
+
+.fluig-style-guide.nwm .nwm-chip-zerada { border-color: #CBD3DA; background-color: #EEF1F4; }
+.fluig-style-guide.nwm .nwm-chip-zerada .nwm-chip-ponto { background-color: #7B8793; }
+
+.fluig-style-guide.nwm .nwm-chip-armazenada-bag { border-color: #A8CFB4; background-color: #E2EFE6; }
+.fluig-style-guide.nwm .nwm-chip-armazenada-bag .nwm-chip-ponto { background-color: var(--nwm-verde); }
+
+.fluig-style-guide.nwm .nwm-chip-descartado { border-color: #F3D2A8; background-color: #FDF1E0; }
+.fluig-style-guide.nwm .nwm-chip-descartado .nwm-chip-ponto { background-color: #E08A1E; }
+
+/* ajuda da coluna Status: a legenda do rodapé da tela antiga virou este botão */
+.fluig-style-guide.nwm .nwm-ajuda-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 6px;
+    padding: 0;
+    border: 1px solid var(--nwm-borda-campo);
+    border-radius: 50%;
+    background-color: #fff;
+    font-size: 11px;
+    line-height: 1;
+    color: var(--nwm-tinta-suave);
+    vertical-align: 1px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.fluig-style-guide.nwm .nwm-ajuda-status:hover {
+    border-color: var(--nwm-verde);
+    color: var(--nwm-verde);
+}
+
+.fluig-style-guide.nwm .nwm-ajuda-status:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
+}
+
+/* ---------- Coluna Ações (botões só-ícone) ---------- */
+.fluig-style-guide.nwm .nwm-acoes {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.fluig-style-guide.nwm .nwm-acao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--nwm-tinta-suave);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.fluig-style-guide.nwm .nwm-acao:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
+}
+
+.fluig-style-guide.nwm .nwm-acao:hover {
+    border-color: var(--nwm-verde);
+    background-color: #fff;
+    color: var(--nwm-tinta);
+}
+
+/* descartar é destrutivo: hover vermelho, como o excluir das outras telas */
+.fluig-style-guide.nwm .nwm-acao-descartar:hover {
+    border-color: rgba(237, 28, 36, 0.35);
+    background-color: rgba(237, 28, 36, 0.08);
+    color: var(--nwm-vermelho-escuro);
+}
+
+/* linha recém-alterada brilha em amarelo solar */
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-nova {
+    animation: nwm-linha-nova 2.2s ease-out;
+}
+
+@keyframes nwm-linha-nova {
+    0%, 35% { background-color: rgba(255, 210, 0, 0.32); }
+    100% { background-color: #fff; }
+}
+
+/* ---------- Modais (<dialog> nativo) ---------- */
+.fluig-style-guide.nwm .nwm-modal {
+    box-sizing: border-box;
+    width: min(720px, calc(100vw - 32px));
+    max-width: none;
+    max-height: calc(100vh - 32px);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background-color: #fff;
+    box-shadow: 0 24px 64px rgba(32, 32, 30, 0.22);
+    font-family: inherit;
+    color: var(--nwm-tinta);
+    overflow: auto;
+}
+
+.fluig-style-guide.nwm .nwm-modal[open] {
+    animation: nwm-modal-entrar 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ::backdrop não herda variáveis CSS em todos os navegadores: cores escritas direto */
+.fluig-style-guide.nwm .nwm-modal::backdrop {
+    background-color: rgba(32, 32, 30, 0.48);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+}
+
+.fluig-style-guide.nwm .nwm-modal[open]::backdrop {
+    animation: nwm-fundo-entrar 0.22s ease-out;
+}
+
+@keyframes nwm-modal-entrar {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes nwm-fundo-entrar {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fluig-style-guide.nwm .nwm-modal.nwm-modal-medio {
+    width: min(560px, calc(100vw - 32px));
+}
+
+.fluig-style-guide.nwm .nwm-modal.nwm-modal-pequeno {
+    width: min(420px, calc(100vw - 32px));
+}
+
+.fluig-style-guide.nwm .nwm-modal-cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 24px 4px;
+}
+
+.fluig-style-guide.nwm .nwm-modal-titulo {
+    margin: 0;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-modal-subtitulo {
+    margin: 4px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-modal-fechar {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin: -6px -8px 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 16px;
+    color: var(--nwm-tinta-suave);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.fluig-style-guide.nwm .nwm-modal-fechar:hover {
+    background-color: rgba(32, 32, 30, 0.05);
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-modal-fechar:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
+}
+
+.fluig-style-guide.nwm .nwm-modal-corpo {
+    padding: 20px 24px 8px;
+}
+
+.fluig-style-guide.nwm .nwm-modal-rodape {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px 24px 24px;
+}
+
+/* detalhes da etiqueta: rótulo em cima, valor embaixo, duas colunas */
+.fluig-style-guide.nwm .nwm-detalhes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 20px;
+    margin: 0;
+}
+
+.fluig-style-guide.nwm .nwm-detalhes-grid dt {
+    margin: 0 0 2px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-detalhes-grid dd {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-detalhes-item-largo {
+    grid-column: 1 / -1;
+}
+
+/* confirmação de ação */
+.fluig-style-guide.nwm .nwm-modal-confirmacao {
+    padding: 28px 24px 0;
+}
+
+.fluig-style-guide.nwm .nwm-confirmacao-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background-color: var(--nwm-nevoa);
+    font-size: 20px;
+    color: var(--nwm-verde);
+}
+
+.fluig-style-guide.nwm .nwm-confirmacao-icone.is-perigo {
+    background-color: rgba(237, 28, 36, 0.1);
+    color: var(--nwm-vermelho-escuro);
+}
+
+.fluig-style-guide.nwm .nwm-modal-confirmacao .nwm-modal-subtitulo {
+    margin-top: 8px;
+}
+
+.fluig-style-guide.nwm .nwm-modal-confirmacao strong {
+    font-weight: 700;
+    color: var(--nwm-tinta);
+}
+
+/* legenda dos status */
+.fluig-style-guide.nwm .nwm-legenda {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fluig-style-guide.nwm .nwm-legenda li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--nwm-linha);
+}
+
+.fluig-style-guide.nwm .nwm-legenda li:last-child {
+    border-bottom: 0;
+}
+
+.fluig-style-guide.nwm .nwm-legenda .nwm-chip {
+    flex: 0 0 auto;
+    min-width: 168px;
+}
+
+.fluig-style-guide.nwm .nwm-legenda-texto {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--nwm-tinta-suave);
+}
+
+/* ---------- Telas médias ---------- */
+@media (max-width: 1399px) {
+    .fluig-style-guide.nwm .nwm-filtros {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .fluig-style-guide.nwm .nwm-filtros-acoes {
+        grid-column: 1 / -1;
+        min-height: 0;
+    }
+}
+
+@media (max-width: 1199px) {
+    .fluig-style-guide.nwm .nwm-filtros {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fluig-style-guide.nwm .nwm-selecao-acoes {
+        flex: 1 1 100%;
+    }
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 767px) {
+    .fluig-style-guide.nwm {
+        padding: 20px 16px;
+    }
+
+    .fluig-style-guide.nwm .nwm-filtros {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 16px;
+    }
+
+    .fluig-style-guide.nwm .nwm-faixa-nf {
+        grid-column: auto;
+    }
+
+    .fluig-style-guide.nwm .nwm-cabecalho {
+        flex-wrap: wrap;
+        gap: 14px;
+        padding-bottom: 18px;
+    }
+
+    .fluig-style-guide.nwm .nwm-cabecalho-acoes {
+        flex: 1 1 100%;
+    }
+
+    .fluig-style-guide.nwm .nwm-cabecalho-acoes .nwm-btn,
+    .fluig-style-guide.nwm .nwm-filtros-acoes .nwm-btn {
+        flex: 1 1 0;
+        width: 100%;
+    }
+
+    .fluig-style-guide.nwm .nwm-selo {
+        width: 46px;
+        height: 46px;
+    }
+
+    .fluig-style-guide.nwm .nwm-selo-miolo {
+        font-size: 18px;
+    }
+
+    .fluig-style-guide.nwm .nwm-cabecalho-titulo {
+        font-size: 21px;
+    }
+
+    .fluig-style-guide.nwm .nwm-cabecalho-subtitulo {
+        font-size: 14px;
+    }
+
+    .fluig-style-guide.nwm .nwm-acao-linha {
+        flex-wrap: wrap;
+    }
+
+    .fluig-style-guide.nwm .nwm-acao-linha .nwm-campo,
+    .fluig-style-guide.nwm .nwm-campo-estreito {
+        flex: 1 1 100%;
+        width: auto;
+        min-width: 0;
+    }
+
+    .fluig-style-guide.nwm .nwm-acao-linha .nwm-btn {
+        flex: 1 1 100%;
+    }
+
+    .fluig-style-guide.nwm .nwm-detalhes-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .fluig-style-guide.nwm .nwm-modal-cabecalho {
+        padding: 20px 20px 4px;
+    }
+
+    .fluig-style-guide.nwm .nwm-modal-corpo {
+        padding: 16px 20px 8px;
+    }
+
+    .fluig-style-guide.nwm .nwm-modal-rodape {
+        padding: 16px 20px 20px;
+    }
+
+    .fluig-style-guide.nwm .nwm-modal-rodape .nwm-btn {
+        flex: 1 1 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fluig-style-guide.nwm .nwm-campo-input,
+    .fluig-style-guide.nwm .nwm-btn,
+    .fluig-style-guide.nwm .nwm-modal-fechar,
+    .fluig-style-guide.nwm .nwm-acao,
+    .fluig-style-guide.nwm .nwm-ajuda-status {
+        transition: none;
+    }
+
+    .fluig-style-guide.nwm .nwm-modal[open],
+    .fluig-style-guide.nwm .nwm-modal[open]::backdrop,
+    .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-nova {
+        animation: none;
+    }
+}
