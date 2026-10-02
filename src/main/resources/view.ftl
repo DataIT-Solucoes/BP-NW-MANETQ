@@ -7,7 +7,7 @@
         <span class="nwm-selo" aria-hidden="true"><span class="nwm-selo-miolo"><i class="bi bi-tags"></i></span></span>
         <div class="nwm-cabecalho-texto">
             <h2 class="nwm-cabecalho-titulo">Manutenção Embalagens</h2>
-            <p class="nwm-cabecalho-subtitulo">Consulte, receba, imprima e movimente as etiquetas.</p>
+            <p class="nwm-cabecalho-subtitulo">Consulte, receba, imprima e movimente as embalagens.</p>
         </div>
         <div class="nwm-cabecalho-acoes">
             <button type="button" class="nwm-btn nwm-btn-destaque" data-gerar><i class="bi bi-plus-lg" aria-hidden="true"></i>Gerar etiquetas</button>
