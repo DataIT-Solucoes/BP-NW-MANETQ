@@ -15,6 +15,8 @@ Refazer, **só como mockup** (dados mockados em JS, sem dataset e sem REST), a t
 no mesmo padrão visual das widgets `widget_nw_embalagens` (prefixo `nwe`) e
 `widget_nw_itensComCtrllDeEmb` (prefixo `nwi`). Prefixo desta: **`nwm`**.
 
+A tela nova se chama **"Manutenção Embalagens"** (a legada se chama "Manutenção Itens/Etiquetas").
+
 Tela legada (ambiente de teste, exige login):
 `http://fluig-web-teste.brancoperes.com.br:8190/portal/p/1/v2_widget_manutencao_etiquetas`
 Fonte JS da tela legada (7.883 linhas, só leitura, não está no repositório):
@@ -35,6 +37,7 @@ Fonte JS da tela legada (7.883 linhas, só leitura, não está no repositório):
 | 7 | **Ordenação por coluna ligada** (a antiga tem `ordering: false`), com ordem inicial Código → Etiqueta. |
 | 8 | **Status "Em campo"**: ignorar por enquanto (existe no código antigo, falta na legenda da tela). |
 | 9 | Não mexer em dataset, serviço REST ou regra de negócio: **não inventar**. O que não se sabe fica "a definir". |
+| 10 | **Nome da tela: "Manutenção Embalagens"** (a legada se chama "Manutenção Itens/Etiquetas"). O `application.code` da widget continua `widget_nw_manutEtiq`; muda só o título exibido no cabeçalho, no `edit.ftl` e no `CLAUDE.md`. |
 
 ---
 
@@ -171,7 +174,7 @@ Comentários em português, curtos, explicando o **porquê**.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────┐
-│ (◎)  Manutenção de Etiquetas                              [ + Gerar etiquetas ] │
+│ (◎)  Manutenção Embalagens                                [ + Gerar etiquetas ] │
 │      Consulte, receba, imprima e movimente as etiquetas.                        │
 ├────────────────────────────────────────────────────────────────────────────────┤
 │ ┌── filtros (card marfim, grid 4 colunas) ───────────────────────────────────┐ │
