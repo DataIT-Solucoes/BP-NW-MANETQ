@@ -1,0 +1,4 @@
+# Fontes do widget sao UTF-8 sem BOM + CRLF: garantir CRLF no working tree
+* text=auto eol=crlf
+*.png binary
+*.war binary
