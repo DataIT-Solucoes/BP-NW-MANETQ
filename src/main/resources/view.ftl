@@ -137,18 +137,20 @@
             <p class="nwm-selecao-contador" data-contador-selecao aria-live="polite">Nenhuma etiqueta selecionada</p>
             <div class="nwm-selecao-itens" data-itens-selecionados>
                 <p class="nwm-selecao-itens-titulo">Itens selecionados</p>
-                <table class="nwm-tabelinha">
-                    <thead>
-                        <tr>
-                            <th scope="col">Código</th>
-                            <th scope="col">Descrição</th>
-                            <th scope="col" class="nwm-num">Qtde Sel.</th>
-                        </tr>
-                    </thead>
-                    <tbody data-itens-selecionados-corpo>
-                        <tr><td colspan="3" class="nwm-tabelinha-vazio">Nenhum item selecionado</td></tr>
-                    </tbody>
-                </table>
+                <div class="nwm-tabelinha-rolagem">
+                    <table class="nwm-tabelinha">
+                        <thead>
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Descrição</th>
+                                <th scope="col" class="nwm-num">Qtde Sel.</th>
+                            </tr>
+                        </thead>
+                        <tbody data-itens-selecionados-corpo>
+                            <tr><td colspan="3" class="nwm-tabelinha-vazio">Nenhum item selecionado</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="nwm-selecao-acoes">

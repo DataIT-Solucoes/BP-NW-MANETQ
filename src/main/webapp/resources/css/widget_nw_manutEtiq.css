@@ -560,6 +560,12 @@
     color: #fff;
 }
 
+/* rolagem horizontal da tabela quando ela não cabe (celular); o cartão segue com os cantos arredondados */
+.fluig-style-guide.nwm .nwm-tabelinha-rolagem {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 /* tabela "Itens selecionados": resumo do que está marcado, não é Tabulator */
 .fluig-style-guide.nwm .nwm-tabelinha {
     width: 100%;
@@ -578,6 +584,7 @@
     text-align: left;
     vertical-align: middle;
     line-height: 1.35;
+    white-space: nowrap;
 }
 
 .fluig-style-guide.nwm .nwm-tabelinha th {
