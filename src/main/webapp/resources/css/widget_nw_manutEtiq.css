@@ -82,31 +82,44 @@
 }
 
 /* ---------- Filtros ---------- */
-/* 8 faixas De/Até em 4 colunas; a Nota Fiscal ocupa duas (tem os rádios em cima) */
+/*
+ * Cartão marfim inteiro. Linha de cima: o que a busca exige (Estabelecimento; Itens ou Nota Fiscal);
+ * linha de baixo: os 5 filtros de refinamento. Cada De/Até é uma caixa só, dividida ao meio.
+ */
 .fluig-style-guide.nwm .nwm-filtros {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    align-items: start;
-    gap: 16px 20px;
     margin: 0 0 24px;
-    padding: 20px;
     border: 1px solid var(--nwm-linha);
     border-radius: 14px;
     background-color: var(--nwm-marfim);
 }
 
-.fluig-style-guide.nwm .nwm-faixa-nf {
-    grid-column: span 2;
+.fluig-style-guide.nwm .nwm-filtros-principais {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px 20px;
+    padding: 20px 22px 0;
 }
 
-/* o botão Buscar alinha pela base da última linha de campos */
+.fluig-style-guide.nwm .nwm-filtros-refino {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.35fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 16px 20px;
+    padding: 16px 22px 0;
+}
+
+/* refinamento é opcional: rótulo mais leve que o da faixa de cima */
+.fluig-style-guide.nwm .nwm-filtros-refino .nwm-campo-rotulo {
+    font-weight: 600;
+    color: var(--nwm-tinta-suave);
+}
+
 .fluig-style-guide.nwm .nwm-filtros-acoes {
     display: flex;
-    align-items: flex-end;
     justify-content: flex-end;
     gap: 10px;
-    height: 100%;
-    min-height: 70px;
+    padding: 16px 22px 20px;
 }
 
 .fluig-style-guide.nwm .nwm-campo-rotulo {
@@ -183,13 +196,6 @@
     padding-right: 10px;
 }
 
-.fluig-style-guide.nwm .nwm-campo-dica {
-    margin: 6px 0 0;
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--nwm-tinta-suave);
-}
-
 .fluig-style-guide.nwm .nwm-campo-estreito {
     width: 130px;
     flex: 0 0 130px;
@@ -228,47 +234,152 @@
     pointer-events: none;
 }
 
-/* ---------- Rádios (Nota Fiscal: Intervalo x Específicas) ---------- */
-.fluig-style-guide.nwm .nwm-nf-rotulo {
+/* ---------- Campos dos filtros ---------- */
+/* rótulos com a mesma altura da linha da Nota Fiscal (que tem o seletor ao lado) */
+.fluig-style-guide.nwm .nwm-filtros .nwm-campo-rotulo {
     display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 4px 16px;
+    align-items: center;
+    gap: 3px;
+    min-height: 26px;
 }
 
-.fluig-style-guide.nwm .nwm-radios {
+.fluig-style-guide.nwm .nwm-filtros .nwm-campo-input {
+    height: 40px;
+    font-size: 14px;
+}
+
+/* caixa De/Até: a borda e o foco ficam na caixa; os dois campos são transparentes por dentro */
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa {
+    gap: 0;
+    align-items: stretch;
+    height: 40px;
+    box-sizing: border-box;
+    border: 1px solid var(--nwm-borda-campo);
+    border-radius: 10px;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa:hover {
+    border-color: #B5B3A9;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa:focus-within {
+    border-color: var(--nwm-verde);
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.18);
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa:has(.is-invalido) {
+    border-color: var(--nwm-vermelho-escuro);
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa:has(.is-invalido):focus-within {
+    box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.18);
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa .nwm-campo-input {
+    height: 38px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa > .nwm-campo-input:first-child,
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa > .nwm-campo-caixa:first-child .nwm-campo-input {
+    border-radius: 9px 0 0 9px;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa > .nwm-campo-input:last-child,
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa > .nwm-campo-caixa:last-child .nwm-campo-input {
+    border-radius: 0 9px 9px 0;
+}
+
+/* a metade em foco ganha um fundo leve, para saber se está no De ou no Até */
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa .nwm-campo-input:focus {
+    border: 0;
+    box-shadow: none;
+    background-color: #F3F7F2;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa .nwm-campo-input.is-invalido {
+    background-color: #FDF3F3;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-data .nwm-campo-input {
+    padding: 0 8px;
+}
+
+/* o traço vira a divisória vertical entre De e Até */
+.fluig-style-guide.nwm .nwm-filtros .nwm-faixa-tracinho {
+    flex: 0 0 1px;
+    align-self: stretch;
+    margin: 8px 0;
+    background-color: var(--nwm-linha);
+    font-size: 0;
+}
+
+/* ---------- Nota Fiscal: Intervalo x Específicas (seletor de duas posições) ---------- */
+.fluig-style-guide.nwm .nwm-nf-rotulo {
     display: flex;
-    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 26px;
     margin: 0 0 6px;
 }
 
-.fluig-style-guide.nwm .nwm-radio {
+.fluig-style-guide.nwm .nwm-nf-rotulo .nwm-campo-rotulo {
+    margin: 0;
+}
+
+.fluig-style-guide.nwm .nwm-radios {
     display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    flex: 0 0 auto;
+    padding: 2px;
+    border: 1px solid var(--nwm-borda-campo);
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-radio {
+    position: relative;
     margin: 0;
-    font-size: 13px;
     font-weight: 400;
-    color: var(--nwm-tinta-suave);
     cursor: pointer;
 }
 
+/* o rádio continua no DOM (teclado e leitor de tela), só some visualmente */
 .fluig-style-guide.nwm .nwm-radio input {
-    width: 15px;
-    height: 15px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     margin: 0;
-    accent-color: var(--nwm-verde);
+    opacity: 0;
     cursor: pointer;
 }
 
-.fluig-style-guide.nwm .nwm-radio input:focus-visible {
-    outline: 2px solid var(--nwm-verde);
-    outline-offset: 2px;
+.fluig-style-guide.nwm .nwm-radio span {
+    display: block;
+    padding: 1px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    color: var(--nwm-tinta-suave);
 }
 
 .fluig-style-guide.nwm .nwm-radio input:checked + span {
-    font-weight: 700;
-    color: var(--nwm-tinta);
+    background-color: var(--nwm-verde);
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-radio input:focus-visible + span {
+    outline: 2px solid var(--nwm-verde);
+    outline-offset: 1px;
 }
 
 /* ---------- Autocomplete ---------- */
@@ -966,24 +1077,23 @@
 }
 
 /* ---------- Telas médias ---------- */
-@media (max-width: 1399px) {
-    .fluig-style-guide.nwm .nwm-filtros {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .fluig-style-guide.nwm .nwm-filtros-acoes {
-        grid-column: 1 / -1;
-        min-height: 0;
-    }
-}
-
 @media (max-width: 1199px) {
-    .fluig-style-guide.nwm .nwm-filtros {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    .fluig-style-guide.nwm .nwm-filtros-refino {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .fluig-style-guide.nwm .nwm-selecao-acoes {
         flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 991px) {
+    .fluig-style-guide.nwm .nwm-filtros-principais {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .fluig-style-guide.nwm .nwm-filtros-refino {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -993,13 +1103,15 @@
         padding: 20px 16px;
     }
 
-    .fluig-style-guide.nwm .nwm-filtros {
+    .fluig-style-guide.nwm .nwm-filtros-principais,
+    .fluig-style-guide.nwm .nwm-filtros-refino {
         grid-template-columns: minmax(0, 1fr);
-        padding: 16px;
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
-    .fluig-style-guide.nwm .nwm-faixa-nf {
-        grid-column: auto;
+    .fluig-style-guide.nwm .nwm-filtros-acoes {
+        padding: 16px;
     }
 
     .fluig-style-guide.nwm .nwm-cabecalho {
@@ -1073,6 +1185,7 @@
 
 @media (prefers-reduced-motion: reduce) {
     .fluig-style-guide.nwm .nwm-campo-input,
+    .fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa,
     .fluig-style-guide.nwm .nwm-btn,
     .fluig-style-guide.nwm .nwm-modal-fechar,
     .fluig-style-guide.nwm .nwm-acao,
