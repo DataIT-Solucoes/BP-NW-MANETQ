@@ -97,6 +97,9 @@ var NWM_DADOS_MOCK = [
     { id: 14, itCodigo: '365131', descItem: 'DIMEXION - ONU 3018', codEstabel: '10904', deposito: 'BAR02', etiqueta: '000128', lote: 'L2602', dtValiLote: '2027-03-22', qtidadeIni: 20, qtidadeAtu: 20, unidade: 'LT', familia: 'DEF', codBarras: '7891000000128', notaFiscal: '12346', situacao: 'em-estoque' }
 ];
 
+//mockup: etiquetas que já abrem marcadas, para a tabela "Itens selecionados" aparecer preenchida
+var NWM_SELECAO_MOCK = [1, 2, 5, 6, 10];
+
 var widget_nw_manutEtiq = SuperWidget.extend({
 
     //instância do Tabulator
@@ -112,6 +115,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     init() {
         var self = this;
         this.selecionados = {};
+        NWM_SELECAO_MOCK.forEach(function (id) { self.selecionados[id] = true; });
 
         this.carregarTabulator().then(function () {
             self.montarTabela();
@@ -356,6 +360,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             self.pintarMarcadas();
             self.atualizarContadorTabela();
         });
+
+        //com a tabela pronta, o resumo e o contador já refletem a seleção inicial do mockup
+        this.tabela.on('tableBuilt', function () {
+            self.atualizarSelecao();
+        });
     },
 
     celulaNumero(valor, esmaecido) {
@@ -542,7 +551,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
                 .append($('<td>').addClass('nwm-num').text(self.formatarQuantidade(item.quantidade)))
                 .appendTo($corpo);
         });
-        $('[data-itens-selecionados]', this.DOM).prop('hidden', !codigos.length);
+        //a tabela fica sempre na tela (como na aba Administrador da tela antiga); vazia, avisa numa linha
+        if (!codigos.length) {
+            $('<tr>')
+                .append($('<td>').attr('colspan', 3).addClass('nwm-tabelinha-vazio').text('Nenhum item selecionado'))
+                .appendTo($corpo);
+        }
 
         this.atualizarCheckTodos(linhas.length);
         this.pintarMarcadas();

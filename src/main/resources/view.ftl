@@ -135,7 +135,7 @@
     <div class="nwm-selecao">
         <div class="nwm-selecao-resumo">
             <p class="nwm-selecao-contador" data-contador-selecao aria-live="polite">Nenhuma etiqueta selecionada</p>
-            <div class="nwm-selecao-itens" data-itens-selecionados hidden>
+            <div class="nwm-selecao-itens" data-itens-selecionados>
                 <p class="nwm-selecao-itens-titulo">Itens selecionados</p>
                 <table class="nwm-tabelinha">
                     <thead>
@@ -145,7 +145,9 @@
                             <th scope="col" class="nwm-num">Qtde Sel.</th>
                         </tr>
                     </thead>
-                    <tbody data-itens-selecionados-corpo></tbody>
+                    <tbody data-itens-selecionados-corpo>
+                        <tr><td colspan="3" class="nwm-tabelinha-vazio">Nenhum item selecionado</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>

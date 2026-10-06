@@ -558,7 +558,6 @@
 /* tabela "Itens selecionados": resumo do que está marcado, não é Tabulator */
 .fluig-style-guide.nwm .nwm-tabelinha {
     width: 100%;
-    max-width: 520px;
     margin: 0;
     border-collapse: collapse;
     background-color: transparent;
@@ -591,6 +590,12 @@
 .fluig-style-guide.nwm .nwm-tabelinha .nwm-num {
     text-align: right;
     font-variant-numeric: tabular-nums;
+}
+
+.fluig-style-guide.nwm .nwm-tabelinha .nwm-tabelinha-vazio {
+    padding: 10px;
+    text-align: center;
+    color: var(--nwm-tinta-suave);
 }
 
 .fluig-style-guide.nwm .nwm-selecao-acoes {
