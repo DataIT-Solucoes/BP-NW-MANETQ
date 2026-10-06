@@ -536,12 +536,13 @@
     color: var(--nwm-tinta-suave);
 }
 
+/* cartão em três faixas: título verde, títulos das colunas em marfim, linhas em branco */
 .fluig-style-guide.nwm .nwm-selecao-itens {
     margin-top: 12px;
-    padding: 12px 14px;
+    overflow: hidden;
     border: 1px solid var(--nwm-linha);
     border-radius: 14px;
-    background-color: var(--nwm-marfim);
+    background-color: #fff;
 }
 
 .fluig-style-guide.nwm .nwm-selecao-itens[hidden] {
@@ -549,10 +550,13 @@
 }
 
 .fluig-style-guide.nwm .nwm-selecao-itens-titulo {
-    margin: 0 0 8px;
-    font-size: 13px;
+    margin: 0;
+    padding: 10px 14px;
+    background-color: var(--nwm-verde);
+    font-size: 14px;
     font-weight: 700;
-    color: var(--nwm-tinta-suave);
+    line-height: 1.35;
+    color: #fff;
 }
 
 /* tabela "Itens selecionados": resumo do que está marcado, não é Tabulator */
@@ -576,11 +580,23 @@
 }
 
 .fluig-style-guide.nwm .nwm-tabelinha th {
+    background-color: var(--nwm-marfim);
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--nwm-tinta-suave);
+}
+
+/* primeira e última coluna alinhadas com o texto do título */
+.fluig-style-guide.nwm .nwm-tabelinha th:first-child,
+.fluig-style-guide.nwm .nwm-tabelinha td:first-child {
+    padding-left: 14px;
+}
+
+.fluig-style-guide.nwm .nwm-tabelinha th:last-child,
+.fluig-style-guide.nwm .nwm-tabelinha td:last-child {
+    padding-right: 14px;
 }
 
 .fluig-style-guide.nwm .nwm-tabelinha tbody tr:last-child td {
