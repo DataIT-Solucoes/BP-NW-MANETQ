@@ -326,16 +326,19 @@
     display: none;
 }
 
+/* se o seletor não couber ao lado do rótulo, desce para a linha de baixo */
 .fluig-style-guide.nwm .nwm-nf-rotulo {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px 8px;
     min-height: 26px;
     margin: 0 0 6px;
 }
 
 .fluig-style-guide.nwm .nwm-nf-rotulo .nwm-campo-rotulo {
+    white-space: nowrap;
     margin: 0;
 }
 
@@ -1117,6 +1120,22 @@
 
     .fluig-style-guide.nwm .nwm-filtros-acoes {
         padding: 16px;
+    }
+
+    /* celular: seletor da Nota Fiscal numa linha própria, duas metades iguais */
+    .fluig-style-guide.nwm .nwm-radios {
+        display: flex;
+        flex: 1 1 100%;
+    }
+
+    .fluig-style-guide.nwm .nwm-radio {
+        flex: 1 1 0;
+        min-width: 0;
+        text-align: center;
+    }
+
+    .fluig-style-guide.nwm .nwm-radio span {
+        padding: 3px 6px;
     }
 
     .fluig-style-guide.nwm .nwm-cabecalho {
