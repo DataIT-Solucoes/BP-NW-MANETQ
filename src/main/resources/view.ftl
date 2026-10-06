@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.4.0/css/tabulator_simple.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
 
 <div id="widget_nw_manutEtiq_${instanceId}" class="super-widget wcm-widget-class fluig-style-guide nwm" data-params="widget_nw_manutEtiq.instance()">
     <div class="nwm-cabecalho">
@@ -67,7 +68,7 @@
                     <input type="text" id="nwm-nf-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Nota fiscal até" autocomplete="off" data-filtro="nfAte">
                 </div>
                 <div data-nf-especificas hidden>
-                    <input type="text" id="nwm-nf-lista-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Ex.: 12345, 12346" aria-label="Notas fiscais específicas" autocomplete="off" data-filtro="nfEspecificas">
+                    <input type="text" id="nwm-nf-lista-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Ex.: 12345" aria-label="Notas fiscais específicas" autocomplete="off" data-filtro="nfEspecificas">
                 </div>
             </div>
         </div>
@@ -134,7 +135,6 @@
 
     <div class="nwm-selecao">
         <div class="nwm-selecao-resumo">
-            <p class="nwm-selecao-contador" data-contador-selecao aria-live="polite">Nenhuma etiqueta selecionada</p>
             <div class="nwm-selecao-itens" data-itens-selecionados>
                 <p class="nwm-selecao-itens-titulo">Itens selecionados</p>
                 <div class="nwm-tabelinha-rolagem">
@@ -152,38 +152,43 @@
                     </table>
                 </div>
             </div>
+            <p class="nwm-selecao-contador" data-contador-selecao aria-live="polite">Nenhuma etiqueta selecionada</p>
         </div>
         <div class="nwm-selecao-acoes">
             <div class="nwm-acao-linha">
                 <div class="nwm-campo">
                     <label class="nwm-campo-rotulo" for="nwm-acao-lote-${instanceId}">Ação em lote</label>
-                    <div class="nwm-campo-caixa nwm-campo-caixa-select">
-                        <select id="nwm-acao-lote-${instanceId}" class="nwm-campo-input nwm-campo-select" data-acao-lote>
-                            <option value="">Selecione</option>
-                            <option value="imprimir">Imprimir</option>
-                            <option value="receber">Receber</option>
-                            <option value="estornar">Estornar</option>
-                            <option value="transferir">Transferir</option>
-                        </select>
+                    <div class="nwm-acoplado">
+                        <div class="nwm-campo-caixa nwm-campo-caixa-select">
+                            <select id="nwm-acao-lote-${instanceId}" class="nwm-campo-input nwm-campo-select" data-acao-lote>
+                                <option value="">Selecione</option>
+                                <option value="imprimir">Imprimir</option>
+                                <option value="receber">Receber</option>
+                                <option value="estornar">Estornar</option>
+                                <option value="transferir">Transferir</option>
+                            </select>
+                        </div>
+                        <button type="button" class="nwm-btn nwm-btn-contorno" data-aplicar-lote><i class="bi bi-check2-all" aria-hidden="true"></i>Aplicar</button>
                     </div>
                 </div>
-                <button type="button" class="nwm-btn nwm-btn-contorno" data-aplicar-lote><i class="bi bi-check2-all" aria-hidden="true"></i>Aplicar</button>
             </div>
             <div class="nwm-acao-linha">
                 <div class="nwm-campo">
                     <label class="nwm-campo-rotulo" for="nwm-item-qtde-${instanceId}">Escolher item</label>
-                    <div class="nwm-campo-caixa" data-auto="itens">
-                        <input type="text" id="nwm-item-qtde-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Digite código ou descrição" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-item-qtde-lista-${instanceId}" data-item-qtde>
-                        <ul class="nwm-sugestoes" id="nwm-item-qtde-lista-${instanceId}" role="listbox" aria-label="Itens encontrados" hidden></ul>
+                    <div class="nwm-campo-caixa nwm-campo-caixa-select">
+                        <select id="nwm-item-qtde-${instanceId}" class="nwm-campo-input nwm-campo-select" data-item-qtde>
+                            <option value="">Selecione</option>
+                        </select>
                     </div>
                 </div>
-                <div class="nwm-campo nwm-campo-estreito">
+                <div class="nwm-campo nwm-campo-qtde">
                     <label class="nwm-campo-rotulo" for="nwm-qtde-${instanceId}">Quantidade</label>
-                    <input type="number" id="nwm-qtde-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" min="0" step="0.0001" placeholder="0" autocomplete="off" data-qtde>
+                    <div class="nwm-acoplado">
+                        <input type="number" id="nwm-qtde-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" min="0" step="0.0001" placeholder="0" autocomplete="off" data-qtde>
+                        <button type="button" class="nwm-btn nwm-btn-contorno" data-executar-qtde><i class="bi bi-ui-checks" aria-hidden="true"></i>Executar</button>
+                    </div>
                 </div>
-                <button type="button" class="nwm-btn nwm-btn-contorno" data-executar-qtde><i class="bi bi-ui-checks" aria-hidden="true"></i>Executar</button>
             </div>
-            <p class="nwm-selecao-ajuda">Marca automaticamente as etiquetas cheias desse item (Em estoque ou Impressa) até atingir a quantidade pedida.</p>
         </div>
     </div>
 

@@ -2,6 +2,11 @@
 var NWM_TABULATOR_JS = 'https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.4.0/js/tabulator.min.js';
 var nwmTabulatorPromise = null;
 
+// Select2 (selects da barra de ações) + tradução pt-BR, do CDN. Mesmo esquema: carregado uma vez só.
+var NWM_SELECT2_JS = 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js';
+var NWM_SELECT2_PT_BR = 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/pt-BR.js';
+var nwmSelect2Promise = null;
+
 // DADOS MOCKADOS, só para visualizar a tela. Trocar pelos datasets/REST quando forem definidos.
 // Listas de apoio usadas pelos autocompletes dos filtros.
 var NWM_FONTES = {
@@ -124,6 +129,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         });
 
         this.prepararAutocompletes();
+        this.montarSelectItens();
+
+        //sem o CDN os selects nativos continuam funcionando
+        this.carregarSelect2().then(function () {
+            self.prepararSelect2();
+        }, function () {});
+
         this.prepararModais();
         this.montarLegenda();
         this.atualizarSelecao();
@@ -717,12 +729,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     executarQuantidade(htmlElement, event) {
         var self = this;
         var $item = $('[data-item-qtde]', this.DOM);
-        var codigo = $item.data('codigo');
+        var codigo = $item.val();
         var quantidade = parseFloat(String($('[data-qtde]', this.DOM).val() || '').replace(',', '.'));
 
         if (!codigo) {
             this.avisar('warning', 'Escolha um item da lista.');
-            $item.trigger('focus');
+            //com o Select2 o select original fica escondido: abre a lista em vez de dar foco
+            if ($item.data('select2')) $item.select2('open');
+            else $item.trigger('focus');
             return;
         }
         if (isNaN(quantidade) || quantidade <= 0) {
@@ -894,6 +908,58 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.avisar('success', alteradas === 1
             ? '1 etiqueta agora está como ' + NWM_STATUS[b.statusNovo].rotulo + '.'
             : alteradas + ' etiquetas agora estão como ' + NWM_STATUS[b.statusNovo].rotulo + '.');
+    },
+
+    // ---------- Select2 ----------
+
+    carregarScript(src) {
+        return new Promise(function (resolve, reject) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    },
+
+    //Select2 primeiro, tradução depois (o pt-BR se registra dentro do Select2)
+    carregarSelect2() {
+        var self = this;
+        if (!nwmSelect2Promise) {
+            var base = $.fn.select2 ? Promise.resolve() : this.carregarScript(NWM_SELECT2_JS);
+            nwmSelect2Promise = base.then(function () {
+                return self.carregarScript(NWM_SELECT2_PT_BR);
+            });
+            nwmSelect2Promise.catch(function () {
+                nwmSelect2Promise = null;
+            });
+        }
+        return nwmSelect2Promise;
+    },
+
+    prepararSelect2() {
+        var base = {
+            language: 'pt-BR',
+            width: '100%',
+            //a option vazia vira placeholder: aparece no campo, mas não na lista
+            placeholder: 'Selecione',
+            //a lista abre dentro do widget, para pegar o estilo de .fluig-style-guide.nwm
+            dropdownParent: $(this.DOM)
+        };
+
+        $('[data-acao-lote]', this.DOM).select2(base);
+        $('[data-item-qtde]', this.DOM).select2(base);
+
+        //o Select2 desenha a própria seta: some a do select nativo
+        $('[data-acao-lote], [data-item-qtde]', this.DOM).closest('.nwm-campo-caixa-select').addClass('is-select2');
+    },
+
+    //"Escolher item" é um select; no mockup as opções vêm de NWM_FONTES.itens
+    montarSelectItens() {
+        var $select = $('[data-item-qtde]', this.DOM);
+        NWM_FONTES.itens.forEach(function (item) {
+            $('<option>').val(item.codigo).text(item.codigo + ' — ' + item.descricao).appendTo($select);
+        });
     },
 
     montarLegenda() {

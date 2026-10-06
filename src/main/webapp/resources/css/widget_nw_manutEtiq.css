@@ -126,6 +126,7 @@
     display: block;
     margin: 0 0 6px;
     font-size: 13px;
+    line-height: 18px;
     font-weight: 700;
     color: var(--nwm-tinta);
 }
@@ -194,11 +195,6 @@
 
 .fluig-style-guide.nwm .nwm-campo-input[type="date"] {
     padding-right: 10px;
-}
-
-.fluig-style-guide.nwm .nwm-campo-estreito {
-    width: 130px;
-    flex: 0 0 130px;
 }
 
 .fluig-style-guide.nwm .nwm-campo-input.is-invalido,
@@ -390,6 +386,135 @@
     outline-offset: 1px;
 }
 
+/* ---------- Select2 (Ação em lote, Escolher item) no mesmo visual dos outros campos ---------- */
+.fluig-style-guide.nwm .nwm-campo-caixa-select.is-select2::after {
+    display: none;
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-selection--single {
+    box-sizing: border-box;
+    height: 44px;
+    border: 1px solid var(--nwm-borda-campo);
+    border-radius: 10px;
+    background-color: #fff;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-selection--single:hover {
+    border-color: #B5B3A9;
+}
+
+.fluig-style-guide.nwm .select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: var(--nwm-verde);
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.18);
+}
+
+/* aberto: campo e lista viram uma peça só (sem sombra entre os dois, cantos retos na emenda) */
+.fluig-style-guide.nwm .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: var(--nwm-verde);
+    box-shadow: none;
+}
+
+.fluig-style-guide.nwm .select2-container--default.select2-container--open.select2-container--below .select2-selection--single {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.fluig-style-guide.nwm .select2-container--default.select2-container--open.select2-container--above .select2-selection--single {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding: 0 38px 0 14px;
+    font-size: 15px;
+    line-height: 42px;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-selection--single .select2-selection__arrow {
+    top: 0;
+    right: 8px;
+    width: 24px;
+    height: 42px;
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    margin-left: -5px;
+    margin-top: -3px;
+    border-width: 6px 5px 0;
+    border-color: var(--nwm-tinta-suave) transparent transparent;
+}
+
+.fluig-style-guide.nwm .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-width: 0 5px 6px;
+    border-color: transparent transparent var(--nwm-tinta-suave);
+}
+
+/* lista aberta, grudada no campo: sem a borda da emenda e com os cantos arredondados só do lado de fora */
+.fluig-style-guide.nwm .select2-dropdown {
+    overflow: hidden;
+    border: 1px solid var(--nwm-verde);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .select2-dropdown--below {
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.fluig-style-guide.nwm .select2-dropdown--above {
+    border-bottom: 0;
+    border-radius: 10px 10px 0 0;
+}
+
+.fluig-style-guide.nwm .select2-search--dropdown {
+    padding: 8px;
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-search--dropdown .select2-search__field {
+    box-sizing: border-box;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--nwm-borda-campo);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--nwm-verde);
+}
+
+.fluig-style-guide.nwm .select2-results__option {
+    padding: 8px 14px;
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #F3F7F2;
+    font-weight: 700;
+}
+
+.fluig-style-guide.nwm .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--nwm-nevoa);
+    color: var(--nwm-tinta);
+}
+
+/* grudado no botão: lado direito reto, e por cima do botão quando em foco (borda verde inteira) */
+.fluig-style-guide.nwm .nwm-acoplado .select2-container--default .select2-selection--single {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.fluig-style-guide.nwm .nwm-acoplado .select2-container--focus,
+.fluig-style-guide.nwm .nwm-acoplado .select2-container--open {
+    z-index: 1;
+}
+
 /* ---------- Autocomplete ---------- */
 .fluig-style-guide.nwm .nwm-sugestoes {
     position: absolute;
@@ -526,7 +651,7 @@
 }
 
 .fluig-style-guide.nwm .nwm-selecao-contador {
-    margin: 0;
+    margin: 10px 0 0;
     font-size: 15px;
     font-weight: 700;
     color: var(--nwm-tinta);
@@ -537,9 +662,12 @@
     color: var(--nwm-tinta-suave);
 }
 
-/* cartão em três faixas: título verde, títulos das colunas em marfim, linhas em branco */
+/*
+ * cartão em três faixas: título verde, títulos das colunas em marfim, linhas em branco.
+ * margin-top = rótulo "Ação em lote" (18px) + margem dele (6px): o topo da tabela fica na linha do select
+ */
 .fluig-style-guide.nwm .nwm-selecao-itens {
-    margin-top: 12px;
+    margin-top: 24px;
     overflow: hidden;
     border: 1px solid var(--nwm-linha);
     border-radius: 14px;
@@ -642,16 +770,39 @@
     min-width: 190px;
 }
 
-.fluig-style-guide.nwm .nwm-acao-linha .nwm-campo-estreito {
-    flex: 0 0 130px;
+.fluig-style-guide.nwm .nwm-acao-linha .nwm-campo-qtde {
+    flex: 0 1 280px;
+    min-width: 220px;
+}
+
+/* campo + botão grudados: o botão encosta no lado direito do campo, sem espaço entre os dois */
+.fluig-style-guide.nwm .nwm-acoplado {
+    display: flex;
+    align-items: stretch;
+}
+
+.fluig-style-guide.nwm .nwm-acoplado > .nwm-campo-caixa,
+.fluig-style-guide.nwm .nwm-acoplado > .nwm-campo-input {
+    flex: 1 1 auto;
     min-width: 0;
 }
 
-.fluig-style-guide.nwm .nwm-selecao-ajuda {
-    margin: 0;
-    font-size: 12px;
-    line-height: 1.45;
-    color: var(--nwm-tinta-suave);
+.fluig-style-guide.nwm .nwm-acoplado .nwm-campo-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* o campo em foco fica por cima do botão, para a borda verde não sumir embaixo dele */
+.fluig-style-guide.nwm .nwm-acoplado .nwm-campo-input:focus {
+    position: relative;
+    z-index: 1;
+}
+
+.fluig-style-guide.nwm .nwm-acoplado .nwm-btn {
+    flex: 0 0 auto;
+    margin-left: -1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 /* ---------- Tabela (Tabulator, tema "simple" sobrescrito com a paleta da tela) ---------- */
@@ -1130,6 +1281,10 @@
     .fluig-style-guide.nwm .nwm-selecao-acoes {
         flex: 1 1 100%;
     }
+
+    .fluig-style-guide.nwm .nwm-selecao-itens {
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 991px) {
@@ -1212,15 +1367,9 @@
         flex-wrap: wrap;
     }
 
-    .fluig-style-guide.nwm .nwm-acao-linha .nwm-campo,
-    .fluig-style-guide.nwm .nwm-campo-estreito {
+    .fluig-style-guide.nwm .nwm-acao-linha .nwm-campo {
         flex: 1 1 100%;
-        width: auto;
         min-width: 0;
-    }
-
-    .fluig-style-guide.nwm .nwm-acao-linha .nwm-btn {
-        flex: 1 1 100%;
     }
 
     .fluig-style-guide.nwm .nwm-detalhes-grid {
@@ -1247,6 +1396,7 @@
 @media (prefers-reduced-motion: reduce) {
     .fluig-style-guide.nwm .nwm-campo-input,
     .fluig-style-guide.nwm .nwm-filtros .nwm-faixa-caixa,
+    .fluig-style-guide.nwm .select2-container--default .select2-selection--single,
     .fluig-style-guide.nwm .nwm-btn,
     .fluig-style-guide.nwm .nwm-modal-fechar,
     .fluig-style-guide.nwm .nwm-acao,
