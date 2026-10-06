@@ -321,6 +321,11 @@
 }
 
 /* ---------- Nota Fiscal: Intervalo x Específicas (seletor de duas posições) ---------- */
+/* o display:flex da caixa venceria o atributo hidden (modo Específicas esconde o intervalo) */
+.fluig-style-guide.nwm .nwm-faixa-caixa[hidden] {
+    display: none;
+}
+
 .fluig-style-guide.nwm .nwm-nf-rotulo {
     display: flex;
     align-items: center;
