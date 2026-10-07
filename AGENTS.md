@@ -1,6 +1,6 @@
 # widget_nw_manutEtiq
 
-> Regras gerais (versões, SuperWidget, Style Guide): `CLAUDE.md` da raiz do repositório. Aqui fica só o que é deste widget.
+> Regras gerais (versões, SuperWidget, Style Guide): `AGENTS.md` da raiz do repositório. Aqui fica só o que é deste widget.
 > Preencher só com o que o usuário informou ou o que está nos fontes. O que não se sabe fica "a definir".
 > Levantamento da tela legada e decisões do usuário: `ORIENTACOES-MOCKUP.md` desta pasta.
 > Padrões gerais do Fluig da Branco Peres (visual, Dataset, Style Guide): skill `fluig-branco-peres`.
