@@ -59,11 +59,6 @@
     min-width: 0;
 }
 
-.fluig-style-guide.nwm .nwm-cabecalho-acoes {
-    flex: 0 0 auto;
-    margin-left: auto;
-}
-
 .fluig-style-guide.nwm .nwm-cabecalho-titulo {
     margin: 0;
     font-family: inherit;
@@ -126,7 +121,6 @@
     display: block;
     margin: 0 0 6px;
     font-size: 13px;
-    line-height: 18px;
     font-weight: 700;
     color: var(--nwm-tinta);
 }
@@ -635,9 +629,10 @@
 }
 
 /* ---------- Barra de seleção (contador + itens marcados + ações) ---------- */
+/* tabela à esquerda; ações à direita, centralizadas na altura da tabela */
 .fluig-style-guide.nwm .nwm-selecao {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 20px 28px;
@@ -650,24 +645,8 @@
     min-width: 0;
 }
 
-.fluig-style-guide.nwm .nwm-selecao-contador {
-    margin: 10px 0 0;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--nwm-tinta);
-}
-
-.fluig-style-guide.nwm .nwm-selecao-contador.is-vazio {
-    font-weight: 400;
-    color: var(--nwm-tinta-suave);
-}
-
-/*
- * cartão em três faixas: título verde, títulos das colunas em marfim, linhas em branco.
- * margin-top = rótulo "Ação em lote" (18px) + margem dele (6px): o topo da tabela fica na linha do select
- */
+/* cartão em três faixas: título verde, títulos das colunas em marfim, linhas em branco */
 .fluig-style-guide.nwm .nwm-selecao-itens {
-    margin-top: 24px;
     overflow: hidden;
     border: 1px solid var(--nwm-linha);
     border-radius: 14px;
@@ -695,11 +674,13 @@
 }
 
 /* tabela "Itens selecionados": resumo do que está marcado, não é Tabulator */
+/* font-family: o Style Guide põe outra fonte em ".fluig-style-guide table" */
 .fluig-style-guide.nwm .nwm-tabelinha {
     width: 100%;
     margin: 0;
     border-collapse: collapse;
     background-color: transparent;
+    font-family: inherit;
     font-size: 14px;
 }
 
@@ -713,14 +694,13 @@
     vertical-align: middle;
     line-height: 1.35;
     white-space: nowrap;
+    font-family: inherit;
 }
 
 .fluig-style-guide.nwm .nwm-tabelinha th {
     background-color: var(--nwm-marfim);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
     color: var(--nwm-tinta-suave);
 }
 
@@ -829,7 +809,16 @@
 }
 
 .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
-    padding: 14px 12px;
+    padding: 12px 10px;
+}
+
+/* a seta de ordenação reserva 18px (o padrão do Tabulator são 25px) */
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col.tabulator-sortable .tabulator-col-title {
+    padding-right: 18px;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-sorter {
+    right: 6px;
 }
 
 .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col .tabulator-col-title {
@@ -864,7 +853,7 @@
 }
 
 .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row .tabulator-cell {
-    padding: 12px;
+    padding: 6px 10px;
     border-right: 0;
 }
 
@@ -947,12 +936,12 @@
 .fluig-style-guide.nwm .nwm-chip {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 4px 12px 4px 10px;
+    gap: 6px;
+    padding: 3px 10px 3px 8px;
     border: 1px solid var(--nwm-linha);
     border-radius: 999px;
     background-color: #fff;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     line-height: 1.4;
     white-space: nowrap;
@@ -971,8 +960,8 @@
 .fluig-style-guide.nwm .nwm-chip-nao-impresso { border-color: #BFE3C8; background-color: #EAF6EC; }
 .fluig-style-guide.nwm .nwm-chip-nao-impresso .nwm-chip-ponto { background-color: #4CAF72; }
 
-.fluig-style-guide.nwm .nwm-chip-impressa { border-color: #F4C2C4; background-color: #FDECEC; }
-.fluig-style-guide.nwm .nwm-chip-impressa .nwm-chip-ponto { background-color: var(--nwm-vermelho); }
+.fluig-style-guide.nwm .nwm-chip-impressa { border-color: #EED79A; background-color: #FDF6DE; }
+.fluig-style-guide.nwm .nwm-chip-impressa .nwm-chip-ponto { background-color: #C99200; }
 
 .fluig-style-guide.nwm .nwm-chip-em-estoque { border-color: #BBD7EC; background-color: #EAF3FA; }
 .fluig-style-guide.nwm .nwm-chip-em-estoque .nwm-chip-ponto { background-color: #2B7CB8; }
@@ -983,8 +972,8 @@
 .fluig-style-guide.nwm .nwm-chip-armazenada-bag { border-color: #A8CFB4; background-color: #E2EFE6; }
 .fluig-style-guide.nwm .nwm-chip-armazenada-bag .nwm-chip-ponto { background-color: var(--nwm-verde); }
 
-.fluig-style-guide.nwm .nwm-chip-descartado { border-color: #F3D2A8; background-color: #FDF1E0; }
-.fluig-style-guide.nwm .nwm-chip-descartado .nwm-chip-ponto { background-color: #E08A1E; }
+.fluig-style-guide.nwm .nwm-chip-descartado { border-color: #F4C2C4; background-color: #FDECEC; }
+.fluig-style-guide.nwm .nwm-chip-descartado .nwm-chip-ponto { background-color: var(--nwm-vermelho); }
 
 /* ajuda da coluna Status: a legenda do rodapé da tela antiga virou este botão */
 .fluig-style-guide.nwm .nwm-ajuda-status {
@@ -1281,10 +1270,6 @@
     .fluig-style-guide.nwm .nwm-selecao-acoes {
         flex: 1 1 100%;
     }
-
-    .fluig-style-guide.nwm .nwm-selecao-itens {
-        margin-top: 0;
-    }
 }
 
 @media (max-width: 991px) {
@@ -1336,11 +1321,6 @@
         padding-bottom: 18px;
     }
 
-    .fluig-style-guide.nwm .nwm-cabecalho-acoes {
-        flex: 1 1 100%;
-    }
-
-    .fluig-style-guide.nwm .nwm-cabecalho-acoes .nwm-btn,
     .fluig-style-guide.nwm .nwm-filtros-acoes .nwm-btn {
         flex: 1 1 0;
         width: 100%;

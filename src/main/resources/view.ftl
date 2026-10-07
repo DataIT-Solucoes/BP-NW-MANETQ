@@ -2,16 +2,16 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.4.0/css/tabulator_simple.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.4.0/js/tabulator.min.js" integrity="sha384-pYxmWRni6PTDEhE3EUFDBSQ4KQcsBHtS3N+syMWwrtxs9QRtJkxkphTVQMXEdVjT" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha384-JnbsSLBmv2/R0fUmF2XYIcAEMPHEAO51Gitn9IjL4l89uFTIgtLF1+jqIqqd9FSk" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/pt-BR.js" integrity="sha384-ukGBtXgWlWvAnvqBKFZnHi6C8eJqbLdnBc5ry6vVybVVjK4ExBTxUwn9tjJO8boy" crossorigin="anonymous"></script>
 
 <div id="widget_nw_manutEtiq_${instanceId}" class="super-widget wcm-widget-class fluig-style-guide nwm" data-params="widget_nw_manutEtiq.instance()">
     <div class="nwm-cabecalho">
         <span class="nwm-selo" aria-hidden="true"><span class="nwm-selo-miolo"><i class="bi bi-tags"></i></span></span>
         <div class="nwm-cabecalho-texto">
             <h2 class="nwm-cabecalho-titulo">Manutenção Embalagens</h2>
-            <p class="nwm-cabecalho-subtitulo">Consulte, receba, imprima e movimente as embalagens.</p>
-        </div>
-        <div class="nwm-cabecalho-acoes">
-            <button type="button" class="nwm-btn nwm-btn-destaque" data-gerar><i class="bi bi-plus-lg" aria-hidden="true"></i>Gerar etiquetas</button>
+            <p class="nwm-cabecalho-subtitulo">Consulte, imprima e movimente as embalagens.</p>
         </div>
     </div>
 
@@ -152,7 +152,6 @@
                     </table>
                 </div>
             </div>
-            <p class="nwm-selecao-contador" data-contador-selecao aria-live="polite">Nenhuma etiqueta selecionada</p>
         </div>
         <div class="nwm-selecao-acoes">
             <div class="nwm-acao-linha">

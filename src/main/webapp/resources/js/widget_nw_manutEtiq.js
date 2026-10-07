@@ -1,12 +1,3 @@
-// Tabulator (tabela) vem do CDN. Carregado uma vez só, mesmo com várias instâncias do widget na página.
-var NWM_TABULATOR_JS = 'https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.4.0/js/tabulator.min.js';
-var nwmTabulatorPromise = null;
-
-// Select2 (selects da barra de ações) + tradução pt-BR, do CDN. Mesmo esquema: carregado uma vez só.
-var NWM_SELECT2_JS = 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js';
-var NWM_SELECT2_PT_BR = 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/pt-BR.js';
-var nwmSelect2Promise = null;
-
 // DADOS MOCKADOS, só para visualizar a tela. Trocar pelos datasets/REST quando forem definidos.
 // Listas de apoio usadas pelos autocompletes dos filtros.
 var NWM_FONTES = {
@@ -122,19 +113,17 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.selecionados = {};
         NWM_SELECAO_MOCK.forEach(function (id) { self.selecionados[id] = true; });
 
-        this.carregarTabulator().then(function () {
-            self.montarTabela();
-        }, function () {
-            $('[data-tabela]', self.DOM).html('<p class="nwm-tabela-erro">Não foi possível carregar a tabela. Verifique a conexão com a internet e recarregue a página.</p>');
-        });
+        //Tabulator e Select2 vêm do CDN, carregados pelo view.ftl; se o CDN falhar, avisa na tela (tabela)
+        //ou segue com o select nativo (Select2)
+        if (window.Tabulator) {
+            this.montarTabela();
+        } else {
+            $('[data-tabela]', this.DOM).html('<p class="nwm-tabela-erro">Não foi possível carregar a tabela. Verifique a conexão com a internet e recarregue a página.</p>');
+        }
 
         this.prepararAutocompletes();
         this.montarSelectItens();
-
-        //sem o CDN os selects nativos continuam funcionando
-        this.carregarSelect2().then(function () {
-            self.prepararSelect2();
-        }, function () {});
+        if ($.fn.select2) this.prepararSelect2();
 
         this.prepararModais();
         this.montarLegenda();
@@ -145,7 +134,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     bindings: {
         local: {
             'buscar': ['click_buscar'],
-            'gerar': ['click_gerarEtiquetas'],
             'nf-modo': ['change_trocarModoNf'],
             'aplicar-lote': ['click_aplicarLote'],
             'executar-qtde': ['click_executarQuantidade'],
@@ -283,23 +271,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     // ---------- Tabela ----------
 
-    carregarTabulator() {
-        if (window.Tabulator) return Promise.resolve();
-        if (!nwmTabulatorPromise) {
-            nwmTabulatorPromise = new Promise(function (resolve, reject) {
-                var script = document.createElement('script');
-                script.src = NWM_TABULATOR_JS;
-                script.onload = resolve;
-                script.onerror = function () {
-                    nwmTabulatorPromise = null;
-                    reject();
-                };
-                document.head.appendChild(script);
-            });
-        }
-        return nwmTabulatorPromise;
-    },
-
     montarTabela() {
         var self = this;
         this.tabela = new Tabulator($('[data-tabela]', this.DOM)[0], {
@@ -324,7 +295,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
                     formatter: function (cell) { return self.montarCheckLinha(cell.getRow()); }
                 },
                 {
-                    title: 'Código', field: 'itCodigo', sorter: 'string', width: 105, vertAlign: 'middle',
+                    title: 'Código', field: 'itCodigo', sorter: 'string', width: 88, vertAlign: 'middle',
                     formatter: function (cell) {
                         var span = document.createElement('span');
                         span.className = 'nwm-codigo';
@@ -333,29 +304,29 @@ var widget_nw_manutEtiq = SuperWidget.extend({
                     }
                 },
                 { title: 'Descrição', field: 'descItem', sorter: 'string', widthGrow: 3, minWidth: 180, vertAlign: 'middle' },
-                { title: 'Fazenda', field: 'codEstabel', sorter: 'string', width: 105, vertAlign: 'middle' },
-                { title: 'Etiqueta', field: 'etiqueta', sorter: 'string', width: 105, vertAlign: 'middle' },
-                { title: 'Lote', field: 'lote', sorter: 'string', width: 95, vertAlign: 'middle' },
+                { title: 'Fazenda', field: 'codEstabel', sorter: 'string', width: 96, vertAlign: 'middle' },
+                { title: 'Etiqueta', field: 'etiqueta', sorter: 'string', width: 96, vertAlign: 'middle' },
+                { title: 'Lote', field: 'lote', sorter: 'string', width: 70, vertAlign: 'middle' },
                 {
-                    title: 'Data Val.', field: 'dtValiLote', sorter: 'string', width: 115, vertAlign: 'middle',
+                    title: 'Data Val.', field: 'dtValiLote', sorter: 'string', width: 100, vertAlign: 'middle',
                     formatter: function (cell) { return self.formatarData(cell.getValue()); }
                 },
                 {
-                    title: 'Qtde Emb', field: 'qtidadeIni', sorter: 'number', width: 120, hozAlign: 'right', vertAlign: 'middle',
+                    title: 'Qtde Emb', field: 'qtidadeIni', sorter: 'number', width: 72, headerWordWrap: true, hozAlign: 'right', vertAlign: 'middle',
                     formatter: function (cell) { return self.celulaNumero(cell.getValue()); }
                 },
                 {
-                    title: 'Qtde Saldo', field: 'qtidadeAtu', sorter: 'number', width: 125, hozAlign: 'right', vertAlign: 'middle',
+                    title: 'Qtde Saldo', field: 'qtidadeAtu', sorter: 'number', width: 76, headerWordWrap: true, hozAlign: 'right', vertAlign: 'middle',
                     formatter: function (cell) { return self.celulaNumero(cell.getValue(), !cell.getValue()); }
                 },
                 {
-                    title: 'Status', field: 'situacao', sorter: 'string', width: 175, vertAlign: 'middle',
+                    title: 'Status', field: 'situacao', sorter: 'string', width: 180, vertAlign: 'middle',
                     //a legenda do rodapé da tela antiga virou o botão de ajuda ao lado do título
                     titleFormatter: function () { return self.montarTituloStatus(); },
                     formatter: function (cell) { return self.montarChipStatus(cell.getValue()); }
                 },
                 {
-                    title: 'Ações', headerSort: false, width: 178, hozAlign: 'right', vertAlign: 'middle',
+                    title: 'Ações', headerSort: false, width: 170, hozAlign: 'right', vertAlign: 'middle',
                     formatter: function (cell) { return self.montarBotoesAcoes(cell.getRow().getData()); },
                     cellClick: function (event, cell) {
                         var botao = event.target.closest('[data-acao]');
@@ -530,10 +501,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         });
     },
 
-    //contador, resumo por item e estado da caixa do cabeçalho
+    //resumo por item e estado da caixa do cabeçalho
     atualizarSelecao() {
         var linhas = this.linhasSelecionadas();
-        var $contador = $('[data-contador-selecao]', this.DOM);
         var porItem = {};
 
         linhas.forEach(function (linha) {
@@ -544,14 +514,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         });
 
         var codigos = Object.keys(porItem);
-        if (!linhas.length) {
-            $contador.addClass('is-vazio').text('Nenhuma etiqueta selecionada');
-        } else {
-            $contador.removeClass('is-vazio').text(
-                (linhas.length === 1 ? '1 etiqueta selecionada' : linhas.length + ' etiquetas selecionadas') +
-                ' · ' + (codigos.length === 1 ? '1 item' : codigos.length + ' itens')
-            );
-        }
 
         var $corpo = $('[data-itens-selecionados-corpo]', this.DOM).empty();
         var self = this;
@@ -775,11 +737,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.avisar('success', 'Marcadas ' + marcadas + ' etiqueta(s), somando ' + this.formatarQuantidade(somado) + '.');
     },
 
-    //MOCK: a tela antiga gera etiquetas/código de barras por aqui; a regra ainda não foi levantada
-    gerarEtiquetas(htmlElement, event) {
-        this.avisar('info', 'Geração de etiquetas: fluxo a definir com o usuário.');
-    },
-
     // ---------- Modais (<dialog> nativo, não o FLUIGC.modal) ----------
 
     prepararModais() {
@@ -911,31 +868,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     // ---------- Select2 ----------
-
-    carregarScript(src) {
-        return new Promise(function (resolve, reject) {
-            var script = document.createElement('script');
-            script.src = src;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-    },
-
-    //Select2 primeiro, tradução depois (o pt-BR se registra dentro do Select2)
-    carregarSelect2() {
-        var self = this;
-        if (!nwmSelect2Promise) {
-            var base = $.fn.select2 ? Promise.resolve() : this.carregarScript(NWM_SELECT2_JS);
-            nwmSelect2Promise = base.then(function () {
-                return self.carregarScript(NWM_SELECT2_PT_BR);
-            });
-            nwmSelect2Promise.catch(function () {
-                nwmSelect2Promise = null;
-            });
-        }
-        return nwmSelect2Promise;
-    },
 
     prepararSelect2() {
         var base = {
