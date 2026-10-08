@@ -1,13 +1,3 @@
-// DADOS MOCKADOS, só para visualizar a tela. Trocar pelos datasets/REST quando forem definidos.
-// Lista de itens usada pelo select de seleção por quantidade.
-var NWM_FONTES = {
-    itens: [
-        { codigo: '357867', descricao: 'REGLONE', unidade: 'LT' },
-        { codigo: '361378', descricao: 'OMITE 720 CE BR - ONU 3082', unidade: 'LT' },
-        { codigo: '365131', descricao: 'DIMEXION - ONU 3018', unidade: 'LT' }
-    ]
-};
-
 // Status da etiqueta: rótulo, texto da legenda (o rodapé da tela antiga) e ações liberadas na visão ADM.
 // A matriz de ações é a da tela legada; "Em campo" ficou de fora por decisão do usuário.
 var NWM_STATUS = {
@@ -58,30 +48,6 @@ var NWM_ACOES = {
     transferir: { rotulo: 'Transferir', icone: 'bi-arrow-left-right', statusNovo: null }
 };
 
-// Etiquetas mockadas. Nomes dos campos do Progress ao lado: it-codigo, desc-item, cod-estabel,
-// char-1 (etiqueta), lote, dt-vali-lote, qtidade-ini, qtidade-atu, sit_etiqueta.
-// Depósito, família e nota fiscal são usados pelos filtros;
-// o nome do campo no banco ainda não foi confirmado.
-var NWM_DADOS_MOCK = [
-    { id: 1, itCodigo: '365131', descItem: 'DIMEXION - ONU 3018', codEstabel: '10901', deposito: 'BAR02', etiqueta: '000123', lote: 'L2601', dtValiLote: '2026-12-10', qtidadeIni: 20, qtidadeAtu: 20, unidade: 'LT', familia: 'DEF', codBarras: '7891000000123', notaFiscal: '12345', situacao: 'impressa' },
-    { id: 2, itCodigo: '365131', descItem: 'DIMEXION - ONU 3018', codEstabel: '10901', deposito: 'BAR02', etiqueta: '000124', lote: 'L2601', dtValiLote: '2026-12-10', qtidadeIni: 20, qtidadeAtu: 20, unidade: 'LT', familia: 'DEF', codBarras: '7891000000124', notaFiscal: '12345', situacao: 'impressa' },
-    { id: 3, itCodigo: '365131', descItem: 'DIMEXION - ONU 3018', codEstabel: '10901', deposito: 'BAR02', etiqueta: '000125', lote: 'L2601', dtValiLote: '2026-12-10', qtidadeIni: 20, qtidadeAtu: 8, unidade: 'LT', familia: 'DEF', codBarras: '7891000000125', notaFiscal: '12345', situacao: 'em-estoque' },
-    { id: 4, itCodigo: '365131', descItem: 'DIMEXION - ONU 3018', codEstabel: '10902', deposito: 'ALM01', etiqueta: '000126', lote: 'L2602', dtValiLote: '2027-03-22', qtidadeIni: 20, qtidadeAtu: 20, unidade: 'LT', familia: 'DEF', codBarras: '7891000000126', notaFiscal: '12346', situacao: 'nao-impresso' },
-    { id: 5, itCodigo: '361378', descItem: 'OMITE 720 CE BR - ONU 3082', codEstabel: '10901', deposito: 'BAR02', etiqueta: '000210', lote: 'L2588', dtValiLote: '2026-11-05', qtidadeIni: 10, qtidadeAtu: 10, unidade: 'LT', familia: 'DEF', codBarras: '7891000000210', notaFiscal: '12340', situacao: 'em-estoque' },
-    { id: 6, itCodigo: '361378', descItem: 'OMITE 720 CE BR - ONU 3082', codEstabel: '10901', deposito: 'BAR02', etiqueta: '000211', lote: 'L2588', dtValiLote: '2026-11-05', qtidadeIni: 10, qtidadeAtu: 10, unidade: 'LT', familia: 'DEF', codBarras: '7891000000211', notaFiscal: '12340', situacao: 'em-estoque' },
-    { id: 7, itCodigo: '361378', descItem: 'OMITE 720 CE BR - ONU 3082', codEstabel: '10901', deposito: 'BAR02', etiqueta: '000212', lote: 'L2588', dtValiLote: '2026-11-05', qtidadeIni: 10, qtidadeAtu: 0, unidade: 'LT', familia: 'DEF', codBarras: '7891000000212', notaFiscal: '12340', situacao: 'zerada' },
-    { id: 8, itCodigo: '361378', descItem: 'OMITE 720 CE BR - ONU 3082', codEstabel: '10902', deposito: 'BAG03', etiqueta: '000213', lote: 'L2588', dtValiLote: '2026-11-05', qtidadeIni: 10, qtidadeAtu: 0, unidade: 'LT', familia: 'DEF', codBarras: '7891000000213', notaFiscal: '12340', situacao: 'armazenada-bag' },
-    { id: 9, itCodigo: '357867', descItem: 'REGLONE', codEstabel: '10902', deposito: 'ALM01', etiqueta: '000301', lote: 'L2611', dtValiLote: '2027-01-30', qtidadeIni: 5, qtidadeAtu: 5, unidade: 'LT', familia: 'DEF', codBarras: '7891000000301', notaFiscal: '12352', situacao: 'nao-impresso' },
-    { id: 10, itCodigo: '357867', descItem: 'REGLONE', codEstabel: '10902', deposito: 'ALM01', etiqueta: '000302', lote: 'L2611', dtValiLote: '2027-01-30', qtidadeIni: 5, qtidadeAtu: 5, unidade: 'LT', familia: 'DEF', codBarras: '7891000000302', notaFiscal: '12352', situacao: 'impressa' },
-    { id: 11, itCodigo: '357867', descItem: 'REGLONE', codEstabel: '10904', deposito: 'BAR02', etiqueta: '000303', lote: 'L2611', dtValiLote: '2027-01-30', qtidadeIni: 5, qtidadeAtu: 5, unidade: 'LT', familia: 'DEF', codBarras: '7891000000303', notaFiscal: '12352', situacao: 'em-estoque' },
-    { id: 12, itCodigo: '357867', descItem: 'REGLONE', codEstabel: '10904', deposito: 'BAR02', etiqueta: '000304', lote: 'L2611', dtValiLote: '2027-01-30', qtidadeIni: 5, qtidadeAtu: 2, unidade: 'LT', familia: 'DEF', codBarras: '7891000000304', notaFiscal: '12352', situacao: 'descartado' },
-    { id: 13, itCodigo: '365131', descItem: 'DIMEXION - ONU 3018', codEstabel: '10904', deposito: 'BAR02', etiqueta: '000127', lote: 'L2602', dtValiLote: '2027-03-22', qtidadeIni: 20, qtidadeAtu: 20, unidade: 'LT', familia: 'DEF', codBarras: '7891000000127', notaFiscal: '12346', situacao: 'em-estoque' },
-    { id: 14, itCodigo: '365131', descItem: 'DIMEXION - ONU 3018', codEstabel: '10904', deposito: 'BAR02', etiqueta: '000128', lote: 'L2602', dtValiLote: '2027-03-22', qtidadeIni: 20, qtidadeAtu: 20, unidade: 'LT', familia: 'DEF', codBarras: '7891000000128', notaFiscal: '12346', situacao: 'em-estoque' }
-];
-
-//mockup: etiquetas que já abrem marcadas, para a tabela "Itens selecionados" aparecer preenchida
-var NWM_SELECAO_MOCK = [1, 2, 5, 6, 10];
-
 var widget_nw_manutEtiq = SuperWidget.extend({
 
     //instância do Tabulator
@@ -93,11 +59,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     //ação aguardando confirmação no modal: { acao: 'receber', linhas: [...], ignoradas: 0 }
     pendente: null,
 
+    //tempo da marcação dos filtros inválidos nesta instância
+    temporizadorFiltros: null,
+
     //método iniciado quando a widget é carregada
     init() {
-        var self = this;
         this.selecionados = {};
-        NWM_SELECAO_MOCK.forEach(function (id) { self.selecionados[id] = true; });
 
         //Tabulator e Select2 vêm do CDN, carregados pelo view.ftl; se o CDN falhar, avisa na tela (tabela)
         //ou segue com o select nativo (Select2)
@@ -108,7 +75,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         }
 
         this.prepararFiltros();
-        this.montarSelectItens();
         if ($.fn.select2) this.prepararSelect2();
 
         this.prepararModais();
@@ -145,7 +111,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     montarTabela() {
         var self = this;
         this.tabela = new Tabulator($('[data-tabela]', this.DOM)[0], {
-            data: NWM_DADOS_MOCK.slice(),
+            data: [],
             index: 'id',
             layout: 'fitColumns',
             responsiveLayout: false,
@@ -215,7 +181,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             self.atualizarContadorTabela();
         });
 
-        //com a tabela pronta, o resumo e o contador já refletem a seleção inicial do mockup
+        //com a tabela pronta, atualiza o resumo da seleção
         this.tabela.on('tableBuilt', function () {
             self.atualizarSelecao();
         });
@@ -468,17 +434,24 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     validarFiltros(f) {
         var temNf = f.modoNf === 'especificas' ? !!f.nfEspecificas : !!(f.nfDe || f.nfAte);
         var temItem = !!(f.itemDe || f.itemAte);
+        var mensagens = [];
+        var campos = [];
 
+        clearTimeout(this.temporizadorFiltros);
+        this.temporizadorFiltros = null;
         $('.nwm-filtros .nwm-campo-input', this.DOM).removeClass('is-invalido').removeAttr('aria-invalid');
 
         if (!f.estDe || !f.estAte) {
-            this.marcarInvalidos(['estDe', 'estAte']);
-            this.avisar('warning', 'Informe o estabelecimento De e Até.');
-            return false;
+            campos = campos.concat(['estDe', 'estAte']);
+            mensagens.push('Informe o estabelecimento De e Até.');
         }
         if (!temItem && !temNf) {
-            this.marcarInvalidos(['itemDe', 'itemAte']);
-            this.avisar('warning', 'Informe os itens ou a nota fiscal.');
+            campos = campos.concat(['itemDe', 'itemAte'], f.modoNf === 'especificas' ? ['nfEspecificas'] : ['nfDe', 'nfAte']);
+            mensagens.push('Informe os itens ou a nota fiscal.');
+        }
+        if (mensagens.length) {
+            this.marcarInvalidos(campos);
+            this.avisar('warning', mensagens.join(' '));
             return false;
         }
         return true;
@@ -486,11 +459,19 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     marcarInvalidos(campos) {
         var self = this;
-        campos.forEach(function (campo) {
+        var $primeiro = $();
+        $.each(campos, function (indice, campo) {
             var $input = $('[data-filtro="' + campo + '"]', self.DOM);
-            if (!$input.val()) $input.addClass('is-invalido').attr('aria-invalid', 'true');
+            if (!$.trim($input.val() || '')) {
+                $input.addClass('is-invalido').attr('aria-invalid', 'true');
+                if (!$primeiro.length) $primeiro = $input;
+            }
         });
-        $('[data-filtro="' + campos[0] + '"]', this.DOM).trigger('focus');
+        $primeiro.trigger('focus');
+        this.temporizadorFiltros = setTimeout(function () {
+            $('.nwm-filtros .nwm-campo-input', self.DOM).removeClass('is-invalido').removeAttr('aria-invalid');
+            self.temporizadorFiltros = null;
+        }, 2000);
     },
 
     //faixa De/Até: compara como número quando os dois lados são numéricos, senão como texto
@@ -755,14 +736,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
         //o Select2 desenha a própria seta: some a do select nativo
         $('[data-acao-lote], [data-item-qtde]', this.DOM).closest('.nwm-campo-caixa-select').addClass('is-select2');
-    },
-
-    //"Escolher item" é um select; no mockup as opções vêm de NWM_FONTES.itens
-    montarSelectItens() {
-        var $select = $('[data-item-qtde]', this.DOM);
-        NWM_FONTES.itens.forEach(function (item) {
-            $('<option>').val(item.codigo).text(item.codigo + ' — ' + item.descricao).appendTo($select);
-        });
     },
 
     montarLegenda() {
