@@ -20,17 +20,19 @@ Refaz a tela legada **Manutenção Itens/Etiquetas** (`v2_widget_manutencao_etiq
 - Onde é usado (página/comunidade do Fluig): a definir
 
 ## Estado atual (2026-10-07)
-Mockup completo com **dados mockados**; nenhuma chamada a dataset, REST ou API do Fluig.
+Mockup sem dados: não há dados mockados nem chamada a dataset, REST ou API do Fluig.
 - `view.ftl`: cabeçalho + 8 filtros + barra de seleção + tabela + 3 `<dialog>` (detalhes, confirmação, legenda).
   Bibliotecas externas declaradas no próprio `view.ftl` com SRI (ver "Recursos externos").
 - `widget_nw_manutEtiq.js`: SuperWidget com Tabulator 6.4.0 (CDN), autocompletes próprios, filtros com a
   validação da tela antiga, seleção por caixa de marcação, ação em lote, ações por linha por status —
-  tudo sobre `NWM_DADOS_MOCK` / `NWM_FONTES` / `NWM_STATUS` / `NWM_ACOES`.
+  configurados em `NWM_STATUS` / `NWM_ACOES`.
 - `widget_nw_manutEtiq.css`: paleta Branco Peres sob `.fluig-style-guide.nwm`.
 - `edit.ftl`: card de identificação.
 
 **Aba única** (decisão do usuário): as duas abas da tela antiga foram unificadas. O mockup é a **visão ADM**;
 não há checagem de permissão, não há a visão do não-ADM e **não há o campo C. Barras** (é exclusivo do não-ADM).
+Cabeçalho sem botão **Gerar etiquetas** (decisão do usuário): a geração é interna ao backend (gatilho do RE1001);
+o Fluig só consulta o resultado (`consultarGeracao`).
 
 ## Tela
 ### Filtros (todos visíveis, sem bloco colapsável; todos faixa De/Até)
@@ -48,7 +50,7 @@ Tabela **Itens selecionados** (Código | Descrição | Qtde Sel., resumo do que 
 "Nenhum item selecionado") · **Ação em lote** (select Selecione | Imprimir | Receber | Estornar | Transferir) + **Aplicar**
 acoplado à direita · **Escolher item** (select) + **Quantidade** + **Executar** acoplado à direita (marca automaticamente
 as etiquetas cheias do item, com status Em estoque ou Impressa, até atingir a quantidade pedida).
-Os dois selects usam **Select2 4.0.13** (pt-BR, com busca). O contador "N etiquetas selecionadas" foi **removido** (06/10).
+Os dois selects usam **Select2 4.0.13** (pt-BR, com busca). Não há contador de etiquetas selecionadas (decisão do usuário).
 
 ### Tabela
 marcação | Código | Descrição | Fazenda | Etiqueta | Lote | Data Val. | Qtde Emb | Qtde Saldo | Status | Ações
@@ -145,13 +147,10 @@ Nenhum.
   com status Em estoque ou Impressa, até atingir a quantidade pedida.
 
 ## Pendências / decisões em aberto
-- Trocar os mocks (`NWM_DADOS_MOCK`, `NWM_FONTES`) pelos datasets/serviços REST quando existirem.
-- Permissão de ADM: lista de grupos do Fluig (pertencer a qualquer um libera) — grupos ainda não definidos,
-  e falta decidir se ficam fixos no JS ou vêm como parâmetro do `edit.ftl`. Na tela antiga eram
-  `adm_abas_etiquetas` (exibia a aba Administrador) e `adm_etiquetas` (liberava estabelecimento/depósito e ações).
+- Ligar a tela ao Dataset `dsNwEmbalagens` (consulta de etiquetas e apoios dos filtros).
+- Permissão de ADM: a regra grupo × ação fica no Dataset (ver "Autorização"); faltam os grupos definitivos (DT-054).
+  Na tela antiga eram `adm_abas_etiquetas` (exibia a aba Administrador) e `adm_etiquetas` (liberava estabelecimento/depósito e ações).
 - Visão do não-ADM (só Receber, campo C. Barras, sem ação em lote e sem Escolher Item/Quantidade).
-- Botão **Gerar etiquetas**: **removido** do cabeçalho (06/10/2026, a pedido). A geração de etiquetas é interna ao backend
-  (gatilho do RE1001); o Fluig só consulta o resultado (`consultarGeracao`).
 - Nota Fiscal "Específicas": a tela antiga usa um array próprio (`arrayDadosNfEspecificas`), provavelmente
   alimentado por um modal de lista. No mockup é um campo com as notas separadas por vírgula — regra a definir.
 - Regra de **Estornar** (status de destino) e de **Transferir** (destino: estabelecimento? depósito?).
