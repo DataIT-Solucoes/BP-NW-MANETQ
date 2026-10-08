@@ -1,88 +1,94 @@
-// Status da etiqueta: rótulo, texto da legenda (o rodapé da tela antiga) e ações liberadas na visão ADM.
-// A matriz de ações é a da tela legada; "Em campo" ficou de fora por decisão do usuário.
 var NWM_STATUS = {
-    'nao-impresso': {
-        rotulo: 'Não Impresso',
-        legenda: 'Etiqueta gerada e não impressa.',
-        acoes: ['detalhes', 'imprimir']
-    },
-    'impressa': {
-        rotulo: 'Impressa',
-        legenda: 'Etiqueta gerada e impressa.',
-        acoes: ['detalhes', 'receber', 'descartar', 'imprimir']
-    },
-    'em-estoque': {
-        rotulo: 'Em estoque',
-        legenda: 'Recebida pela fazenda e disponível no barracão.',
-        acoes: ['detalhes', 'estornar', 'descartar', 'transferir']
-    },
-    'zerada': {
-        rotulo: 'Zerada',
-        legenda: 'Etiqueta bipada e devolvida com quantidade zero para o barracão.',
-        acoes: ['detalhes', 'estornar', 'descartar']
-    },
-    'armazenada-bag': {
-        rotulo: 'Armazenada em Bag',
-        legenda: 'Embalagem vazia descartada pelo fluxo correto.',
-        acoes: ['detalhes']
-    },
-    'descartado': {
-        rotulo: 'Descartado',
-        legenda: 'Embalagem descartada por perda, roubo ou dano.',
-        acoes: ['detalhes', 'estornar']
-    }
+    ATIVA: { rotulo: 'Ativa', legenda: 'Situação ATIVA no controle de embalagens.' },
+    ENCERRADA: { rotulo: 'Encerrada', legenda: 'Situação ENCERRADA no controle de embalagens.' },
+    CANCELADA: { rotulo: 'Cancelada', legenda: 'Situação CANCELADA no controle de embalagens.' },
+    DESCARTADA: { rotulo: 'Descartada', legenda: 'Situação DESCARTADA no controle de embalagens.' }
 };
 
-// ordem da legenda (a mesma do rodapé da tela antiga)
-var NWM_STATUS_ORDEM = ['nao-impresso', 'impressa', 'em-estoque', 'zerada', 'armazenada-bag', 'descartado'];
+var NWM_STATUS_ORDEM = ['ATIVA', 'ENCERRADA', 'CANCELADA', 'DESCARTADA'];
+var NWM_POSICOES = { ESTAB: 'Estabelecimento', CAMPO: 'Campo', TERCEIRO: 'Terceiro', TRANSITO: 'Trânsito' };
 
-// Ações da linha e do lote. "statusNovo" só está preenchido onde a legenda da tela antiga deixa a
-// transição sem dúvida (imprimir/receber/descartar). Estornar e transferir dependem de regra que
-// ainda não foi levantada: no mockup avisam e não alteram nada.
 var NWM_ACOES = {
-    detalhes: { rotulo: 'Detalhes', icone: 'bi-eye', statusNovo: null },
-    imprimir: { rotulo: 'Imprimir', icone: 'bi-printer', statusNovo: 'impressa' },
-    receber: { rotulo: 'Receber', icone: 'bi-box-arrow-in-down', statusNovo: 'em-estoque' },
-    estornar: { rotulo: 'Estornar', icone: 'bi-arrow-counterclockwise', statusNovo: null },
-    descartar: { rotulo: 'Descartar', icone: 'bi-trash3', statusNovo: 'descartado', destrutivo: true },
-    transferir: { rotulo: 'Transferir', icone: 'bi-arrow-left-right', statusNovo: null }
+    detalhes: { rotulo: 'Detalhes', icone: 'bi-eye' },
+    imprimir: { rotulo: 'Imprimir', icone: 'bi-printer' },
+    receber: { rotulo: 'Receber', icone: 'bi-box-arrow-in-down' },
+    estornar: { rotulo: 'Estornar', icone: 'bi-arrow-counterclockwise' },
+    descartar: { rotulo: 'Descartar', icone: 'bi-trash3', destrutivo: true },
+    transferir: { rotulo: 'Transferir / Remessa', icone: 'bi-arrow-left-right' },
+    devolver: { rotulo: 'Devolver', icone: 'bi-box-arrow-up' }
 };
+
+var NWM_APOIOS_FILTROS = { est: 'apoiarEstabelecimentos', item: 'apoiarItens', dep: 'apoiarDepositos', lote: 'apoiarLotes', familia: 'apoiarFamilias' };
+
+var NWM_PARAMETROS_RECORTE_LOTE = { estDe: 'estabelDe', estAte: 'estabelAte', itemDe: 'itemDe', itemAte: 'itemAte', depDe: 'depositoDe', depAte: 'depositoAte' };
+
+var NWM_PARAMETROS_ETIQUETAS = {
+    estDe: 'estabelDe', estAte: 'estabelAte', itemDe: 'itemDe', itemAte: 'itemAte', depDe: 'depositoDe', depAte: 'depositoAte',
+    barrasDe: 'etiquetaDe', barrasAte: 'etiquetaAte', loteDe: 'loteDe', loteAte: 'loteAte', validadeDe: 'validadeDe', validadeAte: 'validadeAte',
+    familiaDe: 'familiaDe', familiaAte: 'familiaAte', nfDe: 'notaDe', nfAte: 'notaAte'
+};
+
+var NWM_PREFIXOS_FAIXAS = ['est', 'item', 'dep', 'barras', 'lote', 'validade', 'familia', 'nf'];
+var NWM_CAMPOS_DOCUMENTO = ['codigo', 'numero', 'serie', 'emitente', 'codEstabel', 'natureza'];
+var NWM_CAMPOS_ORIGEM = ['emitenteOrigem', 'serieOrigem', 'numeroOrigem', 'naturezaOrigem'];
+var NWM_CAMPOS_NUMERICOS_ETIQUETA = ['quantidadeInicial', 'quantidadeAtual', 'capacidade'];
+var NWM_CAMPOS_TEXTO_OPCIONAL_ETIQUETA = ['lote', 'validadeLote', 'deposito', 'localizacao', 'unidade', 'idBag'];
+
+var NWM_ROTULOS_FLUXO = { TRANSFERENCIA: 'Transferência', REMESSA_TERCEIROS: 'Remessa para terceiros', DEVOLUCAO_COMPRA: 'Devolução de compra', RETORNO_TERCEIROS: 'Retorno para terceiros' };
+var NWM_RAMOS_DEVOLUCAO = { DEVOLUCAO_COMPRA: 'FT4011', RETORNO_TERCEIROS: 'FT4012' };
+
+var NWM_LIMITE_SUGESTOES = 20;
+var NWM_LIMITE_DOCUMENTOS = 20;
+var NWM_LIMITE_PAGINA = 100;
+var NWM_LIMITE_EMBALAGENS_OPERACAO = 100;
+var NWM_LIMITE_TEXTO = 100;
+var NWM_ATRASO_APOIO_MS = 350;
+var NWM_TEMPO_MARCACAO_INVALIDO_MS = 2000;
+var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
+var NWM_ESCALA_QUANTIDADE = 10000;
+
+var NWM_CODIGO_POSITIVO = /^[1-9][0-9]*$/;
+var NWM_SOMENTE_DIGITOS = /^[0-9]+$/;
+var NWM_CARACTERE_CONTROLE = /[\x00-\x1f]/;
+var NWM_DECIMAL_ATE_QUATRO_CASAS = /^[0-9]+(?:\.[0-9]{1,4})?$/;
 
 var widget_nw_manutEtiq = SuperWidget.extend({
 
-    //instância do Tabulator
     tabela: null,
 
-    //ids das etiquetas marcadas (seleção própria, feita pela coluna de caixas de marcação)
     selecionados: null,
 
-    //ação aguardando confirmação no modal: { acao: 'receber', linhas: [...], ignoradas: 0 }
     pendente: null,
 
-    //tempo da marcação dos filtros inválidos nesta instância
     temporizadorFiltros: null,
 
-    //método iniciado quando a widget é carregada
+    consultasDataset: null,
+
+    apoiosFiltros: null,
+
+    consultaEtiquetas: null,
+
+    documentosSelecionados: null,
+
+    operacaoAtual: null,
+
     init() {
         this.selecionados = {};
-
-        //Tabulator e Select2 vêm do CDN, carregados pelo view.ftl; se o CDN falhar, avisa na tela (tabela)
-        //ou segue com o select nativo (Select2)
-        if (window.Tabulator) {
-            this.montarTabela();
-        } else {
-            $('[data-tabela]', this.DOM).html('<p class="nwm-tabela-erro">Não foi possível carregar a tabela. Verifique a conexão com a internet e recarregue a página.</p>');
-        }
-
+        this.consultasDataset = Object.create(null);
+        this.apoiosFiltros = Object.create(null);
+        this.documentosSelecionados = [];
+        this.prepararTabela();
         this.prepararFiltros();
+        this.prepararApoiosFiltros();
+        $('[data-acao-lote], [data-aplicar-lote]', this.DOM).prop('disabled', false);
+        this.atualizarItensQuantidade();
         if ($.fn.select2) this.prepararSelect2();
-
         this.prepararModais();
+        this.restaurarOperacaoPendente();
         this.montarLegenda();
         this.atualizarSelecao();
     },
 
-    //BIND de eventos
     bindings: {
         local: {
             'buscar': ['click_buscar'],
@@ -97,16 +103,641 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         global: {}
     },
 
-    // ---------- Entrada dos filtros ----------
+    prepararTabela() {
+        if (window.Tabulator) {
+            this.montarTabela();
+            return;
+        }
+        $('[data-tabela]', this.DOM).empty().append($('<p>', {
+            'class': 'nwm-tabela-erro',
+            text: 'Não foi possível carregar a tabela. Verifique a conexão com a internet e recarregue a página.'
+        }));
+    },
 
     prepararFiltros() {
-        //o aviso de filtro obrigatório sai assim que a pessoa volta a digitar no campo
+        var self = this;
         $(this.DOM).on('input.nwm', '.nwm-filtros .nwm-campo-input', function () {
-            $(this).removeClass('is-invalido').removeAttr('aria-invalid');
+            self.reagirAlteracaoFiltro($(this));
         });
     },
 
-    // ---------- Tabela ----------
+    reagirAlteracaoFiltro($campo) {
+        this.cancelarConsultaEtiquetas();
+        this.cancelarConsultaDataset('tabela');
+        if (this.tabela) this.limparSelecao();
+        this.invalidarApoiosDependentes($campo.data('filtro'));
+        $campo.removeClass('is-invalido').removeAttr('aria-invalid');
+    },
+
+    prepararApoiosFiltros() {
+        var self = this;
+        $.each(NWM_APOIOS_FILTROS, function (prefixo, acao) {
+            $.each(['De', 'Ate'], function (indice, sufixo) {
+                self.prepararApoioFiltro(prefixo + sufixo, acao);
+            });
+        });
+        this.prepararApoioFiltro('nfEspecificas', 'apoiarDocumentosEntrada');
+        $('[data-documentos-selecionados]', this.DOM).on('click.nwm', '[data-remover-documento]', function () {
+            self.removerDocumento($(this).attr('data-remover-documento'));
+        });
+        this.renderizarDocumentosSelecionados();
+    },
+
+    prepararApoioFiltro(campo, acao) {
+        var $input = $('[data-filtro="' + campo + '"]', this.DOM);
+        var idLista = 'nwm-apoio-' + campo + '-' + this.instanceId;
+        var $lista = this.criarListaSugestoes($input, idLista);
+        var apoio = this.criarEstadoApoio(campo, acao, $input, $lista);
+        this.apoiosFiltros[campo] = apoio;
+        this.ligarEventosCampoApoio(apoio);
+        this.ligarEventosListaApoio(apoio);
+    },
+
+    criarListaSugestoes($input, idLista) {
+        $input.wrap($('<div>', { 'class': 'nwm-campo-caixa' }));
+        var $lista = $('<ul>', { id: idLista, 'class': 'nwm-sugestoes', role: 'listbox', 'aria-label': $input.attr('aria-label'), hidden: true }).insertAfter($input);
+        $input.attr({ role: 'combobox', 'aria-autocomplete': 'list', 'aria-expanded': 'false', 'aria-controls': idLista });
+        return $lista;
+    },
+
+    criarEstadoApoio(campo, acao, $input, $lista) {
+        return {
+            campo: campo, acao: acao, $input: $input, $lista: $lista, sequencia: 0,
+            temporizador: null, termo: '', parametros: null, dados: [], cursores: Object.create(null),
+            cursor: '', temMais: false, carregando: false, erro: null, ativo: -1
+        };
+    },
+
+    ligarEventosCampoApoio(apoio) {
+        var self = this;
+        var $input = apoio.$input;
+        $input.on('input.nwmApoio', function () {
+            $input.removeData('registro');
+            self.agendarApoioFiltro(apoio);
+        }).on('focus.nwmApoio', function () {
+            if (!self.campoTemRegistroSelecionado($input)) self.agendarApoioFiltro(apoio);
+        }).on('blur.nwmApoio', function () {
+            self.cancelarApoioFiltro(apoio);
+        }).on('keydown.nwmApoio', function (evento) {
+            self.teclaApoioFiltro(apoio, evento);
+        });
+    },
+
+    campoTemRegistroSelecionado($input) {
+        var registro = $input.data('registro');
+        return !!registro && $input.val() === registro.codigo;
+    },
+
+    ligarEventosListaApoio(apoio) {
+        var self = this;
+        apoio.$lista.on('mousedown.nwmApoio', function (evento) { evento.preventDefault(); });
+        apoio.$lista.on('click.nwmApoio', '[data-opcao]', function () {
+            self.selecionarApoioFiltro(apoio, Number($(this).attr('data-opcao')));
+        }).on('click.nwmApoio', '[data-proxima]', function () {
+            self.consultarPaginaApoio(apoio, true);
+        });
+    },
+
+    montarParametrosApoio(acao, termo, filtros) {
+        var parametros = { filtro: termo, limite: NWM_LIMITE_SUGESTOES };
+        if (this.apoioAceitaEstabelecimentoExato(acao) && filtros.estDe && filtros.estDe === filtros.estAte) {
+            parametros.codEstabel = filtros.estDe;
+        }
+        if (acao === 'apoiarLotes' || acao === 'apoiarDocumentosEntrada') {
+            this.copiarRecorteApoio(acao, filtros, parametros);
+        }
+        return parametros;
+    },
+
+    apoioAceitaEstabelecimentoExato(acao) {
+        return acao === 'apoiarItens' || acao === 'apoiarDepositos';
+    },
+
+    copiarRecorteApoio(acao, filtros, parametros) {
+        $.each(NWM_PARAMETROS_RECORTE_LOTE, function (campo, parametro) {
+            var somenteEstabelecimento = acao === 'apoiarDocumentosEntrada';
+            if (somenteEstabelecimento && campo !== 'estDe' && campo !== 'estAte') return;
+            if (filtros[campo]) parametros[parametro] = filtros[campo];
+        });
+    },
+
+    invalidarApoiosDependentes(campo) {
+        var self = this;
+        var mudouEstabelecimento = campo === 'estDe' || campo === 'estAte';
+        var mudouRecorteLote = mudouEstabelecimento || /^(item|dep)(De|Ate)$/.test(campo || '');
+        if (mudouEstabelecimento) {
+            this.documentosSelecionados = [];
+            this.renderizarDocumentosSelecionados();
+        }
+        $.each(this.apoiosFiltros || {}, function (nome, apoio) {
+            var dependeEstabelecimento = mudouEstabelecimento && /^(item|dep|nfEspecificas)/.test(nome);
+            var dependeRecorteLote = mudouRecorteLote && /^lote/.test(nome);
+            if (dependeEstabelecimento || dependeRecorteLote) self.limparApoioDependente(nome, apoio);
+        });
+    },
+
+    limparApoioDependente(nome, apoio) {
+        this.cancelarApoioFiltro(apoio);
+        apoio.dados = [];
+        apoio.$input.removeData('registro');
+        if (/^(lote|nfEspecificas)/.test(nome)) apoio.$input.val('');
+    },
+
+    cancelarApoioFiltro(apoio) {
+        apoio.sequencia++;
+        clearTimeout(apoio.temporizador);
+        apoio.temporizador = null;
+        this.cancelarConsultaDataset('apoio:' + apoio.campo);
+        apoio.carregando = false;
+        apoio.$input.attr({ 'aria-expanded': 'false', 'aria-busy': 'false' }).removeAttr('aria-activedescendant');
+        apoio.$lista.prop('hidden', true);
+        apoio.ativo = -1;
+    },
+
+    agendarApoioFiltro(apoio) {
+        var self = this;
+        this.cancelarApoioFiltro(apoio);
+        this.reiniciarPesquisaApoio(apoio);
+        if (apoio.termo.length < 2) return;
+        if (this.faltaEstabelecimentoParaDocumentos(apoio)) {
+            apoio.erro = this.erroDataset('CONTEXTO_OBRIGATORIO', 'Informe o estabelecimento De e Até para buscar documentos.', 'funcional');
+            this.renderizarApoioFiltro(apoio);
+            return;
+        }
+        apoio.parametros = this.montarParametrosApoio(apoio.acao, apoio.termo, this.lerFiltros());
+        var sequencia = apoio.sequencia;
+        apoio.temporizador = setTimeout(function () {
+            apoio.temporizador = null;
+            if (apoio.sequencia === sequencia) self.consultarPaginaApoio(apoio, false);
+        }, NWM_ATRASO_APOIO_MS);
+    },
+
+    reiniciarPesquisaApoio(apoio) {
+        apoio.termo = $.trim(apoio.$input.val() || '');
+        apoio.dados = [];
+        apoio.cursor = '';
+        apoio.cursores = Object.create(null);
+        apoio.temMais = false;
+        apoio.erro = null;
+    },
+
+    faltaEstabelecimentoParaDocumentos(apoio) {
+        if (apoio.acao !== 'apoiarDocumentosEntrada') return false;
+        var filtros = this.lerFiltros();
+        return !filtros.estDe || !filtros.estAte;
+    },
+
+    consultarPaginaApoio(apoio, continuar) {
+        if (apoio.carregando || !apoio.parametros || (continuar && !apoio.temMais)) return;
+        var self = this;
+        var sequencia = apoio.sequencia;
+        var parametros = $.extend({}, apoio.parametros);
+        if (continuar) parametros.aposCodigo = apoio.cursor;
+        apoio.carregando = true;
+        apoio.erro = null;
+        this.renderizarApoioFiltro(apoio);
+        this.consultarDataset(apoio.acao, parametros, 'apoio:' + apoio.campo).then(function (resultado) {
+            if (apoio.sequencia !== sequencia) return;
+            self.receberPaginaApoio(apoio, resultado, parametros.aposCodigo);
+        }, function (erro) {
+            self.falharPaginaApoio(apoio, sequencia, erro);
+        });
+    },
+
+    falharPaginaApoio(apoio, sequencia, erro) {
+        if (apoio.sequencia !== sequencia || erro.tipo === 'cancelamento') return;
+        apoio.carregando = false;
+        apoio.erro = erro;
+        this.renderizarApoioFiltro(apoio);
+    },
+
+    receberPaginaApoio(apoio, resultado, cursorEnviado) {
+        var erro = this.validarPaginaApoio(apoio, resultado, cursorEnviado);
+        if (erro) {
+            apoio.temMais = false;
+            this.falharPaginaApoio(apoio, apoio.sequencia, erro);
+            return;
+        }
+        this.acrescentarSugestoesNovas(apoio, resultado.dados);
+        apoio.cursor = resultado.proximoCodigo;
+        if (apoio.cursor) apoio.cursores[apoio.cursor] = true;
+        apoio.temMais = resultado.temMais;
+        apoio.carregando = false;
+        this.renderizarApoioFiltro(apoio);
+    },
+
+    validarPaginaApoio(apoio, resultado, cursorEnviado) {
+        if (this.cursorApoioRepetido(apoio, resultado, cursorEnviado)) {
+            return this.erroDataset('CURSOR_INVALIDO', 'Não foi possível continuar as sugestões: o cursor não avançou. Digite novamente para pesquisar.', 'tecnico');
+        }
+        if (!this.sugestoesValidas(apoio, resultado) || resultado.dados.length > NWM_LIMITE_SUGESTOES) {
+            return this.erroDataset('RESPOSTA_INVALIDA', 'As sugestões estão fora do contrato esperado. Digite novamente para pesquisar.', 'tecnico');
+        }
+        return null;
+    },
+
+    cursorApoioRepetido(apoio, resultado, cursorEnviado) {
+        var proximo = resultado.proximoCodigo;
+        return resultado.temMais && (!proximo || proximo === cursorEnviado || !!apoio.cursores[proximo]);
+    },
+
+    sugestoesValidas(apoio, resultado) {
+        var self = this;
+        var validas = typeof resultado.proximoCodigo === 'string';
+        $.each(resultado.dados, function (indice, registro) {
+            if (!self.sugestaoValida(registro)) validas = false;
+            if (apoio.acao === 'apoiarDocumentosEntrada' && !self.documentoValido(registro)) validas = false;
+        });
+        return validas;
+    },
+
+    sugestaoValida(registro) {
+        return !!registro && typeof registro.codigo === 'string' && typeof registro.descricao === 'string';
+    },
+
+    acrescentarSugestoesNovas(apoio, registros) {
+        var codigosExistentes = Object.create(null);
+        $.each(apoio.dados, function (indice, registro) { codigosExistentes[registro.codigo] = true; });
+        $.each(registros, function (indice, registro) {
+            if (codigosExistentes[registro.codigo]) return;
+            apoio.dados.push(registro);
+            codigosExistentes[registro.codigo] = true;
+        });
+    },
+
+    renderizarApoioFiltro(apoio) {
+        var self = this;
+        apoio.$lista.empty().prop('hidden', false);
+        apoio.$input.attr({ 'aria-expanded': 'true', 'aria-busy': String(apoio.carregando) }).removeAttr('aria-activedescendant');
+        apoio.ativo = -1;
+        $.each(apoio.dados, function (indice, registro) {
+            self.montarOpcaoApoio(apoio, registro, indice).appendTo(apoio.$lista);
+        });
+        if (apoio.carregando || apoio.erro || !apoio.dados.length) this.montarAvisoApoio(apoio).appendTo(apoio.$lista);
+        if (apoio.temMais && !apoio.carregando) this.montarOpcaoCarregarMais(apoio).appendTo(apoio.$lista);
+        if (apoio.dados.length && apoio.carregando) apoio.$lista.scrollTop(apoio.$lista.prop('scrollHeight'));
+    },
+
+    montarOpcaoApoio(apoio, registro, indice) {
+        var $opcao = $('<li>', { id: apoio.$lista.attr('id') + '-' + indice, 'class': 'nwm-sugestao', role: 'option', 'aria-selected': 'false', 'data-opcao': indice });
+        var textos = this.textosOpcaoApoio(apoio, registro);
+        $('<span>', { 'class': 'nwm-sugestao-codigo', text: textos.principal }).appendTo($opcao);
+        $('<span>', { text: textos.complemento }).appendTo($opcao);
+        return $opcao;
+    },
+
+    textosOpcaoApoio(apoio, registro) {
+        if (apoio.acao !== 'apoiarDocumentosEntrada') return { principal: registro.codigo, complemento: registro.descricao };
+        return {
+            principal: 'NF ' + registro.numero + ' · série ' + registro.serie,
+            complemento: 'Emitente ' + registro.emitente + ' · estabelecimento ' + registro.codEstabel + ' · natureza ' + registro.natureza
+        };
+    },
+
+    montarAvisoApoio(apoio) {
+        var mensagem = apoio.carregando ? 'Carregando sugestões…' : apoio.erro ? apoio.erro.message : 'Nenhum resultado encontrado.';
+        return $('<li>', { 'class': 'nwm-sugestoes-aviso', role: 'presentation' })
+            .append($('<span>', { role: apoio.erro ? 'alert' : 'status', text: mensagem }));
+    },
+
+    montarOpcaoCarregarMais(apoio) {
+        return $('<li>', {
+            id: apoio.$lista.attr('id') + '-mais', 'class': 'nwm-sugestao nwm-sugestao-mais', role: 'option', 'aria-selected': 'false', 'data-proxima': '',
+            text: apoio.erro ? 'Tentar carregar mais novamente' : 'Carregar mais resultados'
+        });
+    },
+
+    selecionarApoioFiltro(apoio, indice) {
+        var registro = apoio.dados[indice];
+        if (!registro) return;
+        if (apoio.acao === 'apoiarDocumentosEntrada') {
+            this.adicionarDocumento(registro);
+            return;
+        }
+        this.cancelarApoioFiltro(apoio);
+        apoio.$input.val(registro.codigo).trigger('input').data('registro', registro);
+        this.cancelarApoioFiltro(apoio);
+    },
+
+    teclaApoioFiltro(apoio, evento) {
+        if (evento.key === 'Escape' || evento.key === 'Tab') {
+            this.fecharSugestoesPorTecla(apoio, evento);
+            return;
+        }
+        if (apoio.$lista.prop('hidden')) {
+            this.abrirSugestoesPorTecla(apoio, evento);
+            return;
+        }
+        var $opcoes = apoio.$lista.children('.nwm-sugestao');
+        if (!$opcoes.length) return;
+        if (evento.key === 'Enter') this.confirmarOpcaoAtiva(apoio, $opcoes, evento);
+        else if (evento.key === 'ArrowDown' || evento.key === 'ArrowUp') this.moverOpcaoAtiva(apoio, $opcoes, evento);
+    },
+
+    fecharSugestoesPorTecla(apoio, evento) {
+        if (evento.key === 'Escape' && !apoio.$lista.prop('hidden')) evento.preventDefault();
+        this.cancelarApoioFiltro(apoio);
+    },
+
+    abrirSugestoesPorTecla(apoio, evento) {
+        if (evento.key !== 'ArrowDown') return;
+        evento.preventDefault();
+        this.agendarApoioFiltro(apoio);
+    },
+
+    confirmarOpcaoAtiva(apoio, $opcoes, evento) {
+        evento.preventDefault();
+        if (apoio.ativo < 0) return;
+        var $ativa = $opcoes.eq(apoio.ativo);
+        if ($ativa.is('[data-proxima]')) this.consultarPaginaApoio(apoio, true);
+        else this.selecionarApoioFiltro(apoio, Number($ativa.attr('data-opcao')));
+    },
+
+    moverOpcaoAtiva(apoio, $opcoes, evento) {
+        evento.preventDefault();
+        apoio.ativo = this.proximoIndiceAtivo(apoio.ativo, $opcoes.length, evento.key === 'ArrowDown');
+        $opcoes.removeClass('is-ativa').attr('aria-selected', 'false');
+        var $opcao = $opcoes.eq(apoio.ativo).addClass('is-ativa').attr('aria-selected', 'true');
+        apoio.$input.attr('aria-activedescendant', $opcao.attr('id'));
+        this.rolarAteOpcao(apoio.$lista, $opcao);
+    },
+
+    proximoIndiceAtivo(indiceAtual, quantidade, paraBaixo) {
+        if (indiceAtual < 0) return paraBaixo ? 0 : quantidade - 1;
+        return (indiceAtual + (paraBaixo ? 1 : -1) + quantidade) % quantidade;
+    },
+
+    rolarAteOpcao($lista, $opcao) {
+        var topo = $opcao.position().top;
+        var excesso = topo + $opcao.outerHeight() - $lista.innerHeight();
+        if (topo < 0) $lista.scrollTop($lista.scrollTop() + topo);
+        else if (excesso > 0) $lista.scrollTop($lista.scrollTop() + excesso);
+    },
+
+    documentoValido(registro) {
+        var valido = $.isPlainObject(registro);
+        $.each(NWM_CAMPOS_DOCUMENTO, function (indice, campo) {
+            if (!registro || typeof registro[campo] !== 'string' || !$.trim(registro[campo]) || NWM_CARACTERE_CONTROLE.test(registro[campo])) valido = false;
+        });
+        return valido;
+    },
+
+    adicionarDocumento(registro) {
+        if (!this.documentoValido(registro)) return;
+        var documentos = this.documentosSelecionados || [];
+        if (this.documentoJaSelecionado(documentos, registro.codigo)) {
+            this.avisar('info', 'Este documento já está selecionado.');
+            return;
+        }
+        if (documentos.length >= NWM_LIMITE_DOCUMENTOS) {
+            this.avisar('warning', 'Selecione no máximo 20 documentos.');
+            return;
+        }
+        this.documentosSelecionados = documentos.concat([$.extend({}, registro)]);
+        var apoio = this.apoiosFiltros.nfEspecificas;
+        apoio.$input.val('').trigger('input');
+        this.cancelarApoioFiltro(apoio);
+        this.renderizarDocumentosSelecionados();
+    },
+
+    documentoJaSelecionado(documentos, codigo) {
+        return $.grep(documentos, function (documento) { return documento.codigo === codigo; }).length > 0;
+    },
+
+    removerDocumento(codigo) {
+        this.documentosSelecionados = $.grep(this.documentosSelecionados || [], function (documento) { return documento.codigo !== codigo; });
+        this.cancelarConsultaEtiquetas();
+        if (this.tabela) this.limparSelecao();
+        this.renderizarDocumentosSelecionados();
+    },
+
+    renderizarDocumentosSelecionados() {
+        var self = this;
+        var $lista = $('[data-documentos-selecionados]', this.DOM).empty();
+        var documentos = this.documentosSelecionados || [];
+        $.each(documentos, function (indice, documento) {
+            self.montarItemDocumento(documento).appendTo($lista);
+        });
+        $('[data-documentos-contador]', this.DOM).text(documentos.length + ' de 20 documentos selecionados');
+    },
+
+    montarItemDocumento(documento) {
+        var texto = 'NF ' + documento.numero + ' · série ' + documento.serie + ' · emitente ' + documento.emitente +
+            ' · estabelecimento ' + documento.codEstabel + ' · natureza ' + documento.natureza;
+        var $remover = $('<button>', { type: 'button', 'class': 'nwm-modal-fechar', 'data-remover-documento': documento.codigo, 'aria-label': 'Remover ' + texto, title: 'Remover documento' })
+            .append($('<i>', { 'class': 'bi bi-x-lg', 'aria-hidden': 'true' }));
+        return $('<li>', { 'class': 'nwm-documento' }).append($('<span>', { text: texto })).append($remover);
+    },
+
+    erroDataset(codigo, mensagem, tipo) {
+        var erro = new Error(mensagem);
+        erro.codigoErro = codigo;
+        erro.tipo = tipo;
+        return erro;
+    },
+
+    chamarEmbalagens(acao, parametros) {
+        var corpo;
+        try {
+            corpo = this.montarCorpoDataset(acao, parametros);
+        } catch (erro) {
+            return $.Deferred().reject(this.erroDataset('ENTRADA_INVALIDA', 'Não foi possível preparar os parâmetros da consulta.', 'tecnico')).promise();
+        }
+        var requisicao = $.ajax({
+            url: '/api/public/ecm/dataset/search',
+            type: 'POST', contentType: 'application/json', dataType: 'json',
+            timeout: NWM_TEMPO_LIMITE_CONSULTA_MS, data: corpo
+        });
+        var resultado = this.tratarRespostaDataset(requisicao, acao);
+        resultado.abort = function () { requisicao.abort(); };
+        return resultado;
+    },
+
+    montarCorpoDataset(acao, parametros) {
+        if (typeof acao !== 'string' || !acao || !$.isPlainObject(parametros)) {
+            throw this.erroDataset('ENTRADA_INVALIDA', 'Informe a ação e os parâmetros de negócio.', 'tecnico');
+        }
+        return JSON.stringify({
+            datasetId: 'dsNwEmbalagens',
+            filterFields: ['acao', acao, 'parametros', JSON.stringify(parametros)],
+            resultFields: [], limit: '1', orderBy: ''
+        });
+    },
+
+    tratarRespostaDataset(requisicao, acao) {
+        var self = this;
+        return requisicao.then(function (transporte) {
+            return self.extrairEnvelopeDataset(transporte, acao);
+        }, function (xhr, status) {
+            throw self.erroTransporte(xhr, status);
+        });
+    },
+
+    erroTransporte(xhr, status) {
+        if (status === 'abort') return this.erroDataset('CANCELADA', 'Consulta cancelada.', 'cancelamento');
+        if (status === 'parsererror') return this.erroDataset('RESPOSTA_INVALIDA', 'O Fluig não retornou JSON válido.', 'tecnico');
+        if (status === 'timeout') return this.erroDataset('TEMPO_ESGOTADO', 'A consulta excedeu o tempo de espera. Tente buscar novamente.', 'tecnico');
+        return this.erroDataset('FALHA_TRANSPORTE', 'Não foi possível consultar o Fluig (HTTP ' + xhr.status + '). Tente buscar novamente.', 'tecnico');
+    },
+
+    extrairEnvelopeDataset(transporte, acao) {
+        var invalido = this.erroDataset('RESPOSTA_INVALIDA', 'A resposta da consulta está fora do contrato esperado.', 'tecnico');
+        var linha = this.linhaUnicaDataset(transporte, acao, invalido);
+        var resultado = this.lerResultadoJson(linha, invalido);
+        if (!resultado.sucesso) {
+            if (!resultado.codigoErro) throw invalido;
+            return resultado;
+        }
+        this.validarEnvelopeSucesso(linha, resultado, invalido);
+        if (/^criar(Transferencia|Remessa|Devolucao)$/.test(acao)) {
+            if (!this.envelopeComandoValido(linha, resultado)) throw invalido;
+            return resultado;
+        }
+        if (typeof resultado.temMais !== 'boolean' || String(resultado.temMais) !== String(linha.temMais)) throw invalido;
+        if (acao === 'classificarNatureza') {
+            if (!this.envelopeClassificacaoValido(linha, resultado)) throw invalido;
+            return resultado;
+        }
+        if (!this.envelopePaginadoValido(linha, resultado)) throw invalido;
+        return resultado;
+    },
+
+    linhaUnicaDataset(transporte, acao, invalido) {
+        if (!transporte || !Array.isArray(transporte.content) || transporte.content.length !== 1) throw invalido;
+        var linha = transporte.content[0];
+        if (!linha || linha.acao !== acao || typeof linha.resultadoJson !== 'string') throw invalido;
+        return linha;
+    },
+
+    lerResultadoJson(linha, invalido) {
+        var resultado;
+        try { resultado = JSON.parse(linha.resultadoJson); } catch (erro) { throw invalido; }
+        if (!$.isPlainObject(resultado) || typeof resultado.sucesso !== 'boolean' ||
+            String(resultado.sucesso) !== String(linha.sucesso) ||
+            typeof resultado.codigoErro !== 'string' || resultado.codigoErro !== linha.codigoErro ||
+            typeof resultado.mensagem !== 'string') throw invalido;
+        return resultado;
+    },
+
+    validarEnvelopeSucesso(linha, resultado, invalido) {
+        if (!/^2[0-9]{2}$/.test(String(linha.httpStatus)) || resultado.codigoErro ||
+            !Array.isArray(resultado.dados) || resultado.total !== resultado.dados.length ||
+            String(resultado.total) !== String(linha.total)) throw invalido;
+    },
+
+    envelopeComandoValido(linha, resultado) {
+        return typeof resultado.repeticao === 'boolean' && String(resultado.repeticao) === String(linha.repeticao) &&
+            typeof resultado.wt === 'string' && NWM_CODIGO_POSITIVO.test(resultado.wt) &&
+            typeof resultado.idOperacao === 'string' && NWM_CODIGO_POSITIVO.test(resultado.idOperacao);
+    },
+
+    envelopeClassificacaoValido(linha, resultado) {
+        return linha.campoCursor === '' && !resultado.temMais && resultado.total === 1 && resultado.proximoCodigo === '';
+    },
+
+    envelopePaginadoValido(linha, resultado) {
+        var campoCursor = linha.campoCursor;
+        if (campoCursor !== 'proximoId' && campoCursor !== 'proximoCodigo') return false;
+        var cursor = resultado[campoCursor];
+        if (typeof cursor !== 'string' || linha.proximoCursor !== cursor) return false;
+        return !(resultado.temMais && (!cursor || !resultado.dados.length));
+    },
+
+    consultarDataset(acao, parametros, canal) {
+        var self = this;
+        canal = canal || 'tabela';
+        if (!this.consultasDataset) this.consultasDataset = Object.create(null);
+        this.cancelarConsultaDataset(canal);
+        var consulta = { estado: 'carregando', resultado: null, erro: null, conclusao: $.Deferred(), requisicao: null };
+        this.consultasDataset[canal] = consulta;
+        if (canal === 'tabela') this.definirCarregamentoConsulta(true);
+        try {
+            consulta.requisicao = this.chamarEmbalagens(acao, parametros);
+            consulta.requisicao.then(function (resultado) {
+                self.receberConsultaDataset(canal, consulta, resultado);
+            }, function (erro) {
+                self.falharConsultaDataset(canal, consulta, erro);
+            });
+        } catch (erro) { this.falharConsultaDataset(canal, consulta, erro); }
+        var promessa = consulta.conclusao.promise();
+        promessa.abort = function () {
+            if (self.consultasDataset[canal] === consulta) self.cancelarConsultaDataset(canal);
+        };
+        return promessa;
+    },
+
+    consultaDatasetAtual(canal, consulta) {
+        return this.consultasDataset[canal] === consulta && consulta.estado === 'carregando';
+    },
+
+    receberConsultaDataset(canal, consulta, resultado) {
+        if (!this.consultaDatasetAtual(canal, consulta)) return;
+        consulta.resultado = resultado;
+        if (!resultado.sucesso) {
+            this.falharConsultaDataset(canal, consulta, this.erroRecusaDataset(resultado));
+            return;
+        }
+        consulta.requisicao = null;
+        consulta.estado = resultado.dados.length ? 'sucesso' : 'vazio';
+        if (canal === 'tabela') this.definirCarregamentoConsulta(false);
+        consulta.conclusao.resolve(resultado);
+    },
+
+    erroRecusaDataset(resultado) {
+        var erro = this.erroDataset(resultado.codigoErro, resultado.mensagem || 'Não foi possível concluir a consulta.', this.tipoErroRecusa(resultado.codigoErro));
+        erro.resultado = resultado;
+        return erro;
+    },
+
+    tipoErroRecusa(codigoErro) {
+        if (/^(HTTP_|FALHA_CHAMADA$|RESPOSTA_INVALIDA$)/.test(codigoErro)) return 'tecnico';
+        if (codigoErro === 'SEM_PERMISSAO' || codigoErro === 'AUTORIZACAO_NAO_CONFIGURADA') return 'autorizacao';
+        return 'funcional';
+    },
+
+    falharConsultaDataset(canal, consulta, erro) {
+        if (!this.consultaDatasetAtual(canal, consulta)) return;
+        consulta.requisicao = null;
+        consulta.estado = 'erro';
+        consulta.erro = erro;
+        if (canal === 'tabela') {
+            this.definirCarregamentoConsulta(false);
+            this.mostrarErroConsulta(erro);
+        }
+        consulta.conclusao.reject(erro);
+    },
+
+    cancelarConsultaDataset(canal) {
+        var consulta = this.consultasDataset && this.consultasDataset[canal];
+        if (!consulta || consulta.estado !== 'carregando') return;
+        consulta.estado = 'cancelada';
+        if (consulta.requisicao && consulta.requisicao.abort) consulta.requisicao.abort();
+        consulta.requisicao = null;
+        if (canal === 'tabela') this.definirCarregamentoConsulta(false);
+        consulta.conclusao.reject(this.erroDataset('CANCELADA', 'Consulta cancelada.', 'cancelamento'));
+    },
+
+    invalidarConsultasDataset() {
+        var self = this;
+        this.cancelarConsultaEtiquetas();
+        $.each(this.apoiosFiltros || {}, function (campo, apoio) { self.cancelarApoioFiltro(apoio); });
+        $.each(this.consultasDataset || {}, function (canal) { self.cancelarConsultaDataset(canal); });
+    },
+
+    definirCarregamentoConsulta(carregando) {
+        this.atualizarItensQuantidade();
+        $('[data-buscar]', this.DOM).prop('disabled', carregando);
+        $('[data-tabela]', this.DOM).attr('aria-busy', String(carregando));
+        if (!this.tabela) return;
+        if (carregando) this.tabela.alert('<div class="nwm-carregando" role="status" aria-label="Carregando etiquetas"><span class="nwm-loader" aria-hidden="true"></span></div>');
+        else this.tabela.clearAlert();
+    },
+
+    mostrarErroConsulta(erro) {
+        var mensagem = erro && erro.message || 'Não foi possível consultar as etiquetas.';
+        if (this.tabela) this.tabela.alert($('<span>', { role: 'alert', text: mensagem + ' Clique em Buscar para tentar novamente.' })[0], 'error');
+        else this.avisar('danger', mensagem);
+    },
 
     montarTabela() {
         var self = this;
@@ -115,7 +746,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             index: 'id',
             layout: 'fitColumns',
             responsiveLayout: false,
-            //tabela inteira, sem paginação (decisão do usuário): altura própria + cabeçalho fixo na rolagem
             maxHeight: 560,
             pagination: false,
             initialSort: [
@@ -124,185 +754,204 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             ],
             placeholder: 'Nenhuma etiqueta encontrada.',
             footerElement: '<span class="nwm-tabela-contador" data-contador-tabela></span>',
-            columns: [
-                {
-                    //seleção própria: o Tabulator não controla a marcação, quem manda é this.selecionados
-                    title: '', headerSort: false, width: 44, hozAlign: 'center', vertAlign: 'middle',
-                    titleFormatter: function () { return self.montarCheckTodos(); },
-                    formatter: function (cell) { return self.montarCheckLinha(cell.getRow()); }
-                },
-                {
-                    title: 'Código', field: 'itCodigo', sorter: 'string', width: 88, vertAlign: 'middle',
-                    formatter: function (cell) {
-                        var span = document.createElement('span');
-                        span.className = 'nwm-codigo';
-                        span.textContent = cell.getValue();
-                        return span;
-                    }
-                },
-                { title: 'Descrição', field: 'descItem', sorter: 'string', widthGrow: 3, minWidth: 180, vertAlign: 'middle' },
-                { title: 'Fazenda', field: 'codEstabel', sorter: 'string', width: 96, vertAlign: 'middle' },
-                { title: 'Etiqueta', field: 'etiqueta', sorter: 'string', width: 96, vertAlign: 'middle' },
-                { title: 'Lote', field: 'lote', sorter: 'string', width: 70, vertAlign: 'middle' },
-                {
-                    title: 'Data Val.', field: 'dtValiLote', sorter: 'string', width: 100, vertAlign: 'middle',
-                    formatter: function (cell) { return self.formatarData(cell.getValue()); }
-                },
-                {
-                    title: 'Qtde Emb', field: 'qtidadeIni', sorter: 'number', width: 72, headerWordWrap: true, hozAlign: 'right', vertAlign: 'middle',
-                    formatter: function (cell) { return self.celulaNumero(cell.getValue()); }
-                },
-                {
-                    title: 'Qtde Saldo', field: 'qtidadeAtu', sorter: 'number', width: 76, headerWordWrap: true, hozAlign: 'right', vertAlign: 'middle',
-                    formatter: function (cell) { return self.celulaNumero(cell.getValue(), !cell.getValue()); }
-                },
-                {
-                    title: 'Status', field: 'situacao', sorter: 'string', width: 180, vertAlign: 'middle',
-                    //a legenda do rodapé da tela antiga virou o botão de ajuda ao lado do título
-                    titleFormatter: function () { return self.montarTituloStatus(); },
-                    formatter: function (cell) { return self.montarChipStatus(cell.getValue()); }
-                },
-                {
-                    title: 'Ações', headerSort: false, width: 170, hozAlign: 'right', vertAlign: 'middle',
-                    formatter: function (cell) { return self.montarBotoesAcoes(cell.getRow().getData()); },
-                    cellClick: function (event, cell) {
-                        var botao = event.target.closest('[data-acao]');
-                        if (!botao) return;
-                        self.acaoNaLinha(botao.getAttribute('data-acao'), cell.getRow());
-                    }
-                }
-            ]
+            columns: this.montarColunasTabela()
         });
-
-        //o DOM virtual recria as linhas ao rolar: marcação e contador são refeitos a cada render,
-        //que também é o momento em que o filtro já foi aplicado de verdade
         this.tabela.on('renderComplete', function () {
             self.pintarMarcadas();
             self.atualizarContadorTabela();
         });
-
-        //com a tabela pronta, atualiza o resumo da seleção
         this.tabela.on('tableBuilt', function () {
             self.atualizarSelecao();
         });
     },
 
+    montarColunasTabela() {
+        return [
+            this.colunaMarcacao(),
+            this.colunaCodigo(),
+            this.colunaTexto('Descrição', 'descItem', { widthGrow: 3, minWidth: 180 }),
+            this.colunaTexto('Fazenda', 'codEstabel', { width: 96 }),
+            this.colunaTexto('Etiqueta', 'etiqueta', { width: 110 }),
+            this.colunaTexto('Lote', 'lote', { width: 90 }),
+            this.colunaDataValidade(),
+            this.colunaQuantidade('Qtde Emb', 'qtidadeIni', 72, false),
+            this.colunaQuantidade('Qtde Saldo', 'qtidadeAtu', 76, true),
+            this.colunaStatus(),
+            this.colunaAcoes()
+        ];
+    },
+
+    colunaMarcacao() {
+        var self = this;
+        return {
+            title: '', headerSort: false, width: 44, hozAlign: 'center', vertAlign: 'middle',
+            titleFormatter: function () { return self.montarCheckTodos(); },
+            formatter: function (cell) { return self.montarCheckLinha(cell.getRow()); }
+        };
+    },
+
+    colunaCodigo() {
+        return {
+            title: 'Código', field: 'itCodigo', sorter: 'string', width: 88, vertAlign: 'middle',
+            formatter: function (cell) { return $('<span>', { 'class': 'nwm-codigo', text: cell.getValue() })[0]; }
+        };
+    },
+
+    colunaTexto(titulo, campo, dimensoes) {
+        return $.extend({ title: titulo, field: campo, formatter: 'plaintext', sorter: 'string' }, dimensoes, { vertAlign: 'middle' });
+    },
+
+    colunaDataValidade() {
+        var self = this;
+        return {
+            title: 'Data Val.', field: 'dtValiLote', sorter: 'string', width: 100, vertAlign: 'middle',
+            formatter: function (cell) { return self.formatarData(cell.getValue()); }
+        };
+    },
+
+    colunaQuantidade(titulo, campo, largura, esmaecerZerado) {
+        var self = this;
+        return {
+            title: titulo, field: campo, sorter: 'number', width: largura, headerWordWrap: true, hozAlign: 'right', vertAlign: 'middle',
+            formatter: function (cell) { return self.celulaNumero(cell.getValue(), esmaecerZerado && !cell.getValue()); }
+        };
+    },
+
+    colunaStatus() {
+        var self = this;
+        return {
+            title: 'Status', field: 'situacao', sorter: 'string', width: 180, vertAlign: 'middle',
+            titleFormatter: function () { return self.montarTituloStatus(); },
+            formatter: function (cell) { return self.montarChipStatus(cell.getValue()); }
+        };
+    },
+
+    colunaAcoes() {
+        var self = this;
+        return {
+            title: 'Ações', headerSort: false, width: 210, hozAlign: 'right', vertAlign: 'middle',
+            formatter: function (cell) { return self.montarBotoesAcoes(cell.getRow().getData()); },
+            cellClick: function (event, cell) {
+                var $botao = $(event.target).closest('[data-acao]');
+                if (!$botao.length || $botao.prop('disabled')) return;
+                self.acaoNaLinha($botao.attr('data-acao'), cell.getRow());
+            }
+        };
+    },
+
     celulaNumero(valor, esmaecido) {
-        var span = document.createElement('span');
-        span.className = 'nwm-num-celula' + (esmaecido ? ' nwm-saldo-zero' : '');
-        span.textContent = this.formatarQuantidade(valor);
-        return span;
+        return $('<span>', {
+            'class': 'nwm-num-celula' + (esmaecido ? ' nwm-saldo-zero' : ''),
+            text: this.formatarQuantidade(valor)
+        })[0];
     },
 
     montarChipStatus(situacao) {
-        var info = NWM_STATUS[situacao];
-        var span = document.createElement('span');
-        span.className = 'nwm-chip nwm-chip-' + situacao;
-        var ponto = document.createElement('span');
-        ponto.className = 'nwm-chip-ponto';
-        span.appendChild(ponto);
-        span.appendChild(document.createTextNode(info ? info.rotulo : situacao));
-        return span;
+        var status = NWM_STATUS[situacao];
+        return $('<span>', { 'class': 'nwm-chip nwm-chip-' + situacao })
+            .append($('<span>', { 'class': 'nwm-chip-ponto', 'aria-hidden': 'true' }))
+            .append($('<span>', { text: status ? status.rotulo : situacao }))[0];
     },
 
     montarTituloStatus() {
         var self = this;
-        var span = document.createElement('span');
-        span.appendChild(document.createTextNode('Status'));
-
-        var ajuda = document.createElement('button');
-        ajuda.type = 'button';
-        ajuda.className = 'nwm-ajuda-status';
-        ajuda.title = 'Ver legenda dos status';
-        ajuda.setAttribute('aria-label', 'Ver legenda dos status');
-        ajuda.innerHTML = '<i class="bi bi-question-lg" aria-hidden="true"></i>';
-        //clicar na ajuda não deve ordenar a coluna
-        ajuda.addEventListener('click', function (event) {
-            event.stopPropagation();
+        var $ajuda = $('<button>', {
+            type: 'button', 'class': 'nwm-ajuda-status',
+            title: 'Ver legenda dos status', 'aria-label': 'Ver legenda dos status'
+        }).append($('<i>', { 'class': 'bi bi-question-lg', 'aria-hidden': 'true' }));
+        $ajuda.on('click', function (evento) {
+            evento.stopPropagation();
             self.abrirLegenda();
         });
-
-        span.appendChild(ajuda);
-        return span;
+        return $('<span>', { text: 'Status' }).append($ajuda)[0];
     },
 
-    montarBotoesAcoes(dados) {
-        var info = NWM_STATUS[dados.situacao];
-        var grupo = document.createElement('div');
-        grupo.className = 'nwm-acoes';
-
-        (info ? info.acoes : ['detalhes']).forEach(function (acao) {
-            var b = NWM_ACOES[acao];
-            var botao = document.createElement('button');
-            botao.type = 'button';
-            botao.className = 'nwm-acao nwm-acao-' + acao;
-            botao.setAttribute('data-acao', acao);
-            botao.title = b.rotulo;
-            botao.setAttribute('aria-label', b.rotulo + ' etiqueta ' + dados.etiqueta + ' do item ' + dados.itCodigo);
-            botao.innerHTML = '<i class="bi ' + b.icone + '" aria-hidden="true"></i>';
-            grupo.appendChild(botao);
+    montarBotoesAcoes(etiqueta) {
+        var self = this;
+        var $grupo = $('<div>', { 'class': 'nwm-acoes' });
+        $.each(NWM_ACOES, function (acao, configuracao) {
+            if (etiqueta.tipoControle === 'PRE_SALDO' && acao !== 'detalhes') return;
+            self.montarBotaoAcao(acao, configuracao, etiqueta).appendTo($grupo);
         });
-        return grupo;
+        return $grupo[0];
+    },
+
+    montarBotaoAcao(acao, configuracao, etiqueta) {
+        var disponivel = this.acaoDisponivel(acao, etiqueta);
+        return $('<button>', {
+            type: 'button', 'class': 'nwm-acao nwm-acao-' + acao, 'data-acao': acao,
+            title: configuracao.rotulo + this.motivoAcaoIndisponivel(acao, disponivel),
+            'aria-label': configuracao.rotulo + ' etiqueta ' + etiqueta.etiqueta + ' do item ' + etiqueta.itCodigo,
+            disabled: !disponivel
+        }).append($('<i>', { 'class': 'bi ' + configuracao.icone, 'aria-hidden': 'true' }));
+    },
+
+    acaoDisponivel(acao, etiqueta) {
+        if (acao === 'detalhes') return true;
+        return (acao === 'transferir' || acao === 'devolver') && etiqueta.tipoControle === 'EMBALAGEM';
+    },
+
+    motivoAcaoIndisponivel(acao, disponivel) {
+        if (disponivel) return '';
+        return acao === 'imprimir' ? ' — aguardando modelo de impressão' : ' — sem operação disponível';
     },
 
     atualizarContadorTabela() {
         if (!this.tabela) return;
-        var total = this.tabela.getRows('active').length;
-        var texto = total === 1 ? '1 etiqueta' : total + ' etiquetas';
-        $('[data-contador-tabela]', this.DOM).text(total ? 'Mostrando ' + texto : '');
+        $('[data-contador-tabela]', this.DOM).text(this.textoContadorTabela(this.consultaEtiquetas));
     },
 
-    // ---------- Seleção (coluna de caixas de marcação) ----------
+    textoContadorTabela(carga) {
+        if (carga && carga.estado === 'carregando') return 'Carregando: ' + carga.dados.length + ' etiquetas consultadas…';
+        if (carga && carga.estado === 'erro') return 'Consulta não concluída. Clique em Buscar para tentar novamente.';
+        if (carga && carga.estado === 'cancelada') return 'Consulta cancelada. Clique em Buscar.';
+        if (!carga) return '';
+        var total = this.tabela.getRows('active').length;
+        var texto = total === 1 ? '1 etiqueta' : total + ' etiquetas';
+        var aviso = carga.descricoesAusentes ? ' · Descrição indisponível para ' + carga.descricoesAusentes + ' item(ns).' : '';
+        return 'Mostrando ' + texto + aviso;
+    },
 
     montarCheckTodos() {
         var self = this;
-        var label = document.createElement('label');
-        label.className = 'nwm-check';
-
-        var input = document.createElement('input');
-        input.type = 'checkbox';
-        input.setAttribute('aria-label', 'Marcar ou desmarcar todas as etiquetas da lista');
-        input.setAttribute('data-check-todos', '');
-        input.addEventListener('click', function (event) { event.stopPropagation(); });
-        input.addEventListener('change', function () { self.marcarTodos(input.checked); });
-
-        label.appendChild(input);
-        return label;
+        var $input = $('<input>', { type: 'checkbox', 'aria-label': 'Marcar ou desmarcar todas as embalagens da lista', 'data-check-todos': '', disabled: true })
+            .on('click', function (evento) { evento.stopPropagation(); })
+            .on('change', function () { self.marcarTodos($(this).prop('checked')); });
+        return $('<label>', { 'class': 'nwm-check' }).append($input)[0];
     },
 
     montarCheckLinha(linha) {
         var self = this;
-        var dados = linha.getData();
-        var label = document.createElement('label');
-        label.className = 'nwm-check';
+        var etiqueta = linha.getData();
+        var $input = $('<input>', { type: 'checkbox', 'aria-label': 'Marcar etiqueta ' + etiqueta.etiqueta + ' do item ' + etiqueta.itCodigo })
+            .prop('checked', !!this.selecionados[etiqueta.id]).prop('disabled', !this.podeSelecionarEtiqueta(etiqueta))
+            .on('change', function () { self.marcarLinha(etiqueta.id, $(this).prop('checked')); });
+        return $('<label>', { 'class': 'nwm-check' }).append($input)
+            .on('click', function (evento) { evento.stopPropagation(); })[0];
+    },
 
-        var input = document.createElement('input');
-        input.type = 'checkbox';
-        input.checked = !!this.selecionados[dados.id];
-        input.setAttribute('aria-label', 'Marcar etiqueta ' + dados.etiqueta + ' do item ' + dados.itCodigo);
-        input.addEventListener('change', function () {
-            self.marcarLinha(dados.id, input.checked);
-        });
+    podeSelecionarEtiqueta(etiqueta) {
+        return !!(etiqueta.tipoControle === 'EMBALAGEM' && this.consultaEtiquetas && this.consultaEtiquetas.estado === 'sucesso');
+    },
 
-        label.addEventListener('click', function (event) { event.stopPropagation(); });
-        label.appendChild(input);
-        return label;
+    definirMarcacao(id, marcado) {
+        if (marcado) this.selecionados[id] = true;
+        else delete this.selecionados[id];
     },
 
     marcarLinha(id, marcado) {
-        if (marcado) this.selecionados[id] = true;
-        else delete this.selecionados[id];
+        var linha = this.tabela && this.tabela.getRow(id);
+        if (!linha || !this.podeSelecionarEtiqueta(linha.getData())) return;
+        this.definirMarcacao(id, marcado);
         this.atualizarSelecao();
     },
 
-    //marcar/desmarcar todos vale só para o que está visível depois do filtro
     marcarTodos(marcado) {
         var self = this;
         if (!this.tabela) return;
-        this.tabela.getRows('active').forEach(function (linha) {
-            var id = linha.getData().id;
-            if (marcado) self.selecionados[id] = true;
-            else delete self.selecionados[id];
+        $.each(this.tabela.getRows('active'), function (indice, linha) {
+            var etiqueta = linha.getData();
+            if (self.podeSelecionarEtiqueta(etiqueta)) self.definirMarcacao(etiqueta.id, marcado);
         });
         this.redesenharChecks();
         this.atualizarSelecao();
@@ -314,111 +963,423 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.atualizarSelecao();
     },
 
-    //repinta as caixas de marcação das linhas visíveis sem reconstruir a tabela
     redesenharChecks() {
         var self = this;
         if (!this.tabela) return;
-        this.tabela.getRows('active').forEach(function (linha) {
-            var el = linha.getElement();
-            var check = el ? el.querySelector('.nwm-check input') : null;
-            if (check) check.checked = !!self.selecionados[linha.getData().id];
+        $.each(this.tabela.getRows('active'), function (indice, linha) {
+            self.atualizarCheckLinha($(linha.getElement()), linha.getData(), !!self.selecionados[linha.getData().id]);
         });
     },
 
     pintarMarcadas() {
         var self = this;
         if (!this.tabela) return;
-        this.tabela.getRows().forEach(function (linha) {
-            var el = linha.getElement();
-            if (!el) return;
-            var marcada = !!self.selecionados[linha.getData().id];
-            el.classList.toggle('nwm-linha-marcada', marcada);
-            var check = el.querySelector('.nwm-check input');
-            if (check) check.checked = marcada;
+        $.each(this.tabela.getRows(), function (indice, linha) {
+            var etiqueta = linha.getData();
+            var $linha = $(linha.getElement());
+            var marcada = !!self.selecionados[etiqueta.id];
+            $linha.toggleClass('nwm-linha-marcada', marcada);
+            self.atualizarCheckLinha($linha, etiqueta, marcada);
         });
     },
 
-    //resumo por item e estado da caixa do cabeçalho
+    atualizarCheckLinha($linha, etiqueta, marcada) {
+        $('.nwm-check input', $linha).prop('checked', marcada).prop('disabled', !this.podeSelecionarEtiqueta(etiqueta));
+    },
+
     atualizarSelecao() {
         var linhas = this.linhasSelecionadas();
-        var porItem = {};
-
-        linhas.forEach(function (linha) {
-            var d = linha.getData();
-            if (!porItem[d.itCodigo]) porItem[d.itCodigo] = { descricao: d.descItem, quantidade: 0, etiquetas: 0 };
-            porItem[d.itCodigo].quantidade += Number(d.qtidadeAtu) || 0;
-            porItem[d.itCodigo].etiquetas += 1;
-        });
-
-        var codigos = Object.keys(porItem);
-
-        var $corpo = $('[data-itens-selecionados-corpo]', this.DOM).empty();
-        var self = this;
-        codigos.sort().forEach(function (codigo) {
-            var item = porItem[codigo];
-            $('<tr>')
-                .append($('<td>').addClass('nwm-codigo').text(codigo))
-                .append($('<td>').addClass('nwm-descricao').text(item.descricao))
-                .append($('<td>').addClass('nwm-num').text(self.formatarQuantidade(item.quantidade)))
-                .appendTo($corpo);
-        });
-        //a tabela fica sempre na tela (como na aba Administrador da tela antiga); vazia, avisa numa linha
-        if (!codigos.length) {
-            $('<tr>')
-                .append($('<td>').attr('colspan', 3).addClass('nwm-tabelinha-vazio').text('Nenhum item selecionado'))
-                .appendTo($corpo);
-        }
-
+        this.renderizarItensSelecionados(this.resumirSelecaoPorItem(linhas));
         this.atualizarCheckTodos(linhas.length);
         this.pintarMarcadas();
     },
 
-    atualizarCheckTodos(marcadas) {
-        var check = $('[data-check-todos]', this.DOM)[0];
-        if (!check || !this.tabela) return;
-        var visiveis = this.tabela.getRows('active').length;
-        check.checked = visiveis > 0 && marcadas >= visiveis;
-        check.indeterminate = marcadas > 0 && marcadas < visiveis;
+    resumirSelecaoPorItem(linhas) {
+        var resumo = Object.create(null);
+        $.each(linhas, function (indice, linha) {
+            var etiqueta = linha.getData();
+            if (!resumo[etiqueta.itCodigo]) resumo[etiqueta.itCodigo] = { descricao: etiqueta.descItem, quantidade: 0, etiquetas: 0 };
+            resumo[etiqueta.itCodigo].quantidade += Number(etiqueta.qtidadeAtu) || 0;
+            resumo[etiqueta.itCodigo].etiquetas += 1;
+        });
+        return resumo;
     },
 
-    //linhas marcadas que continuam visíveis depois do filtro
+    renderizarItensSelecionados(resumo) {
+        var self = this;
+        var codigos = Object.keys(resumo);
+        var $corpo = $('[data-itens-selecionados-corpo]', this.DOM).empty();
+        $.each(codigos.sort(), function (indice, codigo) {
+            self.montarLinhaItemSelecionado(codigo, resumo[codigo]).appendTo($corpo);
+        });
+        if (codigos.length) return;
+        $('<tr>')
+            .append($('<td>').attr('colspan', 3).addClass('nwm-tabelinha-vazio').text('Nenhum item selecionado'))
+            .appendTo($corpo);
+    },
+
+    montarLinhaItemSelecionado(codigo, item) {
+        return $('<tr>')
+            .append($('<td>').addClass('nwm-codigo').text(codigo))
+            .append($('<td>').addClass('nwm-descricao').text(item.descricao))
+            .append($('<td>').addClass('nwm-num').text(this.formatarQuantidade(item.quantidade)));
+    },
+
+    atualizarCheckTodos(marcadas) {
+        if (!this.tabela) return;
+        var selecionaveis = this.contarSelecionaveisVisiveis();
+        $('[data-check-todos]', this.DOM)
+            .prop('disabled', !selecionaveis)
+            .prop('checked', selecionaveis > 0 && marcadas >= selecionaveis)
+            .prop('indeterminate', marcadas > 0 && marcadas < selecionaveis);
+    },
+
+    contarSelecionaveisVisiveis() {
+        var self = this;
+        var quantidade = 0;
+        $.each(this.tabela.getRows('active'), function (indice, linha) {
+            if (self.podeSelecionarEtiqueta(linha.getData())) quantidade++;
+        });
+        return quantidade;
+    },
+
     linhasSelecionadas() {
         var self = this;
         if (!this.tabela) return [];
-        return this.tabela.getRows('active').filter(function (linha) {
+        return $.grep(this.tabela.getRows('active'), function (linha) {
             return !!self.selecionados[linha.getData().id];
         });
     },
 
-    // ---------- Filtros ----------
-
-    //Nota Fiscal: intervalo De/Até ou lista de notas específicas
     trocarModoNf(htmlElement, event) {
+        this.invalidarConsultasDataset();
+        this.limparSelecao();
         var especificas = $(htmlElement).val() === 'especificas';
         $('[data-nf-intervalo]', this.DOM).prop('hidden', especificas);
         $('[data-nf-especificas]', this.DOM).prop('hidden', !especificas);
     },
 
     buscar(htmlElement, event) {
-        var self = this;
-        var f = this.lerFiltros();
-        if (!this.validarFiltros(f)) return;
+        this.invalidarConsultasDataset();
+        var filtros = this.lerFiltros();
+        if (!this.validarFiltros(filtros)) return;
         if (!this.tabela) return;
-
-        //a seleção não sobrevive à troca de filtro: ficaria contando etiqueta que saiu da tela
         this.limparSelecao();
+        this.fechar(this.$modalDetalhes);
+        return this.carregarEtiquetas(this.montarParametrosEtiquetas(filtros));
+    },
 
-        this.tabela.setFilter(function (linha) {
-            return self.naFaixa(linha.codEstabel, f.estDe, f.estAte)
-                && self.naFaixa(linha.itCodigo, f.itemDe, f.itemAte)
-                && self.naFaixa(linha.deposito, f.depDe, f.depAte)
-                && self.naFaixa(linha.codBarras, f.barrasDe, f.barrasAte)
-                && self.naFaixa(linha.lote, f.loteDe, f.loteAte)
-                && self.naFaixa(linha.dtValiLote, f.validadeDe, f.validadeAte)
-                && self.naFaixa(linha.familia, f.familiaDe, f.familiaAte)
-                && self.notaFiscalCombina(linha, f);
+    montarParametrosEtiquetas(filtros) {
+        var especificas = filtros.modoNf === 'especificas';
+        var parametros = { limite: NWM_LIMITE_PAGINA, modoNotas: especificas ? 'ESPECIFICAS' : 'INTERVALO' };
+        $.each(NWM_PARAMETROS_ETIQUETAS, function (campo, parametro) {
+            if (especificas && (campo === 'nfDe' || campo === 'nfAte')) return;
+            if (filtros[campo]) parametros[parametro] = filtros[campo];
         });
+        if (especificas) parametros.documento = this.codigosDocumentosSelecionados();
+        return parametros;
+    },
+
+    codigosDocumentosSelecionados() {
+        var codigos = [];
+        $.each(this.documentosSelecionados || [], function (indice, documento) { codigos.push(documento.codigo); });
+        return codigos;
+    },
+
+    carregarEtiquetas(parametros) {
+        var carga = {
+            estado: 'carregando', parametros: $.extend({}, parametros), dados: [], ids: Object.create(null), cursor: '',
+            descricoes: Object.create(null), descricoesAusentes: 0
+        };
+        this.consultaEtiquetas = carga;
+        this.tabela.clearData();
+        this.definirCarregamentoConsulta(true);
+        this.atualizarContadorTabela();
+        this.consultarPaginaEtiquetas(carga);
+    },
+
+    cargaEtiquetasAtual(carga) {
+        return this.consultaEtiquetas === carga && carga.estado === 'carregando';
+    },
+
+    falharCargaEtiquetas(carga, erro) {
+        if (!this.cargaEtiquetasAtual(carga)) return;
+        carga.estado = 'erro';
+        carga.erro = erro;
+        this.definirCarregamentoConsulta(false);
+        this.mostrarErroConsulta(erro);
+        this.atualizarContadorTabela();
+    },
+
+    consultarPaginaEtiquetas(carga) {
+        var self = this;
+        if (!this.cargaEtiquetasAtual(carga)) return;
+        var parametros = $.extend({}, carga.parametros);
+        if (carga.cursor) parametros.aposId = carga.cursor;
+        this.consultarDataset('consultarEtiquetas', parametros, 'etiquetas').then(function (resultado) {
+            if (!self.cargaEtiquetasAtual(carga)) return;
+            try {
+                self.receberPaginaEtiquetas(carga, resultado, parametros.limite);
+            } catch (erro) { self.falharCargaEtiquetas(carga, erro); }
+        }, function (erro) {
+            self.falharCargaEtiquetas(carga, erro);
+        });
+    },
+
+    receberPaginaEtiquetas(carga, resultado, limite) {
+        if (typeof resultado.proximoId !== 'string' || resultado.dados.length > limite) {
+            throw this.erroDataset('RESPOSTA_INVALIDA', 'A página de etiquetas está fora do contrato esperado.', 'tecnico');
+        }
+        var maiorId = this.acrescentarPaginaEtiquetas(carga, resultado.dados);
+        if (resultado.temMais) {
+            this.avancarCursorEtiquetas(carga, resultado.proximoId, maiorId);
+            this.atualizarContadorTabela();
+            this.consultarPaginaEtiquetas(carga);
+            return;
+        }
+        this.atualizarContadorTabela();
+        this.descreverItensCarga(carga);
+    },
+
+    acrescentarPaginaEtiquetas(carga, registros) {
+        var self = this;
+        var maiorId = carga.cursor;
+        $.each(registros, function (indice, registro) {
+            var etiqueta = self.mapearEtiqueta(registro);
+            self.validarOrdemEtiqueta(carga, etiqueta.id);
+            carga.ids[etiqueta.id] = true;
+            carga.dados.push(etiqueta);
+            if (!maiorId || self.compararIds(etiqueta.id, maiorId) > 0) maiorId = etiqueta.id;
+        });
+        return maiorId;
+    },
+
+    validarOrdemEtiqueta(carga, id) {
+        if (carga.ids[id]) throw this.erroDataset('RESPOSTA_INVALIDA', 'A consulta devolveu uma etiqueta repetida entre páginas. Busque novamente.', 'tecnico');
+        if (carga.cursor && this.compararIds(id, carga.cursor) <= 0) throw this.erroDataset('CURSOR_INVALIDO', 'A página contém uma etiqueta anterior ao cursor. Busque novamente.', 'tecnico');
+    },
+
+    avancarCursorEtiquetas(carga, proximoId, maiorId) {
+        var cursorValido = NWM_SOMENTE_DIGITOS.test(proximoId) && this.compararIds(proximoId, carga.cursor || '0') > 0 && this.compararIds(proximoId, maiorId) === 0;
+        if (!cursorValido) throw this.erroDataset('CURSOR_INVALIDO', 'O cursor de etiquetas não avançou corretamente. Busque novamente.', 'tecnico');
+        carga.cursor = proximoId;
+    },
+
+    descreverItensCarga(carga) {
+        if (!this.cargaEtiquetasAtual(carga)) return;
+        this.reaproveitarDescricoesFiltro(carga);
+        var descricao = { carga: carga, codigos: this.codigosItensCarga(carga), indice: 0 };
+        this.descreverProximoItem(descricao);
+    },
+
+    reaproveitarDescricoesFiltro(carga) {
+        var self = this;
+        $.each(['itemDe', 'itemAte'], function (indice, campo) {
+            var registro = $('[data-filtro="' + campo + '"]', self.DOM).data('registro');
+            if (registro && registro.codigo && typeof registro.descricao === 'string') carga.descricoes[registro.codigo] = registro.descricao;
+        });
+    },
+
+    codigosItensCarga(carga) {
+        var codigos = [];
+        var vistos = Object.create(null);
+        $.each(carga.dados, function (indice, etiqueta) {
+            if (vistos[etiqueta.itCodigo]) return;
+            vistos[etiqueta.itCodigo] = true;
+            codigos.push(etiqueta.itCodigo);
+        });
+        return codigos;
+    },
+
+    descreverProximoItem(descricao) {
+        var carga = descricao.carga;
+        if (!this.cargaEtiquetasAtual(carga)) return;
+        if (descricao.indice === descricao.codigos.length) {
+            this.aplicarDescricoesCarga(carga);
+            this.concluirCargaEtiquetas(carga);
+            return;
+        }
+        var codigo = descricao.codigos[descricao.indice++];
+        if (Object.prototype.hasOwnProperty.call(carga.descricoes, codigo)) {
+            this.descreverProximoItem(descricao);
+            return;
+        }
+        if (codigo.length < 2) {
+            this.registrarDescricaoAusente(descricao);
+            return;
+        }
+        descricao.codigo = codigo;
+        descricao.cursores = Object.create(null);
+        this.consultarDescricaoItem(descricao, '');
+    },
+
+    registrarDescricaoAusente(descricao) {
+        descricao.carga.descricoesAusentes++;
+        this.descreverProximoItem(descricao);
+    },
+
+    consultarDescricaoItem(descricao, cursor) {
+        var self = this;
+        var carga = descricao.carga;
+        if (!this.cargaEtiquetasAtual(carga)) return;
+        this.consultarDataset('apoiarItens', this.parametrosDescricaoItem(carga, descricao.codigo, cursor), 'descricao:itens').then(function (resultado) {
+            if (!self.cargaEtiquetasAtual(carga)) return;
+            self.receberDescricaoItem(descricao, cursor, resultado);
+        }, function (erro) {
+            if (!self.cargaEtiquetasAtual(carga) || erro.tipo === 'cancelamento') return;
+            self.registrarDescricaoAusente(descricao);
+        });
+    },
+
+    parametrosDescricaoItem(carga, codigo, cursor) {
+        var parametros = { filtro: codigo, limite: NWM_LIMITE_SUGESTOES };
+        if (carga.parametros.estabelDe === carga.parametros.estabelAte) parametros.codEstabel = carga.parametros.estabelDe;
+        if (cursor) parametros.aposCodigo = cursor;
+        return parametros;
+    },
+
+    receberDescricaoItem(descricao, cursor, resultado) {
+        var encontrado = this.registroDoItem(resultado.dados, descricao.codigo);
+        if (encontrado) {
+            descricao.carga.descricoes[descricao.codigo] = encontrado.descricao;
+            this.descreverProximoItem(descricao);
+            return;
+        }
+        var proximo = resultado.proximoCodigo;
+        if (resultado.temMais && typeof proximo === 'string' && proximo && proximo !== cursor && !descricao.cursores[proximo]) {
+            descricao.cursores[proximo] = true;
+            this.consultarDescricaoItem(descricao, proximo);
+            return;
+        }
+        this.registrarDescricaoAusente(descricao);
+    },
+
+    registroDoItem(registros, codigo) {
+        var encontrado = null;
+        $.each(registros, function (indice, registro) {
+            if (registro && registro.codigo === codigo && typeof registro.descricao === 'string') encontrado = registro;
+        });
+        return encontrado;
+    },
+
+    aplicarDescricoesCarga(carga) {
+        $.each(carga.dados, function (indice, etiqueta) { etiqueta.descItem = carga.descricoes[etiqueta.itCodigo] || '—'; });
+    },
+
+    concluirCargaEtiquetas(carga) {
+        var self = this;
+        if (!this.cargaEtiquetasAtual(carga)) return;
+        carga.prontaParaExibir = true;
+        this.tabela.setData(carga.dados).then(function () {
+            if (self.cargaEtiquetasAtual(carga)) self.exibirCargaConcluida(carga);
+            else self.reexibirCargaVigente();
+        }, function (erro) {
+            self.falharCargaEtiquetas(carga, erro);
+        });
+    },
+
+    exibirCargaConcluida(carga) {
+        carga.estado = carga.dados.length ? 'sucesso' : 'vazio';
+        this.definirCarregamentoConsulta(false);
         this.atualizarSelecao();
+        this.atualizarContadorTabela();
+    },
+
+    reexibirCargaVigente() {
+        var self = this;
+        var vigente = this.consultaEtiquetas;
+        if (!vigente || !vigente.prontaParaExibir || vigente.estado === 'cancelada' || vigente.estado === 'erro') {
+            this.tabela.clearData();
+            return;
+        }
+        this.tabela.setData(vigente.dados).then(function () {
+            self.atualizarSelecao();
+            self.atualizarContadorTabela();
+        }, function (erro) { self.mostrarErroConsulta(erro); });
+    },
+
+    compararIds(primeiro, segundo) {
+        primeiro = primeiro.replace(/^0+/, '') || '0';
+        segundo = segundo.replace(/^0+/, '') || '0';
+        if (primeiro.length !== segundo.length) return primeiro.length < segundo.length ? -1 : 1;
+        if (primeiro === segundo) return 0;
+        return primeiro < segundo ? -1 : 1;
+    },
+
+    mapearEtiqueta(registro) {
+        if (!this.registroEtiquetaValido(registro)) {
+            throw this.erroDataset('RESPOSTA_INVALIDA', 'Um registro de etiqueta está fora do contrato esperado.', 'tecnico');
+        }
+        return {
+            id: registro.idEtiqueta, idEtiqueta: registro.idEtiqueta, versao: registro.versao,
+            itCodigo: registro.item, descItem: '—', codEstabel: registro.codEstabel,
+            etiqueta: registro.codEtiqueta, codBarras: registro.codEtiqueta, lote: registro.lote || '',
+            dtValiLote: registro.validadeLote || '', qtidadeIni: registro.quantidadeInicial,
+            qtidadeAtu: registro.quantidadeAtual, capacidade: registro.capacidade, unidade: registro.unidade || '',
+            deposito: registro.deposito || '', localizacao: registro.localizacao || '',
+            situacao: registro.situacao, tipoLocal: registro.tipoLocal, tipoControle: registro.tipoControle,
+            idBag: registro.idBag, dadosOriginais: $.extend({}, registro)
+        };
+    },
+
+    registroEtiquetaValido(registro) {
+        return $.isPlainObject(registro) &&
+            this.identificacaoEtiquetaValida(registro) &&
+            this.classificacaoEtiquetaValida(registro) &&
+            this.numerosEtiquetaValidos(registro) &&
+            this.textosOpcionaisEtiquetaValidos(registro) &&
+            (!registro.validadeLote || this.dataIsoValida(registro.validadeLote));
+    },
+
+    identificacaoEtiquetaValida(registro) {
+        return typeof registro.idEtiqueta === 'string' && NWM_SOMENTE_DIGITOS.test(registro.idEtiqueta) && this.compararIds(registro.idEtiqueta, '0') > 0 &&
+            this.textoPreenchido(registro.codEtiqueta) && this.textoPreenchido(registro.item) && this.textoPreenchido(registro.codEstabel);
+    },
+
+    classificacaoEtiquetaValida(registro) {
+        return Object.prototype.hasOwnProperty.call(NWM_STATUS, registro.situacao) &&
+            Object.prototype.hasOwnProperty.call(NWM_POSICOES, registro.tipoLocal) &&
+            (registro.tipoControle === 'EMBALAGEM' || registro.tipoControle === 'PRE_SALDO') &&
+            this.inteiroPositivo(registro.versao);
+    },
+
+    numerosEtiquetaValidos(registro) {
+        var validos = true;
+        $.each(NWM_CAMPOS_NUMERICOS_ETIQUETA, function (indice, campo) {
+            if (typeof registro[campo] !== 'number' || !isFinite(registro[campo]) || registro[campo] < 0) validos = false;
+        });
+        return validos;
+    },
+
+    textosOpcionaisEtiquetaValidos(registro) {
+        var validos = true;
+        $.each(NWM_CAMPOS_TEXTO_OPCIONAL_ETIQUETA, function (indice, campo) {
+            var valor = registro[campo];
+            if (valor !== null && typeof valor !== 'undefined' && typeof valor !== 'string') validos = false;
+        });
+        return validos;
+    },
+
+    textoPreenchido(valor) {
+        return typeof valor === 'string' && !!valor;
+    },
+
+    inteiroPositivo(valor) {
+        return typeof valor === 'number' && isFinite(valor) && valor >= 1 && valor % 1 === 0;
+    },
+
+    numeroFinito(valor) {
+        return typeof valor === 'number' && isFinite(valor);
+    },
+
+    cancelarConsultaEtiquetas() {
+        var carga = this.consultaEtiquetas;
+        if (!carga || carga.estado === 'cancelada') return;
+        carga.estado = 'cancelada';
+        this.cancelarConsultaDataset('etiquetas');
+        this.cancelarConsultaDataset('descricao:itens');
+        this.definirCarregamentoConsulta(false);
+        this.atualizarContadorTabela();
     },
 
     lerFiltros() {
@@ -430,84 +1391,126 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         return filtros;
     },
 
-    //validação herdada da tela antiga: estabelecimento De/Até obrigatório e Itens OU Nota Fiscal
-    validarFiltros(f) {
-        var temNf = f.modoNf === 'especificas' ? !!f.nfEspecificas : !!(f.nfDe || f.nfAte);
-        var temItem = !!(f.itemDe || f.itemAte);
-        var mensagens = [];
-        var campos = [];
-
-        clearTimeout(this.temporizadorFiltros);
-        this.temporizadorFiltros = null;
-        $('.nwm-filtros .nwm-campo-input', this.DOM).removeClass('is-invalido').removeAttr('aria-invalid');
-
-        if (!f.estDe || !f.estAte) {
-            campos = campos.concat(['estDe', 'estAte']);
-            mensagens.push('Informe o estabelecimento De e Até.');
-        }
-        if (!temItem && !temNf) {
-            campos = campos.concat(['itemDe', 'itemAte'], f.modoNf === 'especificas' ? ['nfEspecificas'] : ['nfDe', 'nfAte']);
-            mensagens.push('Informe os itens ou a nota fiscal.');
-        }
-        if (mensagens.length) {
-            this.marcarInvalidos(campos);
-            this.avisar('warning', mensagens.join(' '));
+    validarFiltros(filtros) {
+        if (filtros.modoNf === 'especificas' && !this.quantidadeDocumentosValida()) {
+            this.avisar('warning', 'Selecione de 1 a 20 documentos nas sugestões de notas específicas.');
             return false;
         }
+        this.limparMarcacaoInvalidos();
+        var obrigatorios = this.verificarFiltrosObrigatorios(filtros);
+        if (obrigatorios.mensagens.length) return this.recusarFiltros(obrigatorios, false);
+        var conteudo = this.verificarConteudoFiltros(filtros);
+        if (conteudo.mensagens.length) return this.recusarFiltros(conteudo, true);
         return true;
     },
 
-    marcarInvalidos(campos) {
+    quantidadeDocumentosValida() {
+        var quantidade = (this.documentosSelecionados || []).length;
+        return quantidade > 0 && quantidade <= NWM_LIMITE_DOCUMENTOS;
+    },
+
+    limparMarcacaoInvalidos() {
+        clearTimeout(this.temporizadorFiltros);
+        this.temporizadorFiltros = null;
+        $('.nwm-filtros .nwm-campo-input', this.DOM).removeClass('is-invalido').removeAttr('aria-invalid');
+    },
+
+    recusarFiltros(verificacao, preenchidos) {
+        this.marcarInvalidos(verificacao.campos, preenchidos);
+        this.avisar('warning', verificacao.mensagens.join(' '));
+        return false;
+    },
+
+    verificarFiltrosObrigatorios(filtros) {
+        var verificacao = { campos: [], mensagens: [] };
+        var especificas = filtros.modoNf === 'especificas';
+        var temNotaFiscal = especificas ? this.documentosSelecionados.length > 0 : !!(filtros.nfDe || filtros.nfAte);
+        var temItem = !!(filtros.itemDe || filtros.itemAte);
+        if (!filtros.estDe || !filtros.estAte) {
+            verificacao.campos = verificacao.campos.concat(['estDe', 'estAte']);
+            verificacao.mensagens.push('Informe o estabelecimento De e Até.');
+        }
+        if (!temItem && !temNotaFiscal) {
+            verificacao.campos = verificacao.campos.concat(['itemDe', 'itemAte'], especificas ? ['nfEspecificas'] : ['nfDe', 'nfAte']);
+            verificacao.mensagens.push('Informe os itens ou a nota fiscal.');
+        }
+        return verificacao;
+    },
+
+    verificarConteudoFiltros(filtros) {
+        var verificacao = { campos: [], mensagens: [] };
+        this.verificarOrdemFaixas(filtros, verificacao);
+        this.verificarTextoFiltros(filtros, verificacao);
+        this.verificarDatasValidade(filtros, verificacao);
+        return verificacao;
+    },
+
+    verificarOrdemFaixas(filtros, verificacao) {
+        $.each(NWM_PREFIXOS_FAIXAS, function (indice, prefixo) {
+            if (prefixo === 'nf' && filtros.modoNf === 'especificas') return;
+            var inicio = filtros[prefixo + 'De'] || '';
+            var fim = filtros[prefixo + 'Ate'] || '';
+            if (!inicio || !fim || inicio.toUpperCase() <= fim.toUpperCase()) return;
+            verificacao.campos.push(prefixo + 'De', prefixo + 'Ate');
+            verificacao.mensagens.push('Há um intervalo em que De é maior que Até.');
+        });
+    },
+
+    verificarTextoFiltros(filtros, verificacao) {
+        var self = this;
+        $.each(filtros, function (campo, valor) {
+            if (!self.campoTextoVerificavel(campo, filtros.modoNf)) return;
+            if (valor.length <= NWM_LIMITE_TEXTO && !NWM_CARACTERE_CONTROLE.test(valor)) return;
+            verificacao.campos.push(campo);
+            verificacao.mensagens.push('Um filtro contém texto inválido ou mais de 100 caracteres.');
+        });
+    },
+
+    campoTextoVerificavel(campo, modoNf) {
+        if (campo === 'modoNf' || campo === 'nfEspecificas') return false;
+        return !(modoNf === 'especificas' && /^(nfDe|nfAte)$/.test(campo));
+    },
+
+    verificarDatasValidade(filtros, verificacao) {
+        var self = this;
+        $.each(['validadeDe', 'validadeAte'], function (indice, campo) {
+            if (!filtros[campo] || self.dataIsoValida(filtros[campo])) return;
+            verificacao.campos.push(campo);
+            verificacao.mensagens.push('Informe uma data de validade válida.');
+        });
+    },
+
+    dataIsoValida(valor) {
+        if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(valor)) return false;
+        var partes = valor.split('-');
+        var data = new Date(valor + 'T00:00:00Z');
+        return !isNaN(data.getTime()) && data.getUTCFullYear() === Number(partes[0]) &&
+            data.getUTCMonth() + 1 === Number(partes[1]) && data.getUTCDate() === Number(partes[2]);
+    },
+
+    marcarInvalidos(campos, preenchidos) {
         var self = this;
         var $primeiro = $();
         $.each(campos, function (indice, campo) {
             var $input = $('[data-filtro="' + campo + '"]', self.DOM);
-            if (!$.trim($input.val() || '')) {
-                $input.addClass('is-invalido').attr('aria-invalid', 'true');
-                if (!$primeiro.length) $primeiro = $input;
-            }
+            if (!preenchidos && $.trim($input.val() || '')) return;
+            $input.addClass('is-invalido').attr('aria-invalid', 'true');
+            if (!$primeiro.length) $primeiro = $input;
         });
         $primeiro.trigger('focus');
         this.temporizadorFiltros = setTimeout(function () {
             $('.nwm-filtros .nwm-campo-input', self.DOM).removeClass('is-invalido').removeAttr('aria-invalid');
             self.temporizadorFiltros = null;
-        }, 2000);
+        }, NWM_TEMPO_MARCACAO_INVALIDO_MS);
     },
-
-    //faixa De/Até: compara como número quando os dois lados são numéricos, senão como texto
-    naFaixa(valor, de, ate) {
-        if (!de && !ate) return true;
-        var v = String(valor == null ? '' : valor);
-
-        if (de && this.menor(v, de)) return false;
-        if (ate && this.menor(ate, v)) return false;
-        return true;
-    },
-
-    menor(a, b) {
-        if (a === '') return true;
-        if (this.ehNumero(a) && this.ehNumero(b)) return Number(a) < Number(b);
-        return a.toUpperCase() < b.toUpperCase();
-    },
-
-    ehNumero(valor) {
-        return valor !== '' && !isNaN(Number(valor));
-    },
-
-    notaFiscalCombina(linha, f) {
-        if (f.modoNf === 'especificas') {
-            if (!f.nfEspecificas) return true;
-            var lista = f.nfEspecificas.split(',').map(function (x) { return $.trim(x); }).filter(function (x) { return x !== ''; });
-            return lista.indexOf(String(linha.notaFiscal)) !== -1;
-        }
-        return this.naFaixa(linha.notaFiscal, f.nfDe, f.nfAte);
-    },
-
-    // ---------- Ações ----------
 
     acaoNaLinha(acao, linha) {
         if (acao === 'detalhes') {
             this.abrirDetalhes(linha);
+            return;
+        }
+        if (!this.podeSelecionarEtiqueta(linha.getData())) {
+            this.avisar('warning', 'Clique em Buscar para atualizar as etiquetas antes de iniciar uma operação.');
             return;
         }
         this.pedirConfirmacao(acao, [linha], 0);
@@ -515,138 +1518,200 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     aplicarLote(htmlElement, event) {
         var acao = $('[data-acao-lote]', this.DOM).val();
-        if (!acao) {
-            this.avisar('warning', 'Selecione a ação em lote.');
-            return;
-        }
-
-        var linhas = this.linhasSelecionadas();
-        if (!linhas.length) {
-            this.avisar('warning', 'Marque ao menos uma etiqueta.');
-            return;
-        }
-
-        //cada status permite um conjunto de ações: o que não permite fica de fora e é informado
-        var permitidas = linhas.filter(function (linha) {
-            var info = NWM_STATUS[linha.getData().situacao];
-            return info && info.acoes.indexOf(acao) !== -1;
-        });
-
-        if (!permitidas.length) {
-            this.avisar('warning', 'Nenhuma etiqueta marcada aceita a ação ' + NWM_ACOES[acao].rotulo.toLowerCase() + '.');
-            return;
-        }
-        this.pedirConfirmacao(acao, permitidas, linhas.length - permitidas.length);
+        if (this.acaoAbreOperacao(acao)) this.abrirOperacao(this.linhasSelecionadas());
+        else this.avisar('info', 'Escolha Transferência / Remessa ou Devolução.');
     },
 
-    //marca automaticamente as etiquetas cheias do item escolhido até somar a quantidade pedida
-    executarQuantidade(htmlElement, event) {
-        var self = this;
-        var $item = $('[data-item-qtde]', this.DOM);
-        var codigo = $item.val();
-        var quantidade = parseFloat(String($('[data-qtde]', this.DOM).val() || '').replace(',', '.'));
+    acaoAbreOperacao(acao) {
+        return acao === 'transferir' || acao === 'devolver';
+    },
 
-        if (!codigo) {
-            this.avisar('warning', 'Escolha um item da lista.');
-            //com o Select2 o select original fica escondido: abre a lista em vez de dar foco
-            if ($item.data('select2')) $item.select2('open');
-            else $item.trigger('focus');
-            return;
-        }
-        if (isNaN(quantidade) || quantidade <= 0) {
-            this.avisar('warning', 'Informe a quantidade.');
-            $('[data-qtde]', this.DOM).trigger('focus');
-            return;
-        }
-        if (!this.tabela) return;
+    elegivelQuantidade(etiqueta) {
+        return this.podeSelecionarEtiqueta(etiqueta) && this.embalagemInteiraDisponivel(etiqueta) && etiqueta.qtidadeAtu === etiqueta.qtidadeIni;
+    },
 
-        var somado = 0;
-        var marcadas = 0;
-        this.tabela.getRows('active').forEach(function (linha) {
-            if (somado >= quantidade) return;
-            var d = linha.getData();
-            //embalagem cheia (saldo igual ao da embalagem) e status que aceita separação
-            var cheia = Number(d.qtidadeAtu) > 0 && Number(d.qtidadeAtu) === Number(d.qtidadeIni);
-            var statusOk = d.situacao === 'em-estoque' || d.situacao === 'impressa';
-            if (d.itCodigo !== codigo || !cheia || !statusOk || self.selecionados[d.id]) return;
+    embalagemInteiraDisponivel(etiqueta) {
+        return etiqueta.situacao === 'ATIVA' && etiqueta.tipoLocal === 'ESTAB' && !this.possuiBag(etiqueta) && etiqueta.qtidadeAtu > 0;
+    },
 
-            self.selecionados[d.id] = true;
-            somado += Number(d.qtidadeAtu);
-            marcadas += 1;
+    possuiBag(etiqueta) {
+        return etiqueta.idBag != null && etiqueta.idBag !== '';
+    },
+
+    atualizarItensQuantidade() {
+        var $select = $('[data-item-qtde]', this.DOM);
+        if (!$select.length) return;
+        var anterior = $select.val();
+        var itens = this.itensElegiveisQuantidade();
+        $select.empty().append($('<option>', { value: '', text: 'Selecione' }));
+        $.each(Object.keys(itens).sort(), function (indice, codigo) {
+            $select.append($('<option>', { value: codigo, text: codigo + ' — ' + itens[codigo] }));
         });
+        $select.val(Object.prototype.hasOwnProperty.call(itens, anterior) ? anterior : '').trigger('change.select2');
+        $('[data-item-qtde], [data-qtde], [data-executar-qtde]', this.DOM).prop('disabled', !Object.keys(itens).length)
+            .attr('title', 'Acrescenta embalagens inteiras: ativas, no estabelecimento e sem Bag. A quantidade selecionada pode superar a solicitada.');
+    },
 
+    itensElegiveisQuantidade() {
+        var self = this;
+        var itens = Object.create(null);
+        if (!this.tabela) return itens;
+        $.each(this.tabela.getRows('active'), function (indice, linha) {
+            var etiqueta = linha.getData();
+            if (self.elegivelQuantidade(etiqueta)) itens[etiqueta.itCodigo] = etiqueta.descItem;
+        });
+        return itens;
+    },
+
+    executarQuantidade(htmlElement, event) {
+        var item = $('[data-item-qtde]', this.DOM).val();
+        var texto = $.trim($('[data-qtde]', this.DOM).val() || '');
+        if (!item || !this.quantidadePedidaValida(texto)) {
+            this.avisar('warning', 'Escolha um item e informe uma quantidade positiva, com até quatro casas decimais.');
+            return;
+        }
+        if (!this.consultaEtiquetas || this.consultaEtiquetas.estado !== 'sucesso') return;
+        var pedido = Math.round(Number(texto) * NWM_ESCALA_QUANTIDADE);
+        var escolha = this.escolherEmbalagensDoItem(item, pedido);
+        this.selecionados = escolha.selecionados;
         this.redesenharChecks();
         this.atualizarSelecao();
-
-        if (!marcadas) {
-            this.avisar('warning', 'Nenhuma etiqueta cheia desse item está disponível na lista atual.');
-            return;
-        }
-        if (somado < quantidade) {
-            this.avisar('warning', 'Marcadas ' + marcadas + ' etiqueta(s), somando ' + this.formatarQuantidade(somado) + ' de ' + this.formatarQuantidade(quantidade) + '.');
-            return;
-        }
-        this.avisar('success', 'Marcadas ' + marcadas + ' etiqueta(s), somando ' + this.formatarQuantidade(somado) + '.');
+        this.avisarResultadoQuantidade(escolha, pedido);
     },
 
-    // ---------- Modais (<dialog> nativo, não o FLUIGC.modal) ----------
+    quantidadePedidaValida(texto) {
+        return NWM_DECIMAL_ATE_QUATRO_CASAS.test(texto) && isFinite(Number(texto)) && Number(texto) > 0;
+    },
+
+    escolherEmbalagensDoItem(item, pedido) {
+        var self = this;
+        var escolha = { selecionados: $.extend({}, this.selecionados), total: 0, etiquetas: 0 };
+        $.each(this.tabela.getRows('active'), function (indice, linha) {
+            var etiqueta = linha.getData();
+            if (escolha.total >= pedido || escolha.selecionados[etiqueta.id] || etiqueta.itCodigo !== item || !self.elegivelQuantidade(etiqueta)) return;
+            escolha.selecionados[etiqueta.id] = true;
+            escolha.total += Math.round(etiqueta.qtidadeAtu * NWM_ESCALA_QUANTIDADE);
+            escolha.etiquetas++;
+        });
+        return escolha;
+    },
+
+    avisarResultadoQuantidade(escolha, pedido) {
+        var faltou = escolha.total < pedido;
+        this.avisar(faltou ? 'warning' : 'info', escolha.etiquetas + ' etiqueta(s) selecionada(s), total ' + this.formatarQuantidade(escolha.total / NWM_ESCALA_QUANTIDADE) +
+            (faltou ? '. A quantidade disponível é menor que a solicitada.' : '. Embalagens selecionadas inteiras.'));
+    },
 
     prepararModais() {
-        var self = this;
         this.$modalDetalhes = $('[data-modal-detalhes]', this.DOM);
         this.$modalConfirmar = $('[data-modal-confirmar]', this.DOM);
         this.$modalLegenda = $('[data-modal-legenda]', this.DOM);
+        this.$modalOperacao = $('[data-modal-operacao]', this.DOM);
+        this.ligarEventosModalOperacao();
+        this.ligarFechamentoPeloFundo();
+        this.ligarDescarteConfirmacao();
+    },
 
-        //clique no fundo escurecido fecha: o alvo é o próprio <dialog>
-        [this.$modalDetalhes, this.$modalConfirmar, this.$modalLegenda].forEach(function ($modal) {
-            $modal.on('click', function (event) {
-                if (event.target === $modal[0]) $modal[0].close();
-            });
-        });
-
-        //Esc fecha sem passar pelos handlers: o "close" limpa a ação pendente
+    ligarDescarteConfirmacao() {
+        var self = this;
         this.$modalConfirmar.on('close', function () { self.pendente = null; });
     },
 
+    ligarEventosModalOperacao() {
+        var self = this;
+        this.$modalOperacao.on('cancel.nwm', function (evento) {
+            if (self.operacaoEmComunicacao(self.operacaoAtual)) evento.preventDefault();
+        });
+        this.ligarBotaoOperacao('[data-fechar-operacao]', function () { self.fecharOperacao(); });
+        this.ligarBotaoOperacao('[data-classificar-natureza]', function () { self.classificarOperacao(); });
+        this.ligarBotaoOperacao('[data-carregar-origem]', function () { self.carregarOrigemOperacao(); });
+        this.ligarBotaoOperacao('[data-preparar-operacao]', function () { self.prepararEnvioOperacao(); });
+        this.ligarBotaoOperacao('[data-enviar-operacao]', function () { self.enviarOperacao(false); });
+        this.ligarBotaoOperacao('[data-reenviar-operacao]', function () { self.enviarOperacao(true); });
+        this.ligarBotaoOperacao('[data-resultado-operacao]', function () { self.consultarResultadoAtual(); });
+        this.$modalOperacao.on('input.nwm', '[data-operacao-campo]', function () {
+            self.reagirAlteracaoCampoOperacao($(this).attr('data-operacao-campo'));
+        });
+    },
+
+    ligarBotaoOperacao(seletor, acao) {
+        $(seletor, this.DOM).on('click.nwm', acao);
+    },
+
+    reagirAlteracaoCampoOperacao(campo) {
+        var operacao = this.operacaoAtual;
+        if (!operacao || this.operacaoTravada(operacao)) return;
+        this.cancelarConsultaDataset('operacao:natureza');
+        this.cancelarConsultaDataset('operacao:origem');
+        operacao.estado = 'edicao';
+        operacao.comando = null;
+        if (campo === 'natureza') operacao.classificacao = null;
+        if (/^(natureza|emitenteOrigem|serieOrigem|numeroOrigem|naturezaOrigem)$/.test(campo)) this.descartarOrigemOperacao(operacao);
+        this.mostrarEstadoOperacao('Revise os dados antes de confirmar.');
+    },
+
+    descartarOrigemOperacao(operacao) {
+        operacao.origem = null;
+        operacao.selecaoOrigem = Object.create(null);
+        $('[data-origem-corpo]', this.DOM).empty();
+    },
+
+    ligarFechamentoPeloFundo() {
+        var self = this;
+        $.each([this.$modalDetalhes, this.$modalConfirmar, this.$modalLegenda], function (indice, $modal) {
+            $modal.on('click', function (event) {
+                if ($(event.target).is($modal)) self.fechar($modal);
+            });
+        });
+    },
+
     abrir($modal) {
-        var modal = $modal[0];
-        if (!modal || typeof modal.showModal !== 'function' || modal.open) return;
-        modal.showModal();
+        if (!$modal || !$modal.length || $modal.prop('open')) return;
+        $modal.trigger('showModal');
     },
 
     fechar($modal) {
-        var modal = $modal[0];
-        if (modal && modal.open) modal.close();
+        if ($modal && $modal.length && $modal.prop('open')) $modal.trigger('close');
     },
 
     abrirDetalhes(linha) {
-        var d = linha.getData();
-        var info = NWM_STATUS[d.situacao];
-
-        $('[data-detalhes-subtitulo]', this.DOM).text('Etiqueta ' + d.etiqueta + ' · item ' + d.itCodigo + ' — ' + d.descItem);
-
-        var $grid = $('[data-detalhes-grid]', this.DOM).empty();
-        [
-            { rotulo: 'Status', valor: info ? info.rotulo : d.situacao },
-            { rotulo: 'Etiqueta', valor: d.etiqueta },
-            { rotulo: 'Item', valor: d.itCodigo + ' — ' + d.descItem, largo: true },
-            { rotulo: 'Fazenda', valor: d.codEstabel },
-            { rotulo: 'Depósito', valor: d.deposito },
-            { rotulo: 'Lote', valor: d.lote },
-            { rotulo: 'Data de validade', valor: this.formatarData(d.dtValiLote) },
-            { rotulo: 'Qtde da embalagem', valor: this.formatarQuantidade(d.qtidadeIni) + ' ' + d.unidade },
-            { rotulo: 'Qtde em saldo', valor: this.formatarQuantidade(d.qtidadeAtu) + ' ' + d.unidade },
-            { rotulo: 'Família', valor: d.familia },
-            { rotulo: 'Código de barras', valor: d.codBarras },
-            { rotulo: 'Nota fiscal', valor: d.notaFiscal }
-        ].forEach(function (campo) {
-            var $dt = $('<dt>').text(campo.rotulo);
-            var $dd = $('<dd>').text(campo.valor);
-            var $bloco = $('<div>').addClass(campo.largo ? 'nwm-detalhes-item-largo' : '').append($dt).append($dd);
-            $grid.append($bloco);
+        var etiqueta = linha.getData();
+        $('[data-detalhes-subtitulo]', this.DOM).text('Etiqueta ' + etiqueta.etiqueta + ' · item ' + etiqueta.itCodigo + ' — ' + etiqueta.descItem);
+        var $grade = $('[data-detalhes-grid]', this.DOM).empty();
+        $.each(this.camposDetalhes(etiqueta), function (indice, campo) {
+            $('<div>').addClass(campo.largo ? 'nwm-detalhes-item-largo' : '')
+                .append($('<dt>').text(campo.rotulo))
+                .append($('<dd>').text(campo.valor))
+                .appendTo($grade);
         });
-
         this.abrir(this.$modalDetalhes);
+    },
+
+    camposDetalhes(etiqueta) {
+        var status = NWM_STATUS[etiqueta.situacao];
+        return [
+            { rotulo: 'Status', valor: status ? status.rotulo : etiqueta.situacao },
+            { rotulo: 'Etiqueta', valor: etiqueta.etiqueta },
+            { rotulo: 'Item', valor: etiqueta.itCodigo + ' — ' + etiqueta.descItem, largo: true },
+            { rotulo: 'Fazenda', valor: etiqueta.codEstabel },
+            { rotulo: 'Posição', valor: NWM_POSICOES[etiqueta.tipoLocal] || etiqueta.tipoLocal },
+            { rotulo: 'Bag', valor: etiqueta.idBag == null ? '—' : etiqueta.idBag },
+            { rotulo: 'Tipo de controle', valor: etiqueta.tipoControle === 'PRE_SALDO' ? 'Saldo anterior ao controle' : 'Embalagem' },
+            { rotulo: 'Depósito', valor: etiqueta.deposito },
+            { rotulo: 'Localização', valor: etiqueta.localizacao || '—' },
+            { rotulo: 'Lote', valor: etiqueta.lote },
+            { rotulo: 'Data de validade', valor: this.formatarData(etiqueta.dtValiLote) },
+            { rotulo: 'Quantidade inicial', valor: this.quantidadeComUnidade(etiqueta.qtidadeIni, etiqueta.unidade) },
+            { rotulo: 'Capacidade', valor: this.quantidadeComUnidade(etiqueta.capacidade, etiqueta.unidade) },
+            { rotulo: 'Qtde em saldo', valor: this.quantidadeComUnidade(etiqueta.qtidadeAtu, etiqueta.unidade) },
+            { rotulo: 'Família', valor: '—' },
+            { rotulo: 'Código de barras', valor: etiqueta.codBarras },
+            { rotulo: 'Nota fiscal', valor: '—' }
+        ];
+    },
+
+    quantidadeComUnidade(quantidade, unidade) {
+        return this.formatarQuantidade(quantidade) + ' ' + unidade;
     },
 
     fecharDetalhes(htmlElement, event) {
@@ -654,27 +1719,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     pedirConfirmacao(acao, linhas, ignoradas) {
-        var b = NWM_ACOES[acao];
-        this.pendente = { acao: acao, linhas: linhas, ignoradas: ignoradas || 0 };
-
-        var quantas = linhas.length === 1
-            ? 'a etiqueta ' + linhas[0].getData().etiqueta
-            : linhas.length + ' etiquetas marcadas';
-        var texto = b.rotulo + ' ' + quantas + '.';
-        if (ignoradas) texto += ' ' + ignoradas + ' etiqueta(s) marcada(s) não aceitam esta ação e ficam de fora.';
-        if (!b.statusNovo) texto += ' A regra desta ação ainda não foi definida: no mockup nada é alterado.';
-
-        $('[data-confirmar-titulo]', this.DOM).text(b.rotulo + (linhas.length === 1 ? ' etiqueta?' : ' etiquetas?'));
-        $('[data-confirmar-texto]', this.DOM).text(texto);
-        $('[data-confirmar-botao]', this.DOM).text(b.rotulo);
-        $('[data-confirmar-icone]', this.DOM)
-            .toggleClass('is-perigo', !!b.destrutivo)
-            .html('<i class="bi ' + b.icone + '"></i>');
-        $('[data-confirmar-acao]', this.DOM)
-            .toggleClass('nwm-btn-perigo', !!b.destrutivo)
-            .toggleClass('nwm-btn-destaque', !b.destrutivo);
-
-        this.abrir(this.$modalConfirmar);
+        this.aplicarAcao(acao, linhas);
     },
 
     fecharConfirmar(htmlElement, event) {
@@ -690,58 +1735,654 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.aplicarAcao(pendente.acao, pendente.linhas);
     },
 
-    //MOCK: só muda o status na tela. Trocar pela gravação no dataset/REST quando existir.
-    //Estornar e transferir não têm status de destino definido: avisam e não alteram nada.
     aplicarAcao(acao, linhas) {
-        var self = this;
-        var b = NWM_ACOES[acao];
-
-        if (!b.statusNovo) {
-            this.avisar('info', b.rotulo + ': regra a definir. Nenhuma etiqueta foi alterada.');
+        if (this.acaoAbreOperacao(acao)) {
+            this.abrirOperacao(linhas);
             return;
         }
-
-        var alteradas = 0;
-        linhas.forEach(function (linha) {
-            if (linha.getData().situacao === b.statusNovo) return;
-            alteradas += 1;
-            //o update redesenha só a célula do status: o reformat refaz os botões da coluna Ações,
-            //que dependem do status novo
-            linha.update({ situacao: b.statusNovo }).then(function () {
-                linha.reformat();
-                self.destacarLinha(linha);
-            });
-        });
-
-        this.limparSelecao();
-        this.avisar('success', alteradas === 1
-            ? '1 etiqueta agora está como ' + NWM_STATUS[b.statusNovo].rotulo + '.'
-            : alteradas + ' etiquetas agora estão como ' + NWM_STATUS[b.statusNovo].rotulo + '.');
+        var configuracao = NWM_ACOES[acao];
+        this.avisar('info', (configuracao ? configuracao.rotulo : 'Operação') + ': indisponível nesta etapa de consulta.');
     },
 
-    // ---------- Select2 ----------
+    operacaoTravada(operacao) {
+        return /^(enviando|incerta|consultando|concluida)$/.test(operacao.estado);
+    },
+
+    operacaoEmComunicacao(operacao) {
+        return !!operacao && /^(enviando|consultando)$/.test(operacao.estado);
+    },
+
+    operacaoAguardandoResultado(operacao) {
+        return !!operacao && /^(enviando|incerta|consultando)$/.test(operacao.estado);
+    },
+
+    campoOperacao(campo) {
+        return $.trim($('[data-operacao-campo="' + campo + '"]', this.DOM).val() || '');
+    },
+
+    textoOperacaoValido(valor) {
+        return typeof valor === 'string' && valor.length > 0 && valor.length <= NWM_LIMITE_TEXTO && !NWM_CARACTERE_CONTROLE.test(valor);
+    },
+
+    abrirOperacao(linhas) {
+        if (this.operacaoAguardandoResultado(this.operacaoAtual)) {
+            this.abrir(this.$modalOperacao);
+            return;
+        }
+        var selecao = this.embalagensSelecionaveis(linhas);
+        var estabelecimento = this.estabelecimentoDaOperacao(selecao.estabelecimentos);
+        if (!estabelecimento || selecao.dados.length > NWM_LIMITE_EMBALAGENS_OPERACAO) {
+            this.avisar('warning', 'Use um único estabelecimento e no máximo 100 embalagens por operação.');
+            return;
+        }
+        this.operacaoAtual = { estado: 'edicao', codEstabel: estabelecimento, dados: selecao.dados, classificacao: null, origem: null, selecaoOrigem: Object.create(null), comando: null };
+        this.prepararFormularioOperacao(estabelecimento, selecao.dados.length);
+        this.mostrarEstadoOperacao('A preparação cria o documento de trabalho. A efetivação da nota ocorre no Datasul.');
+        this.abrir(this.$modalOperacao);
+    },
+
+    embalagensSelecionaveis(linhas) {
+        var self = this;
+        var selecao = { dados: [], estabelecimentos: Object.create(null) };
+        $.each(linhas, function (indice, linha) {
+            var etiqueta = linha.getData();
+            if (!self.podeSelecionarEtiqueta(etiqueta)) return;
+            selecao.dados.push($.extend({}, etiqueta));
+            selecao.estabelecimentos[etiqueta.codEstabel] = true;
+        });
+        return selecao;
+    },
+
+    estabelecimentoDaOperacao(estabelecimentos) {
+        var codigos = Object.keys(estabelecimentos);
+        if (codigos.length === 1) return codigos[0];
+        if (codigos.length) return '';
+        var filtros = this.lerFiltros();
+        return filtros.estDe === filtros.estAte ? filtros.estDe : '';
+    },
+
+    prepararFormularioOperacao(estabelecimento, quantidade) {
+        $('[data-operacao-campo]', this.DOM).val('').prop('disabled', false);
+        $('[data-operacao-estabelecimento]', this.DOM).text(estabelecimento);
+        $('[data-operacao-selecao]', this.DOM).text(quantidade + ' embalagem(ns) da grade. Para devolução, selecione as embalagens da origem abaixo.');
+        $('[data-origem-corpo]', this.DOM).empty();
+        $('[data-operacao-direta], [data-operacao-origem]', this.DOM).prop('hidden', true);
+        $('[data-operacao-classificacao]', this.DOM).text('Informe a natureza e clique em Validar natureza.');
+    },
+
+    fecharOperacao() {
+        var operacao = this.operacaoAtual;
+        if (this.operacaoEmComunicacao(operacao)) return;
+        this.cancelarConsultaDataset('operacao:natureza');
+        this.cancelarConsultaDataset('operacao:origem');
+        this.fechar(this.$modalOperacao);
+        if (!operacao || operacao.estado !== 'incerta') this.operacaoAtual = null;
+    },
+
+    mostrarEstadoOperacao(mensagem) {
+        var operacao = this.operacaoAtual;
+        if (!operacao) return;
+        $('[data-operacao-mensagem]', this.DOM).text(mensagem);
+        this.atualizarControlesEdicaoOperacao(operacao);
+        this.atualizarControlesEnvioOperacao(operacao);
+        $('[data-operacao-chave]', this.DOM).text(this.textoChaveOperacao(operacao));
+        if (operacao.origem) this.renderizarOrigemOperacao();
+    },
+
+    atualizarControlesEdicaoOperacao(operacao) {
+        var travada = this.operacaoTravada(operacao);
+        var semClassificacao = !operacao.classificacao;
+        $('[data-operacao-campo]', this.DOM).prop('disabled', travada);
+        $('[data-classificar-natureza]', this.DOM).prop('disabled', travada || operacao.estado === 'classificando');
+        $('[data-carregar-origem]', this.DOM).prop('disabled', travada || semClassificacao || operacao.estado === 'carregando-origem');
+        $('[data-preparar-operacao]', this.DOM).prop('disabled', travada || semClassificacao || /^(classificando|carregando-origem)$/.test(operacao.estado));
+        $('[data-fechar-operacao]', this.DOM).prop('disabled', this.operacaoEmComunicacao(operacao));
+    },
+
+    atualizarControlesEnvioOperacao(operacao) {
+        var aguardandoConfirmacao = operacao.estado === 'confirmacao';
+        var incerta = operacao.estado === 'incerta';
+        var podeReenviar = incerta && !!operacao.resultadoConsultado && !operacao.conflitoIdempotente;
+        $('[data-enviar-operacao]', this.DOM).prop('hidden', !aguardandoConfirmacao).prop('disabled', !aguardandoConfirmacao);
+        $('[data-resultado-operacao]', this.DOM).prop('hidden', !incerta).prop('disabled', !incerta);
+        $('[data-reenviar-operacao]', this.DOM).prop('hidden', !podeReenviar).prop('disabled', !podeReenviar);
+    },
+
+    textoChaveOperacao(operacao) {
+        if (!operacao.comando) return '';
+        var aviso = operacao.semPersistencia ? ' · Anote este identificador: a recuperação após recarregar está indisponível neste navegador.' : '';
+        return 'Identificador da solicitação: ' + operacao.comando.parametros.chaveIdempotente + aviso;
+    },
+
+    classificarOperacao() {
+        var self = this;
+        var operacao = this.operacaoAtual;
+        if (!operacao || this.operacaoTravada(operacao) || operacao.estado === 'classificando') return;
+        var natureza = this.campoOperacao('natureza');
+        if (!this.textoOperacaoValido(natureza)) {
+            this.mostrarEstadoOperacao('Informe o código exato da natureza, com até 100 caracteres.');
+            return;
+        }
+        this.iniciarClassificacao(operacao);
+        this.consultarDataset('classificarNatureza', { codEstabel: operacao.codEstabel, natureza: natureza }, 'operacao:natureza').then(function (resultado) {
+            if (self.operacaoAtual !== operacao || self.campoOperacao('natureza') !== natureza) return;
+            self.receberClassificacao(operacao, natureza, resultado.dados[0]);
+        }, function (erro) {
+            if (self.operacaoAtual !== operacao || erro.tipo === 'cancelamento') return;
+            operacao.estado = 'edicao';
+            self.mostrarEstadoOperacao(erro.message);
+        });
+    },
+
+    iniciarClassificacao(operacao) {
+        this.cancelarConsultaDataset('operacao:origem');
+        operacao.classificacao = null;
+        operacao.origem = null;
+        operacao.comando = null;
+        operacao.estado = 'classificando';
+        $('[data-operacao-direta], [data-operacao-origem]', this.DOM).prop('hidden', true);
+        $('[data-origem-corpo]', this.DOM).empty();
+        this.mostrarEstadoOperacao('Validando natureza…');
+    },
+
+    receberClassificacao(operacao, natureza, classificacao) {
+        operacao.estado = 'edicao';
+        if (!this.classificacaoValida(classificacao, natureza, operacao.codEstabel)) {
+            this.mostrarEstadoOperacao('Esta natureza não pertence aos fluxos disponíveis de transferência, remessa ou devolução.');
+            return;
+        }
+        operacao.classificacao = $.extend({}, classificacao);
+        $('[data-operacao-classificacao]', this.DOM).text(NWM_ROTULOS_FLUXO[classificacao.fluxo]);
+        $('[data-operacao-direta]', this.DOM).prop('hidden', classificacao.exigeOrigem);
+        $('[data-operacao-origem]', this.DOM).prop('hidden', !classificacao.exigeOrigem);
+        this.mostrarEstadoOperacao(classificacao.exigeOrigem ?
+            'Informe o documento de entrada e carregue suas embalagens elegíveis.' :
+            'Confira destino, série e valor por item. As embalagens serão movimentadas inteiras.');
+    },
+
+    classificacaoValida(classificacao, natureza, codEstabel) {
+        if (!classificacao || classificacao.natureza !== natureza || classificacao.codEstabel !== codEstabel) return false;
+        if (typeof classificacao.exigeOrigem !== 'boolean' || typeof classificacao.editaQuantidade !== 'boolean' || typeof classificacao.editaPreco !== 'boolean') return false;
+        return this.fluxoDiretoValido(classificacao) || this.fluxoDevolucaoValido(classificacao);
+    },
+
+    fluxoDiretoValido(classificacao) {
+        var fluxoDireto = classificacao.fluxo === 'TRANSFERENCIA' || classificacao.fluxo === 'REMESSA_TERCEIROS';
+        return fluxoDireto && classificacao.ramoPadrao === 'DIRETO' && !classificacao.exigeOrigem;
+    },
+
+    fluxoDevolucaoValido(classificacao) {
+        return Object.prototype.hasOwnProperty.call(NWM_RAMOS_DEVOLUCAO, classificacao.fluxo) &&
+            classificacao.ramoPadrao === NWM_RAMOS_DEVOLUCAO[classificacao.fluxo] && classificacao.exigeOrigem;
+    },
+
+    parametrosOrigemOperacao() {
+        var self = this;
+        var operacao = this.operacaoAtual;
+        var parametros = { codEstabel: operacao.codEstabel, natureza: operacao.classificacao.natureza };
+        $.each(NWM_CAMPOS_ORIGEM, function (indice, campo) {
+            parametros[campo] = self.campoOperacao(campo);
+            if (!self.textoOperacaoValido(parametros[campo])) throw new Error('Informe emitente, série, número e natureza do documento de entrada.');
+        });
+        if (!NWM_CODIGO_POSITIVO.test(parametros.emitenteOrigem)) throw new Error('O emitente de origem deve ser um código inteiro positivo.');
+        return parametros;
+    },
+
+    carregarOrigemOperacao() {
+        var operacao = this.operacaoAtual;
+        var parametros;
+        if (!this.podeCarregarOrigem(operacao)) return;
+        try { parametros = this.parametrosOrigemOperacao(); } catch (erro) {
+            this.mostrarEstadoOperacao(erro.message);
+            return;
+        }
+        var carga = { parametros: parametros, dados: [], ids: Object.create(null), cursor: '' };
+        operacao.origem = carga;
+        operacao.selecaoOrigem = Object.create(null);
+        operacao.estado = 'carregando-origem';
+        operacao.comando = null;
+        $('[data-origem-corpo]', this.DOM).empty();
+        this.mostrarEstadoOperacao('Carregando embalagens da origem…');
+        this.consultarPaginaOrigem(operacao, carga);
+    },
+
+    podeCarregarOrigem(operacao) {
+        if (!operacao || !operacao.classificacao || !operacao.classificacao.exigeOrigem) return false;
+        return !this.operacaoTravada(operacao) && operacao.estado !== 'carregando-origem';
+    },
+
+    cargaOrigemAtual(operacao, carga) {
+        return this.operacaoAtual === operacao && operacao.origem === carga && operacao.estado === 'carregando-origem';
+    },
+
+    falharCargaOrigem(operacao, carga, erro) {
+        if (!this.cargaOrigemAtual(operacao, carga) || erro.tipo === 'cancelamento') return;
+        operacao.origem = null;
+        operacao.estado = 'edicao';
+        this.mostrarEstadoOperacao(erro.message);
+    },
+
+    consultarPaginaOrigem(operacao, carga) {
+        var self = this;
+        var parametros = $.extend({}, carga.parametros, { limite: NWM_LIMITE_PAGINA });
+        if (carga.cursor) parametros.aposIdEtiqueta = carga.cursor;
+        this.consultarDataset('consultarEmbalagensOrigem', parametros, 'operacao:origem').then(function (resultado) {
+            if (!self.cargaOrigemAtual(operacao, carga)) return;
+            try {
+                self.receberPaginaOrigem(operacao, carga, resultado);
+            } catch (erro) { self.falharCargaOrigem(operacao, carga, erro); }
+        }, function (erro) {
+            self.falharCargaOrigem(operacao, carga, erro);
+        });
+    },
+
+    receberPaginaOrigem(operacao, carga, resultado) {
+        if (resultado.dados.length > NWM_LIMITE_PAGINA) throw new Error('Página da origem acima do limite.');
+        var maiorId = this.acrescentarPaginaOrigem(carga, resultado.dados);
+        if (resultado.temMais) {
+            this.avancarCursorOrigem(carga, resultado.proximoId, maiorId);
+            this.consultarPaginaOrigem(operacao, carga);
+            return;
+        }
+        carga.completa = true;
+        operacao.estado = 'edicao';
+        this.renderizarOrigemOperacao();
+        this.mostrarEstadoOperacao(carga.dados.length + ' embalagem(ns) da origem. Marque somente as que deseja devolver.');
+    },
+
+    acrescentarPaginaOrigem(carga, registros) {
+        var self = this;
+        var maiorId = carga.cursor || '0';
+        $.each(registros, function (indice, registro) {
+            if (!self.registroOrigemValido(carga, registro)) throw new Error('Um registro da origem está fora do contrato esperado.');
+            carga.ids[registro.idEtiqueta] = true;
+            carga.dados.push(registro);
+            if (self.compararIds(registro.idEtiqueta, maiorId) > 0) maiorId = registro.idEtiqueta;
+        });
+        return maiorId;
+    },
+
+    avancarCursorOrigem(carga, proximoId, maiorId) {
+        var cursorValido = typeof proximoId === 'string' && NWM_CODIGO_POSITIVO.test(proximoId) &&
+            this.compararIds(proximoId, maiorId) === 0 && this.compararIds(proximoId, carga.cursor || '0') > 0;
+        if (!cursorValido) throw new Error('O cursor da origem não avançou corretamente.');
+        carga.cursor = proximoId;
+    },
+
+    registroOrigemValido(carga, registro) {
+        if (!registro || typeof registro.idEtiqueta !== 'string' || !NWM_CODIGO_POSITIVO.test(registro.idEtiqueta)) return false;
+        if (carga.ids[registro.idEtiqueta] || this.compararIds(registro.idEtiqueta, carga.cursor || '0') <= 0) return false;
+        if (typeof registro.codEtiqueta !== 'string' || typeof registro.item !== 'string' || typeof registro.podeSelecionar !== 'boolean' || typeof registro.motivo !== 'string') return false;
+        if (!this.numeroOpcionalValido(registro.quantidadeAtual) || !this.numeroOpcionalValido(registro.disponivelLinha)) return false;
+        if (!this.numeroFinito(registro.sequenciaOrigem) || registro.sequenciaOrigem % 1) return false;
+        return !registro.podeSelecionar || this.registroOrigemSelecionavelValido(registro);
+    },
+
+    numeroOpcionalValido(valor) {
+        return valor === null || this.numeroFinito(valor);
+    },
+
+    registroOrigemSelecionavelValido(registro) {
+        return this.inteiroPositivo(registro.versaoEtiqueta) &&
+            registro.quantidadeAtual != null && registro.quantidadeAtual > 0 &&
+            registro.disponivelLinha != null && registro.disponivelLinha >= registro.quantidadeAtual &&
+            registro.sequenciaOrigem >= 1;
+    },
+
+    renderizarOrigemOperacao() {
+        var self = this;
+        var operacao = this.operacaoAtual;
+        var $corpo = $('[data-origem-corpo]', this.DOM).empty();
+        if (!operacao || !operacao.origem || !operacao.origem.completa) return;
+        $.each(operacao.origem.dados, function (indice, registro) {
+            self.montarLinhaOrigem(operacao, registro).appendTo($corpo);
+        });
+    },
+
+    montarLinhaOrigem(operacao, registro) {
+        var $linha = $('<tr>').append($('<td>').append(this.montarCheckOrigem(operacao, registro)));
+        $.each(this.valoresLinhaOrigem(registro), function (indice, valor) {
+            $linha.append($('<td>', { text: valor }));
+        });
+        return $linha;
+    },
+
+    montarCheckOrigem(operacao, registro) {
+        var self = this;
+        return $('<input>', { type: 'checkbox', 'aria-label': 'Selecionar etiqueta ' + registro.codEtiqueta })
+            .prop('checked', !!operacao.selecaoOrigem[registro.idEtiqueta])
+            .prop('disabled', !registro.podeSelecionar || this.operacaoTravada(operacao))
+            .on('change.nwm', function () {
+                self.alterarSelecaoOrigem(operacao, registro, $(this).prop('checked'));
+            });
+    },
+
+    alterarSelecaoOrigem(operacao, registro, marcado) {
+        if (!registro.podeSelecionar || this.operacaoTravada(operacao)) return;
+        if (marcado) operacao.selecaoOrigem[registro.idEtiqueta] = true;
+        else delete operacao.selecaoOrigem[registro.idEtiqueta];
+        operacao.comando = null;
+        operacao.estado = 'edicao';
+        this.mostrarEstadoOperacao('Seleção alterada. Revise e confirme a preparação.');
+    },
+
+    valoresLinhaOrigem(registro) {
+        return [
+            registro.codEtiqueta,
+            registro.item,
+            registro.lote || '—',
+            registro.quantidadeAtual == null ? '—' : this.formatarQuantidade(registro.quantidadeAtual),
+            registro.disponivelLinha == null ? '—' : this.formatarQuantidade(registro.disponivelLinha),
+            registro.podeSelecionar ? 'Disponível' : registro.motivo
+        ];
+    },
+
+    montarComandoOperacao() {
+        var operacao = this.operacaoAtual;
+        if (!operacao || !operacao.classificacao) throw new Error('Valide a natureza antes de continuar.');
+        var classificacao = operacao.classificacao;
+        var parametros = { codEstabel: operacao.codEstabel, natureza: classificacao.natureza, serie: this.campoOperacao('serie'), selecao: [] };
+        if (this.campoOperacao('natureza') !== classificacao.natureza || !this.textoOperacaoValido(parametros.serie)) throw new Error('Valide a natureza e informe a série de saída.');
+        var acao = classificacao.exigeOrigem ?
+            this.montarDevolucao(operacao, parametros) :
+            this.montarSaidaDireta(operacao, classificacao, parametros);
+        this.validarSelecaoComando(parametros.selecao);
+        parametros.chaveIdempotente = this.gerarChaveIdempotente();
+        return { acao: acao, parametros: parametros };
+    },
+
+    montarDevolucao(operacao, parametros) {
+        var self = this;
+        if (!this.origemCarregadaConfere(operacao)) throw new Error('Carregue novamente as embalagens do documento de origem.');
+        $.extend(parametros, operacao.origem.parametros);
+        var saldos = { totais: Object.create(null), limites: Object.create(null) };
+        $.each(operacao.origem.dados, function (indice, registro) {
+            if (!operacao.selecaoOrigem[registro.idEtiqueta]) return;
+            if (!registro.podeSelecionar) throw new Error('Uma embalagem selecionada não está disponível na origem.');
+            parametros.selecao.push({ idEtiqueta: registro.idEtiqueta, versao: String(registro.versaoEtiqueta), quantidade: registro.quantidadeAtual });
+            self.acumularSaldoOrigem(saldos, registro);
+        });
+        this.validarSaldosOrigem(saldos);
+        return 'criarDevolucao';
+    },
+
+    origemCarregadaConfere(operacao) {
+        if (!operacao.origem || !operacao.origem.completa) return false;
+        return JSON.stringify(this.parametrosOrigemOperacao()) === JSON.stringify(operacao.origem.parametros);
+    },
+
+    acumularSaldoOrigem(saldos, registro) {
+        var linha = String(registro.sequenciaOrigem);
+        var disponivel = Math.round(registro.disponivelLinha * NWM_ESCALA_QUANTIDADE);
+        saldos.totais[linha] = (saldos.totais[linha] || 0) + Math.round(registro.quantidadeAtual * NWM_ESCALA_QUANTIDADE);
+        saldos.limites[linha] = Object.prototype.hasOwnProperty.call(saldos.limites, linha) ? Math.min(saldos.limites[linha], disponivel) : disponivel;
+    },
+
+    validarSaldosOrigem(saldos) {
+        $.each(saldos.totais, function (linha, quantidade) {
+            if (quantidade > saldos.limites[linha]) throw new Error('A soma selecionada excede o saldo documental de uma linha da origem.');
+        });
+    },
+
+    montarSaidaDireta(operacao, classificacao, parametros) {
+        var self = this;
+        this.definirDestinoSaida(classificacao, parametros);
+        parametros.valorItem = this.valorItemOperacao();
+        $.each(operacao.dados, function (indice, etiqueta) {
+            if (!self.embalagemPodeSair(etiqueta, parametros.codEstabel)) throw new Error('Selecione embalagens ativas, no estabelecimento de origem, sem Bag e com saldo.');
+            parametros.selecao.push({ idEtiqueta: etiqueta.idEtiqueta, versao: String(etiqueta.versao), quantidade: etiqueta.qtidadeAtu });
+        });
+        return classificacao.fluxo === 'TRANSFERENCIA' ? 'criarTransferencia' : 'criarRemessa';
+    },
+
+    definirDestinoSaida(classificacao, parametros) {
+        parametros.codEstabelDestino = this.campoOperacao('codEstabelDestino');
+        var emitente = this.campoOperacao('emitenteDestino');
+        if (emitente) {
+            if (!NWM_CODIGO_POSITIVO.test(emitente) || emitente.length > NWM_LIMITE_TEXTO) throw new Error('O emitente de destino deve ser um código inteiro positivo.');
+            parametros.emitenteDestino = emitente;
+        }
+        if (classificacao.fluxo === 'TRANSFERENCIA' && !parametros.codEstabelDestino) throw new Error('Informe o estabelecimento de destino.');
+        if (classificacao.fluxo === 'REMESSA_TERCEIROS' && !parametros.codEstabelDestino && !emitente) throw new Error('Informe o estabelecimento ou o emitente de destino.');
+        if (parametros.codEstabelDestino && !this.destinoDiferenteValido(parametros)) throw new Error('Confira o estabelecimento de destino.');
+    },
+
+    destinoDiferenteValido(parametros) {
+        return this.textoOperacaoValido(parametros.codEstabelDestino) && parametros.codEstabelDestino !== parametros.codEstabel;
+    },
+
+    valorItemOperacao() {
+        var valor = this.campoOperacao('valorItem');
+        if (!NWM_DECIMAL_ATE_QUATRO_CASAS.test(valor) || !isFinite(Number(valor))) throw new Error('Informe o valor por item, não negativo, com até quatro casas decimais.');
+        return Number(valor);
+    },
+
+    embalagemPodeSair(etiqueta, codEstabel) {
+        return etiqueta.codEstabel === codEstabel && etiqueta.tipoControle === 'EMBALAGEM' && etiqueta.situacao === 'ATIVA' &&
+            etiqueta.tipoLocal === 'ESTAB' && !this.possuiBag(etiqueta) && !(etiqueta.qtidadeAtu <= 0);
+    },
+
+    validarSelecaoComando(selecao) {
+        var self = this;
+        if (!selecao.length || selecao.length > NWM_LIMITE_EMBALAGENS_OPERACAO) throw new Error('Selecione de 1 a 100 embalagens.');
+        $.each(selecao, function (indice, item) {
+            if (!self.itemSelecaoValido(item)) throw new Error('Confira os IDs, versões e quantidades selecionados.');
+        });
+    },
+
+    itemSelecaoValido(item) {
+        var escalada = item.quantidade * NWM_ESCALA_QUANTIDADE;
+        return NWM_CODIGO_POSITIVO.test(item.idEtiqueta) && NWM_CODIGO_POSITIVO.test(item.versao) &&
+            isFinite(item.quantidade) && Math.abs(escalada - Math.round(escalada)) <= 0.00001;
+    },
+
+    gerarChaveIdempotente() {
+        return 'NWM_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 14) + '_' + this.instanceId;
+    },
+
+    prepararEnvioOperacao() {
+        var operacao = this.operacaoAtual;
+        if (!operacao || this.operacaoTravada(operacao)) return;
+        try {
+            operacao.comando = this.montarComandoOperacao();
+            operacao.estado = 'confirmacao';
+        } catch (erro) {
+            this.mostrarEstadoOperacao(erro.message);
+            return;
+        }
+        var parametros = operacao.comando.parametros;
+        this.mostrarEstadoOperacao('Confirme a preparação de ' + parametros.selecao.length + ' embalagem(ns), no estabelecimento ' + parametros.codEstabel +
+            ', natureza ' + parametros.natureza + ', série ' + parametros.serie + '. A nota será efetivada no Datasul.');
+    },
+
+    enviarOperacao(reenviar) {
+        var self = this;
+        var operacao = this.operacaoAtual;
+        if (!this.podeEnviarOperacao(operacao, reenviar)) return;
+        operacao.estado = 'enviando';
+        operacao.resultadoConsultado = false;
+        this.guardarOperacaoPendente(operacao);
+        this.mostrarEstadoOperacao('Preparando documento de trabalho… Aguarde o resultado.');
+        this.chamarEmbalagens(operacao.comando.acao, operacao.comando.parametros).then(function (resultado) {
+            self.receberEnvioOperacao(operacao, resultado);
+        }, function (erro) {
+            self.marcarOperacaoIncerta(operacao, erro);
+        });
+    },
+
+    podeEnviarOperacao(operacao, reenviar) {
+        if (!operacao || !operacao.comando || operacao.conflitoIdempotente) return false;
+        if (reenviar) return operacao.estado === 'incerta' && !!operacao.resultadoConsultado;
+        return operacao.estado === 'confirmacao';
+    },
+
+    receberEnvioOperacao(operacao, resultado) {
+        if (resultado.sucesso) {
+            this.concluirEnvioOperacao(operacao, resultado);
+            return;
+        }
+        if (/^CHAVE_IDEMPOTENTE_/.test(resultado.codigoErro)) {
+            operacao.conflitoIdempotente = true;
+            this.guardarOperacaoPendente(operacao);
+        }
+        if (/^(HTTP_|FALHA_|RESPOSTA_INVALIDA|HTTP_STATUS_|CHAVE_IDEMPOTENTE_)/.test(resultado.codigoErro)) {
+            this.marcarOperacaoIncerta(operacao, this.erroDataset(resultado.codigoErro, resultado.mensagem, 'funcional'));
+            return;
+        }
+        operacao.estado = 'edicao';
+        operacao.comando = null;
+        this.guardarOperacaoPendente(null);
+        this.mostrarEstadoOperacao(resultado.mensagem);
+    },
+
+    concluirEnvioOperacao(operacao, resultado) {
+        operacao.estado = 'concluida';
+        this.guardarOperacaoPendente(null);
+        this.mostrarEstadoOperacao('Documento de trabalho ' + resultado.wt + ' · operação ' + resultado.idOperacao +
+            (resultado.repeticao ? ' já registrada.' : ' preparada.') + ' A efetivação da nota ocorre no Datasul.');
+        this.cancelarConsultaEtiquetas();
+        this.limparSelecao();
+    },
+
+    marcarOperacaoIncerta(operacao, erro) {
+        operacao.estado = 'incerta';
+        this.mostrarEstadoOperacao(erro.message + (operacao.conflitoIdempotente ?
+            ' O identificador foi preservado. Consulte o resultado e confira o conflito com o responsável antes de continuar.' :
+            ' Consulte o resultado antes de reenviar esta mesma solicitação.'));
+    },
+
+    consultarResultadoAtual() {
+        var self = this;
+        var operacao = this.operacaoAtual;
+        if (!operacao || operacao.estado !== 'incerta' || !operacao.comando) return;
+        var consulta = this.parametrosConsultaResultado(operacao.comando);
+        operacao.estado = 'consultando';
+        operacao.resultadoConsultado = false;
+        this.mostrarEstadoOperacao('Consultando o resultado da mesma solicitação…');
+        this.consultarDataset('consultarResultadoOperacao', consulta, 'operacao:resultado').then(function (resultado) {
+            self.receberResultadoOperacao(operacao, resultado);
+        }, function (erro) {
+            operacao.estado = 'incerta';
+            self.mostrarEstadoOperacao(erro.message + ' O identificador foi preservado. Consulte novamente.');
+        });
+    },
+
+    parametrosConsultaResultado(comando) {
+        var parametros = comando.parametros;
+        var consulta = { codEstabel: parametros.codEstabel, chaveIdempotente: parametros.chaveIdempotente, ramo: comando.acao === 'criarDevolucao' ? 'DEVOLUCAO' : 'DIRETO' };
+        if (consulta.ramo !== 'DEVOLUCAO') return consulta;
+        $.each(NWM_CAMPOS_ORIGEM, function (indice, campo) { consulta[campo] = parametros[campo]; });
+        return consulta;
+    },
+
+    receberResultadoOperacao(operacao, resultado) {
+        if (operacao.conflitoIdempotente) {
+            this.informarResultadoComConflito(operacao, resultado);
+            return;
+        }
+        if (resultado.temMais || resultado.dados.length > 1) {
+            operacao.estado = 'incerta';
+            operacao.resultadoConsultado = false;
+            this.mostrarEstadoOperacao('A consulta não confirmou um resultado único. O identificador foi preservado para conferência.');
+            return;
+        }
+        operacao.resultadoConsultado = true;
+        if (resultado.dados.length) this.concluirOperacaoLocalizada(operacao);
+        else {
+            operacao.estado = 'incerta';
+            this.mostrarEstadoOperacao('Nenhum resultado persistido localizado até agora. Você pode consultar novamente ou reenviar a mesma solicitação, preservando o identificador.');
+        }
+    },
+
+    informarResultadoComConflito(operacao, resultado) {
+        operacao.estado = 'incerta';
+        this.mostrarEstadoOperacao((resultado.dados.length ? 'Há resultado registrado para este identificador.' : 'Nenhum resultado persistido localizado até agora.') +
+            ' A solicitação permanece com conflito. Confira o identificador e o conteúdo com o responsável; o reenvio está bloqueado.');
+    },
+
+    concluirOperacaoLocalizada(operacao) {
+        operacao.estado = 'concluida';
+        this.mostrarEstadoOperacao('Operação localizada para esta solicitação. Confira o documento de trabalho no Datasul.');
+        this.guardarOperacaoPendente(null);
+        this.cancelarConsultaEtiquetas();
+        this.limparSelecao();
+    },
+
+    chaveOperacaoPendente() {
+        return 'nwm-operacao-' + this.instanceId + '-' + window.location.pathname;
+    },
+
+    guardarOperacaoPendente(operacao) {
+        try {
+            var armazenamento = window.sessionStorage;
+            if (!armazenamento) {
+                if (operacao) operacao.semPersistencia = true;
+                return;
+            }
+            if (!operacao) {
+                armazenamento.removeItem(this.chaveOperacaoPendente());
+                return;
+            }
+            armazenamento.setItem(this.chaveOperacaoPendente(), JSON.stringify({ codEstabel: operacao.codEstabel, comando: operacao.comando, conflitoIdempotente: !!operacao.conflitoIdempotente }));
+            operacao.semPersistencia = false;
+        } catch (erro) {
+            if (operacao) operacao.semPersistencia = true;
+        }
+    },
+
+    restaurarOperacaoPendente() {
+        try {
+            if (!window.sessionStorage) return;
+            var texto = window.sessionStorage.getItem(this.chaveOperacaoPendente());
+            if (!texto) return;
+            var salvo = JSON.parse(texto);
+            if (!this.operacaoSalvaValida(salvo)) return;
+            this.reabrirOperacaoSalva(salvo);
+        } catch (erro) {
+            this.avisar('warning', 'Não foi possível recuperar a solicitação anterior. Confira seu identificador antes de iniciar outra operação.');
+        }
+    },
+
+    operacaoSalvaValida(salvo) {
+        var comando = salvo.comando;
+        var parametros = comando && comando.parametros;
+        if (!comando || !/^criar(Transferencia|Remessa|Devolucao)$/.test(comando.acao) || !parametros) return false;
+        if (parametros.codEstabel !== salvo.codEstabel || typeof parametros.chaveIdempotente !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(parametros.chaveIdempotente)) return false;
+        return Array.isArray(parametros.selecao) && parametros.selecao.length >= 1 && parametros.selecao.length <= NWM_LIMITE_EMBALAGENS_OPERACAO;
+    },
+
+    reabrirOperacaoSalva(salvo) {
+        var parametros = salvo.comando.parametros;
+        this.operacaoAtual = {
+            estado: 'incerta', codEstabel: salvo.codEstabel, comando: salvo.comando, dados: [], origem: null, classificacao: null,
+            resultadoConsultado: false, conflitoIdempotente: salvo.conflitoIdempotente === true
+        };
+        $('[data-operacao-estabelecimento]', this.DOM).text(salvo.codEstabel);
+        $('[data-operacao-selecao]', this.DOM).text(parametros.selecao.length + ' embalagem(ns) na solicitação preservada.');
+        $('[data-operacao-classificacao]', this.DOM).text('Natureza ' + parametros.natureza + ' · série ' + parametros.serie);
+        $('[data-operacao-direta], [data-operacao-origem]', this.DOM).prop('hidden', true);
+        this.mostrarEstadoOperacao(this.operacaoAtual.conflitoIdempotente ?
+            'Há uma solicitação anterior com conflito de identificação. Consulte o resultado e confira o conflito com o responsável; o reenvio está bloqueado.' :
+            'Há uma solicitação anterior sem resultado confirmado. Consulte o resultado antes de reenviar.');
+        this.abrir(this.$modalOperacao);
+    },
 
     prepararSelect2() {
-        var base = {
+        var configuracao = {
             language: 'pt-BR',
             width: '100%',
-            //a option vazia vira placeholder: aparece no campo, mas não na lista
             placeholder: 'Selecione',
-            //a lista abre dentro do widget, para pegar o estilo de .fluig-style-guide.nwm
             dropdownParent: $(this.DOM)
         };
-
-        $('[data-acao-lote]', this.DOM).select2(base);
-        $('[data-item-qtde]', this.DOM).select2(base);
-
-        //o Select2 desenha a própria seta: some a do select nativo
+        $('[data-acao-lote]', this.DOM).select2(configuracao);
+        $('[data-item-qtde]', this.DOM).select2(configuracao);
         $('[data-acao-lote], [data-item-qtde]', this.DOM).closest('.nwm-campo-caixa-select').addClass('is-select2');
     },
 
     montarLegenda() {
         var self = this;
         var $lista = $('[data-legenda-lista]', this.DOM).empty();
-        NWM_STATUS_ORDEM.forEach(function (chave) {
+        $.each(NWM_STATUS_ORDEM, function (indice, chave) {
             $('<li>')
                 .append($(self.montarChipStatus(chave)))
                 .append($('<span>').addClass('nwm-legenda-texto').text(NWM_STATUS[chave].legenda))
@@ -757,19 +2398,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.fechar(this.$modalLegenda);
     },
 
-    // ---------- Apoio ----------
-
-    //pisca a linha alterada em amarelo, como nas outras telas
-    destacarLinha(linha) {
-        var el = linha.getElement();
-        if (!el) return;
-        el.classList.remove('nwm-linha-nova');
-        void el.offsetWidth;
-        el.classList.add('nwm-linha-nova');
-        setTimeout(function () { el.classList.remove('nwm-linha-nova'); }, 2200);
-    },
-
-    //FLUIGC existe na página do Fluig; fora dela (preview) o aviso vai para o console
     avisar(tipo, mensagem) {
         if (window.FLUIGC && FLUIGC.toast) {
             FLUIGC.toast({ title: '', message: mensagem, type: tipo });
@@ -778,7 +2406,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         console.log('[widget_nw_manutEtiq] ' + tipo + ': ' + mensagem);
     },
 
-    //dt-vali-lote vem como aaaa-mm-dd; a tela antiga mostrava os 10 primeiros caracteres
     formatarData(valor) {
         var texto = String(valor || '').substring(0, 10);
         var partes = texto.split('-');
@@ -789,9 +2416,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         return Number(valor || 0).toLocaleString('pt-BR', { maximumFractionDigits: 4 });
     },
 
-    //minúsculas e sem acento, para a busca não depender disso
     normalizar(texto) {
-        return String(texto || '').trim().toLowerCase()
+        return $.trim(String(texto || '')).toLowerCase()
             .normalize('NFD').replace(/[̀-ͯ]/g, '');
     }
 });

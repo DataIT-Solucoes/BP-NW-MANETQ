@@ -138,6 +138,7 @@
 
 /* par De/Até: dois campos de largura igual separados por um traço */
 .fluig-style-guide.nwm .nwm-faixa-caixa {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -147,6 +148,11 @@
 .fluig-style-guide.nwm .nwm-faixa-caixa > .nwm-campo-input {
     flex: 1 1 0;
     min-width: 0;
+}
+
+/* A lista de qualquer metade se alinha à caixa inteira De/Até. */
+.fluig-style-guide.nwm .nwm-faixa-caixa > .nwm-campo-caixa {
+    position: static;
 }
 
 .fluig-style-guide.nwm .nwm-faixa-tracinho {
@@ -199,6 +205,68 @@
 .fluig-style-guide.nwm .nwm-campo-input.is-invalido:focus {
     border-color: var(--nwm-vermelho-escuro);
     box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.18);
+}
+
+/* ---------- Apoios dos filtros (mesmo padrão visual de Itens Controlados) ---------- */
+.fluig-style-guide.nwm .nwm-sugestoes {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    max-height: 260px;
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid var(--nwm-linha);
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 12px 32px rgba(32, 32, 30, 0.16);
+}
+
+.fluig-style-guide.nwm .nwm-sugestoes[hidden] {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-sugestao,
+.fluig-style-guide.nwm .nwm-sugestoes-aviso {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--nwm-tinta);
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.fluig-style-guide.nwm .nwm-sugestao {
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-sugestao-codigo {
+    margin-right: 6px;
+    font-weight: 700;
+}
+
+.fluig-style-guide.nwm .nwm-sugestao:hover,
+.fluig-style-guide.nwm .nwm-sugestao.is-ativa {
+    background-color: var(--nwm-nevoa);
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-sugestoes-aviso {
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-sugestoes-aviso [role="alert"] {
+    color: var(--nwm-vermelho-escuro);
+}
+
+.fluig-style-guide.nwm .nwm-sugestao-mais {
+    color: var(--nwm-verde);
+    font-weight: 700;
 }
 
 /* ---------- Select ---------- */
@@ -856,6 +924,50 @@
     color: var(--nwm-tinta-suave);
 }
 
+/* ---------- Carregamento da tabela (mesmo padrão de Tipos e Itens Controlados) ---------- */
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-alert {
+    background: rgba(227, 225, 216, 0.55);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-alert .tabulator-alert-msg.tabulator-alert-state-msg {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+.fluig-style-guide.nwm .nwm-carregando {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fluig-style-guide.nwm .nwm-loader {
+    --cor-fundo: #fff;
+    --cor-destaque: var(--nwm-verde);
+    --tamanho: 1px;
+
+    width: calc(48 * var(--tamanho));
+    height: calc(48 * var(--tamanho));
+    border: calc(5 * var(--tamanho)) solid var(--cor-fundo);
+    border-bottom-color: var(--cor-destaque);
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: nwm-carregador-girar 1s linear infinite;
+}
+
+@keyframes nwm-carregador-girar {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fluig-style-guide.nwm .nwm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* ---------- Caixa de marcação (coluna de seleção) ---------- */
 .fluig-style-guide.nwm .nwm-check {
     display: inline-flex;
@@ -902,23 +1014,23 @@
 }
 
 /* cores da legenda da tela antiga, em tom pastel no fundo e o ponto na cor cheia */
-.fluig-style-guide.nwm .nwm-chip-nao-impresso { border-color: #BFE3C8; background-color: #EAF6EC; }
-.fluig-style-guide.nwm .nwm-chip-nao-impresso .nwm-chip-ponto { background-color: #4CAF72; }
+.fluig-style-guide.nwm .nwm-chip-ATIVA { border-color: var(--nwm-verde); background-color: var(--nwm-nevoa); }
+.fluig-style-guide.nwm .nwm-chip-ATIVA .nwm-chip-ponto { background-color: var(--nwm-verde); }
 
-.fluig-style-guide.nwm .nwm-chip-impressa { border-color: #EED79A; background-color: #FDF6DE; }
-.fluig-style-guide.nwm .nwm-chip-impressa .nwm-chip-ponto { background-color: #C99200; }
+.fluig-style-guide.nwm .nwm-chip-ENCERRADA { border-color: var(--nwm-linha); background-color: var(--nwm-marfim); }
+.fluig-style-guide.nwm .nwm-chip-ENCERRADA .nwm-chip-ponto { background-color: var(--nwm-tinta-suave); }
 
-.fluig-style-guide.nwm .nwm-chip-em-estoque { border-color: #BBD7EC; background-color: #EAF3FA; }
-.fluig-style-guide.nwm .nwm-chip-em-estoque .nwm-chip-ponto { background-color: #2B7CB8; }
+.fluig-style-guide.nwm .nwm-chip-CANCELADA { border-color: var(--nwm-vermelho-escuro); background-color: var(--nwm-marfim); }
+.fluig-style-guide.nwm .nwm-chip-CANCELADA .nwm-chip-ponto { background-color: var(--nwm-vermelho-escuro); }
 
-.fluig-style-guide.nwm .nwm-chip-zerada { border-color: #CBD3DA; background-color: #EEF1F4; }
-.fluig-style-guide.nwm .nwm-chip-zerada .nwm-chip-ponto { background-color: #7B8793; }
+.fluig-style-guide.nwm .nwm-chip-DESCARTADA { border-color: var(--nwm-vermelho); background-color: var(--nwm-marfim); }
+.fluig-style-guide.nwm .nwm-chip-DESCARTADA .nwm-chip-ponto { background-color: var(--nwm-vermelho); }
 
-.fluig-style-guide.nwm .nwm-chip-armazenada-bag { border-color: #A8CFB4; background-color: #E2EFE6; }
-.fluig-style-guide.nwm .nwm-chip-armazenada-bag .nwm-chip-ponto { background-color: var(--nwm-verde); }
-
-.fluig-style-guide.nwm .nwm-chip-descartado { border-color: #F4C2C4; background-color: #FDECEC; }
-.fluig-style-guide.nwm .nwm-chip-descartado .nwm-chip-ponto { background-color: var(--nwm-vermelho); }
+.fluig-style-guide.nwm .nwm-acao:disabled,
+.fluig-style-guide.nwm .nwm-campo-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
 /* ajuda da coluna Status: a legenda do rodapé da tela antiga virou este botão */
 .fluig-style-guide.nwm .nwm-ajuda-status {
@@ -1334,4 +1446,80 @@
     .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-nova {
         animation: none;
     }
+}
+.fluig-style-guide.nwm .nwm-documentos-caixa {
+    position: relative;
+}
+
+.fluig-style-guide.nwm .nwm-btn[hidden] {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-documentos {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 4px;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.fluig-style-guide.nwm .nwm-documento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    background: #f0f5f3;
+    border-radius: 6px;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+.fluig-style-guide.nwm .nwm-documentos-contador {
+    font-size: 11px;
+    color: #64746c;
+}
+.fluig-style-guide.nwm .nwm-modal-operacao {
+    width: 940px;
+    max-width: calc(100vw - 32px);
+}
+
+.fluig-style-guide.nwm .nwm-operacao-campos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.fluig-style-guide.nwm .nwm-operacao-campos > .nwm-campo {
+    flex: 1 1 180px;
+    min-width: 0;
+}
+
+.fluig-style-guide.nwm .nwm-operacao-campos[hidden] {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-origem-rolagem {
+    max-height: 280px;
+    overflow: auto;
+    margin-top: 16px;
+}
+
+.fluig-style-guide.nwm .nwm-operacao-mensagem {
+    padding: 12px;
+    margin: 16px 0 8px;
+    background: #f0f5f3;
+    border-radius: 8px;
+    white-space: pre-wrap;
+}
+
+.fluig-style-guide.nwm .nwm-operacao-chave {
+    font-size: 11px;
+    color: #64746c;
+    overflow-wrap: anywhere;
+}
+
+.fluig-style-guide.nwm .nwm-modal-operacao .nwm-modal-rodape {
+    flex-wrap: wrap;
 }

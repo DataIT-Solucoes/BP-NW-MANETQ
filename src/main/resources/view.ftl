@@ -55,8 +55,10 @@
                     <span class="nwm-faixa-tracinho" aria-hidden="true">&ndash;</span>
                     <input type="text" id="nwm-nf-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Nota fiscal até" autocomplete="off" data-filtro="nfAte">
                 </div>
-                <div data-nf-especificas hidden>
-                    <input type="text" id="nwm-nf-lista-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Ex.: 12345" aria-label="Notas fiscais específicas" autocomplete="off" data-filtro="nfEspecificas">
+                <div class="nwm-documentos-caixa" data-nf-especificas hidden>
+                    <input type="text" id="nwm-nf-lista-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Buscar documento (2+ caracteres)" aria-label="Buscar notas fiscais específicas" autocomplete="off" data-filtro="nfEspecificas">
+                    <ul class="nwm-documentos" aria-label="Documentos selecionados" data-documentos-selecionados></ul>
+                    <span class="nwm-documentos-contador" role="status" data-documentos-contador>0 de 20 documentos selecionados</span>
                 </div>
             </div>
         </div>
@@ -137,10 +139,11 @@
                         <div class="nwm-campo-caixa nwm-campo-caixa-select">
                             <select id="nwm-acao-lote-${instanceId}" class="nwm-campo-input nwm-campo-select" data-acao-lote>
                                 <option value="">Selecione</option>
-                                <option value="imprimir">Imprimir</option>
-                                <option value="receber">Receber</option>
-                                <option value="estornar">Estornar</option>
-                                <option value="transferir">Transferir</option>
+                                <option value="imprimir" disabled>Imprimir (aguardando modelo)</option>
+                                <option value="receber" disabled>Receber (via Datasul)</option>
+                                <option value="estornar" disabled>Estornar (indisponível)</option>
+                                <option value="transferir">Transferência / Remessa</option>
+                                <option value="devolver">Devolução</option>
                             </select>
                         </div>
                         <button type="button" class="nwm-btn nwm-btn-destaque" data-aplicar-lote><i class="bi bi-check2-all" aria-hidden="true"></i>Aplicar</button>
@@ -197,11 +200,88 @@
         </div>
     </dialog>
 
+    <dialog class="nwm-modal nwm-modal-operacao" aria-labelledby="nwm-operacao-titulo-${instanceId}" data-modal-operacao>
+        <div class="nwm-modal-cabecalho">
+            <div>
+                <h3 class="nwm-modal-titulo" id="nwm-operacao-titulo-${instanceId}">Movimentar embalagens</h3>
+                <p class="nwm-modal-subtitulo">Estabelecimento <strong data-operacao-estabelecimento></strong> · <span data-operacao-classificacao></span></p>
+            </div>
+            <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-operacao><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+        <div class="nwm-modal-corpo">
+            <p class="nwm-modal-subtitulo" data-operacao-selecao></p>
+            <div class="nwm-operacao-campos">
+                <div class="nwm-campo">
+                    <label class="nwm-campo-rotulo" for="nwm-natureza-${instanceId}">Natureza de saída</label>
+                    <div class="nwm-acoplado">
+                        <input id="nwm-natureza-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="natureza">
+                        <button type="button" class="nwm-btn nwm-btn-contorno" data-classificar-natureza>Validar natureza</button>
+                    </div>
+                </div>
+                <div class="nwm-campo">
+                    <label class="nwm-campo-rotulo" for="nwm-serie-${instanceId}">Série de saída</label>
+                    <input id="nwm-serie-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="serie">
+                </div>
+            </div>
+            <div class="nwm-operacao-campos" data-operacao-direta hidden>
+                <div class="nwm-campo">
+                    <label class="nwm-campo-rotulo" for="nwm-destino-${instanceId}">Estabelecimento de destino</label>
+                    <input id="nwm-destino-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="codEstabelDestino">
+                </div>
+                <div class="nwm-campo">
+                    <label class="nwm-campo-rotulo" for="nwm-emitente-destino-${instanceId}">Emitente de destino (se externo)</label>
+                    <input id="nwm-emitente-destino-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="emitenteDestino">
+                </div>
+                <div class="nwm-campo">
+                    <label class="nwm-campo-rotulo" for="nwm-valor-item-${instanceId}">Valor aplicado a cada item do documento</label>
+                    <input id="nwm-valor-item-${instanceId}" type="number" min="0" step="0.0001" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="valorItem">
+                </div>
+            </div>
+            <div data-operacao-origem hidden>
+                <p class="nwm-campo-rotulo">Documento de entrada de origem</p>
+                <div class="nwm-operacao-campos">
+                    <div class="nwm-campo">
+                        <label class="nwm-campo-rotulo" for="nwm-emitente-origem-${instanceId}">Emitente</label>
+                        <input id="nwm-emitente-origem-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="emitenteOrigem">
+                    </div>
+                    <div class="nwm-campo">
+                        <label class="nwm-campo-rotulo" for="nwm-serie-origem-${instanceId}">Série</label>
+                        <input id="nwm-serie-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="serieOrigem">
+                    </div>
+                    <div class="nwm-campo">
+                        <label class="nwm-campo-rotulo" for="nwm-numero-origem-${instanceId}">Número</label>
+                        <input id="nwm-numero-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="numeroOrigem">
+                    </div>
+                    <div class="nwm-campo">
+                        <label class="nwm-campo-rotulo" for="nwm-natureza-origem-${instanceId}">Natureza de entrada</label>
+                        <input id="nwm-natureza-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="naturezaOrigem">
+                    </div>
+                </div>
+                <button type="button" class="nwm-btn nwm-btn-contorno" data-carregar-origem>Carregar embalagens da origem</button>
+                <div class="nwm-origem-rolagem">
+                    <table class="nwm-tabelinha">
+                        <thead><tr><th scope="col">Selecionar</th><th scope="col">Etiqueta</th><th scope="col">Item</th><th scope="col">Lote</th><th scope="col">Saldo</th><th scope="col">Disponível na linha</th><th scope="col">Situação</th></tr></thead>
+                        <tbody data-origem-corpo></tbody>
+                    </table>
+                </div>
+            </div>
+            <p class="nwm-operacao-mensagem" role="status" aria-live="polite" data-operacao-mensagem></p>
+            <p class="nwm-operacao-chave" data-operacao-chave></p>
+        </div>
+        <div class="nwm-modal-rodape">
+            <button type="button" class="nwm-btn nwm-btn-contorno" data-fechar-operacao>Fechar</button>
+            <button type="button" class="nwm-btn nwm-btn-contorno" data-resultado-operacao hidden>Consultar resultado</button>
+            <button type="button" class="nwm-btn nwm-btn-contorno" data-reenviar-operacao hidden>Reenviar mesma solicitação</button>
+            <button type="button" class="nwm-btn nwm-btn-destaque" data-preparar-operacao>Revisar preparação</button>
+            <button type="button" class="nwm-btn nwm-btn-destaque" data-enviar-operacao hidden>Confirmar preparação</button>
+        </div>
+    </dialog>
+
     <dialog class="nwm-modal nwm-modal-medio" aria-labelledby="nwm-legenda-titulo-${instanceId}" data-modal-legenda>
         <div class="nwm-modal-cabecalho">
             <div>
                 <h3 class="nwm-modal-titulo" id="nwm-legenda-titulo-${instanceId}">Legenda dos status</h3>
-                <p class="nwm-modal-subtitulo">O que cada situação significa na vida da embalagem.</p>
+                <p class="nwm-modal-subtitulo">Situações retornadas pelo controle de embalagens. Posição e Bag aparecem nos detalhes.</p>
             </div>
             <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-legenda><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>

@@ -19,18 +19,21 @@ Refaz a tela legada **Manutenção Itens/Etiquetas** (`v2_widget_manutencao_etiq
 - Context-root: `/widget_nw_manutEtiq`
 - Onde é usado (página/comunidade do Fluig): a definir
 
-## Estado atual (2026-10-07)
-Mockup sem dados: não há dados mockados nem chamada a dataset, REST ou API do Fluig.
-- `view.ftl`: cabeçalho + 8 filtros + barra de seleção + tabela + 3 `<dialog>` (detalhes, confirmação, legenda).
-  Bibliotecas externas declaradas no próprio `view.ftl` com SRI (ver "Recursos externos").
-- `widget_nw_manutEtiq.js`: SuperWidget com Tabulator 6.4.0 (CDN), autocompletes próprios, filtros com a
-  validação da tela antiga, seleção por caixa de marcação, ação em lote, ações por linha por status —
-  configurados em `NWM_STATUS` / `NWM_ACOES`.
+## Estado atual (2026-10-08)
+Etapa 2 **commitada, ainda não validada ao vivo no Fluig**: a tela consulta o Dataset
+`dsNwEmbalagens`; não há dados mockados.
+- `view.ftl`: cabeçalho + 8 filtros + barra de seleção + tabela + 4 `<dialog>` (detalhes, confirmação,
+  operação "Movimentar embalagens", legenda). Bibliotecas externas declaradas no próprio `view.ftl` com SRI (ver "Recursos externos").
+- `widget_nw_manutEtiq.js`: SuperWidget com Tabulator 6.4.0 (CDN), autocompletes próprios ligados aos apoios do
+  Dataset, validação dos filtros, seleção por caixa de marcação, ação em lote e modal de operação — configurados em
+  `NWM_STATUS` / `NWM_POSICOES` / `NWM_ACOES`. Transporte: método da instância `chamarEmbalagens(acao, parametros)`
+  (`$.ajax` para `/api/public/ecm/dataset/search`, uma linha, sem credencial no navegador).
 - `widget_nw_manutEtiq.css`: paleta Branco Peres sob `.fluig-style-guide.nwm`.
 - `edit.ftl`: card de identificação.
+- Testes locais (Node): `testes/*.cjs`.
 
-**Aba única** (decisão do usuário): as duas abas da tela antiga foram unificadas. O mockup é a **visão ADM**;
-não há checagem de permissão, não há a visão do não-ADM e **não há o campo C. Barras** (é exclusivo do não-ADM).
+**Aba única** (decisão do usuário): as duas abas da tela antiga foram unificadas. A tela é a **visão ADM**;
+o Widget não checa permissão (quem autoriza é o Dataset), não há a visão do não-ADM e **não há o campo C. Barras** (é exclusivo do não-ADM).
 Cabeçalho sem botão **Gerar etiquetas** (decisão do usuário): a geração é interna ao backend (gatilho do RE1001);
 o Fluig só consulta o resultado (`consultarGeracao`).
 
@@ -38,49 +41,60 @@ o Fluig só consulta o resultado (`consultarGeracao`).
 ### Filtros (todos visíveis, sem bloco colapsável; todos faixa De/Até)
 Estabelecimento (**obrigatório**) · Itens · Depósito · Cód Barras · Lote · Data Validade (`input type=date`)
 · Família · Nota Fiscal (rádio **Intervalo** × **Específicas**). Ação: **Buscar**.
-Autocomplete (2+ caracteres, busca por código ou descrição) em Estabelecimento, Itens, Depósito e Família;
-nos campos de faixa o autocomplete preenche **só o código**.
+Autocomplete (2+ caracteres, busca por código ou descrição, 20 por página com "Carregar mais resultados") em
+Estabelecimento, Itens, Depósito, Lote e Família; nos campos de faixa o autocomplete preenche **só o código**.
+Item e Depósito só filtram por estabelecimento quando Estabelecimento De = Até; Lote recebe as faixas de
+estabelecimento, item e depósito. Cód Barras é a faixa do código da etiqueta (`etiquetaDe`/`etiquetaAte`).
+Nota Fiscal **Específicas**: busca documentos de entrada (pela faixa de estabelecimento) e monta uma lista de
+**1 a 20** documentos, cada um removível.
 
-Validação herdada da tela antiga (`validarFiltros()`): Estabelecimento De **e** Até obrigatórios; e é
-obrigatório preencher **Itens ou Nota Fiscal**. O aviso sai em `FLUIGC.toast({type:'warning'})` e o campo
-que falta fica marcado.
+Validação (`validarFiltros()`): Estabelecimento De **e** Até obrigatórios; obrigatório preencher **Itens ou Nota
+Fiscal**; em cada faixa, De ≤ Até (comparação de texto, preserva zeros à esquerda); no máximo 100 caracteres e sem
+caractere de controle; data de validade válida. O aviso sai em `FLUIGC.toast({type:'warning'})` e o campo fica marcado.
 
 ### Barra de seleção (acima da tabela)
 Tabela **Itens selecionados** (Código | Descrição | Qtde Sel., resumo do que está marcado; sempre visível, vazia mostra
-"Nenhum item selecionado") · **Ação em lote** (select Selecione | Imprimir | Receber | Estornar | Transferir) + **Aplicar**
-acoplado à direita · **Escolher item** (select) + **Quantidade** + **Executar** acoplado à direita (marca automaticamente
-as etiquetas cheias do item, com status Em estoque ou Impressa, até atingir a quantidade pedida).
+"Nenhum item selecionado") · **Ação em lote** (select Selecione | Imprimir (aguardando modelo) | Receber (via Datasul) |
+Estornar (indisponível) | Transferência / Remessa | Devolução; só as duas últimas estão habilitadas e abrem o modal
+de operação) + **Aplicar** acoplado à direita · **Escolher item** (select) + **Quantidade** + **Executar** acoplado à
+direita (marca embalagens inteiras do item — ativas, no estabelecimento, sem Bag e com saldo igual à quantidade
+inicial — até atingir a quantidade pedida; o total pode passar do pedido).
 Os dois selects usam **Select2 4.0.13** (pt-BR, com busca). Não há contador de etiquetas selecionadas (decisão do usuário).
 
 ### Tabela
 marcação | Código | Descrição | Fazenda | Etiqueta | Lote | Data Val. | Qtde Emb | Qtde Saldo | Status | Ações
-- **Tabela inteira, sem paginação** (decisão do usuário): altura própria (`maxHeight: 560`) com cabeçalho fixo
-  na rolagem e DOM virtual do Tabulator. O rodapé mostra "Mostrando N etiquetas".
+- **Tabela inteira, sem paginação** (decisão do usuário): a busca pede todas as páginas do Dataset (cursor, 100 por
+  chamada) e só então mostra. Altura própria (`maxHeight: 560`) com cabeçalho fixo na rolagem e DOM virtual do
+  Tabulator. O rodapé mostra "Mostrando N etiquetas". A descrição do item vem de `apoiarItens`.
 - **Ordenação por coluna ligada**; ordem inicial Código → Etiqueta.
 - Marcar/desmarcar todos no cabeçalho vale só para o que está visível depois do filtro; trocar o filtro limpa a seleção.
+  Só etiquetas `EMBALAGEM` de uma busca concluída podem ser marcadas.
 - **Status é chip colorido na célula** (a tela antiga pintava a linha inteira). A legenda do rodapé virou o
   botão de ajuda ao lado do título da coluna Status, que abre o modal "Legenda dos status".
 - **Ações são botões só-ícone** com `title` + `aria-label`: Detalhes `bi-eye` · Imprimir `bi-printer` ·
   Receber `bi-box-arrow-in-down` · Estornar `bi-arrow-counterclockwise` · Descartar `bi-trash3` ·
-  Transferir `bi-arrow-left-right`.
+  Transferir / Remessa `bi-arrow-left-right` · Devolver `bi-box-arrow-up`.
 
-### Status, legenda e ações por status (visão ADM)
-| Status (chave no JS) | Rótulo | Legenda | Ações além de Detalhes |
-|---|---|---|---|
-| `nao-impresso` | Não Impresso | Etiqueta gerada e não impressa | Imprimir |
-| `impressa` | Impressa | Etiqueta gerada e impressa | Receber, Descartar, Imprimir |
-| `em-estoque` | Em estoque | Recebida pela fazenda e disponível no barracão | Estornar, Descartar, Transferir |
-| `zerada` | Zerada | Etiqueta bipada e devolvida com quantidade zero para o barracão | Estornar, Descartar |
-| `armazenada-bag` | Armazenada em Bag | Embalagem vazia descartada pelo fluxo correto | — |
-| `descartado` | Descartado | Embalagem descartada por perda, roubo ou dano | Estornar |
+### Status, posição e ações
+- **Status** = situação do backend (`NWM_STATUS`): `ATIVA` Ativa · `ENCERRADA` Encerrada · `CANCELADA` Cancelada ·
+  `DESCARTADA` Descartada. A legenda atual é provisória ("Situação X no controle de embalagens.").
+- **Posição** (`tipoLocal`, `NWM_POSICOES`): `ESTAB` Estabelecimento · `CAMPO` Campo · `TERCEIRO` Terceiro ·
+  `TRANSITO` Trânsito; aparece no modal de detalhes.
+- **Ações por linha** dependem de `tipoControle`, não do status: Detalhes sempre; Transferir / Remessa e Devolver
+  só em `EMBALAGEM`; Imprimir, Receber, Estornar e Descartar aparecem desabilitados (o `title` diz o motivo).
+  `PRE_SALDO` só tem Detalhes.
 
-Status **"Em campo"**: existe no código da tela antiga, não está na legenda — ignorado por decisão do usuário.
+### Modal de operação ("Movimentar embalagens")
+O usuário informa a **natureza de saída**; `classificarNatureza` devolve o fluxo:
+- **Transferência** e **Remessa para terceiros** (sem documento de origem): estabelecimento ou emitente de destino,
+  série e valor por item; embalagens ativas, no estabelecimento de origem, sem Bag e com saldo →
+  `criarTransferencia` / `criarRemessa`.
+- **Devolução de compra** e **Retorno para terceiros** (exigem documento de origem: emitente, série, número e
+  natureza de entrada): `consultarEmbalagensOrigem` lista as elegíveis, o usuário escolhe o subconjunto, sem passar
+  do saldo de cada linha da origem → `criarDevolucao`.
 
-### Efeito das ações no mockup
-Toda ação pede confirmação em `<dialog>`. Só são aplicadas as transições que a legenda da tela antiga torna
-inequívocas: **Imprimir → Impressa**, **Receber → Em estoque**, **Descartar → Descartado** (muda o status na
-tela e pisca a linha em amarelo). **Estornar** e **Transferir** não têm destino definido: avisam
-"regra a definir" e não alteram nada.
+De 1 a 100 embalagens por operação; chave idempotente por tentativa (guardada no `sessionStorage` para reenviar a
+mesma); resultado por `consultarResultadoOperacao`. A tela não altera status nem saldo localmente.
 
 ## Recursos declarados no `application.info`
 | Índice | Tipo | Valor |
@@ -94,69 +108,81 @@ Recursos externos carregados pelo `view.ftl` (CDN): Bootstrap Icons 1.11.3, font
 Tabulator 6.4.0 (CSS + JS) e Select2 4.0.13 (CSS + JS + `i18n/pt-BR.js`). Os `<script>` são **declarativos no `view.ftl`**,
 com `integrity` (SRI sha384) e `crossorigin="anonymous"`; o JS mantém o aviso `nwm-tabela-erro` se a tabela não carregar.
 
+## Padrão de código (JS) — seguir sempre
+Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o próprio arquivo atual.
+- **Sem comentários.** O nome da função e das variáveis explica o que o código faz.
+- **Nomes descritivos em português**: `filtros`, `parametros`, `etiqueta`, `registro`, `operacao`, `resultado`; nada de
+  `f`, `p`, `d`, `r`, `op`. Objeto jQuery começa com `$` (`$lista`, `$input`).
+- **Funções curtas** (até ~20 linhas), com uma responsabilidade. Passo com nome próprio vira método da instância
+  (ex.: `validarFiltros` → `verificarFiltrosObrigatorios`, `verificarOrdemFaixas`, `recusarFiltros`).
+- **Constantes `NWM_*` no topo** para limites, tempos, mapas campo → parâmetro do Dataset e regex reutilizadas
+  (`NWM_LIMITE_PAGINA`, `NWM_PARAMETROS_ETIQUETAS`, `NWM_CODIGO_POSITIVO`…). Nada de número mágico no meio do código.
+- **jQuery para DOM, eventos e AJAX**: `$('<tag>', {...})`, `.attr/.prop/.text/.append/.appendTo`, `.on/.off`, `$.each`,
+  `$.grep`, `$.extend`, `$.ajax`, `$.Deferred`. Proibido: `document`, `querySelector`, `addEventListener`, `createElement`,
+  `innerHTML`, `fetch`, `async/await`. Texto vindo do servidor entra por `text:`, nunca como HTML.
+- Estilo do arquivo: `var`, métodos no formato `nome() {}`, `var self = this` nos callbacks.
+- **Refatorar não muda comportamento**: mensagens, seletores, classes CSS e parâmetros do Dataset ficam idênticos.
+  Mantenha os nomes dos métodos e dos campos de estado já existentes (`operacaoAtual`, `consultaEtiquetas`,
+  `apoiosFiltros`, `consultasDataset`…): os bindings e os testes dependem deles.
+- **Testes**: rodar `node testes/testar-apoios-filtros.cjs`, `testar-consulta-etiquetas.cjs`, `testar-funcoes-manutencao.cjs`
+  e `testar-transporte-dataset.cjs` antes e depois; todos com `FALHAS=0`. Os testes usam um jQuery simulado
+  (`testes/testar-apoios-filtros.cjs`) que casa o **texto exato dos seletores** e só tem parte da API: método jQuery
+  novo (ex.: `.add`, `$.proxy`) em trecho que os testes executam precisa existir no simulador, senão o teste quebra.
+
 ## Dados
-- **Dataset: ler sempre `widget_nw_embalagens/datasets/dsNwEmbalagens.js`** (`NW_CONFIG`, `NW_ACOES`, `NW_COLUNAS`). Por
+- **Dataset: ler sempre `../widget_nw_embalagens/datasets/dsNwEmbalagens.js`** (`NW_CONFIG`, `NW_ACOES`, `NW_COLUNAS`). Por
   definição do usuário esse arquivo é **sempre igual ao que está no Fluig**: ele manda sobre este documento. Só existe a
   ação, o parâmetro e a coluna que estiverem lá; o que faltar, perguntar ao usuário (não inventar). Conferir também
   `regras` (grupo × ação) e `escritasHabilitadas`. Grupos definitivos por ação ainda pendentes (DT-054).
-- Datasets: a definir para esta tela qual(is) ação(ões) usar. Candidato: o Dataset central **`dsNwEmbalagens`**.
-  Ações relevantes (resumo de 07/10/2026; releia o arquivo): `consultarEtiquetas`, `obterDadosImpressao`, `classificarNatureza`, `consultarEmbalagensOrigem`,
-  `criarTransferencia`, `criarDevolucao`, `criarRemessa`, `consultarResultadoOperacao` e os apoios `apoiarEstabelecimentos`,
-  `apoiarItens`, `apoiarFamilias`, `consultarBags`. Transporte: `chamarEmbalagens(acao, parametros)` (`chamar-embalagens.js`).
-- Serviços REST: a definir (o Dataset usa o serviço `DATASUL_REST_HOMOLOG`; credenciais só no serviço).
-- Campos do registro no JS (nome do campo Progress da tela antiga entre parênteses):
-  `itCodigo` (`it-codigo`), `descItem` (`desc-item`), `codEstabel` (`cod-estabel`), `etiqueta` (`char-1`),
-  `lote` (`lote`), `dtValiLote` (`dt-vali-lote`), `qtidadeIni` (`qtidade-ini`), `qtidadeAtu` (`qtidade-atu`),
-  `situacao` (`sit_etiqueta`), mais `deposito`, `familia`, `codBarras`, `notaFiscal` e `unidade` —
-  usados pelos filtros e pelo modal de detalhes, **nome do campo no banco a confirmar**.
+- Ações do Dataset `dsNwEmbalagens` usadas pela tela: `consultarEtiquetas`; apoios `apoiarEstabelecimentos`,
+  `apoiarItens`, `apoiarDepositos`, `apoiarLotes`, `apoiarFamilias`, `apoiarDocumentosEntrada`; operação
+  `classificarNatureza`, `consultarEmbalagensOrigem`, `criarTransferencia`, `criarRemessa`, `criarDevolucao`,
+  `consultarResultadoOperacao`. `obterDadosImpressao` ainda não é usada (impressão aguardando modelo).
+- Serviços REST: nenhum chamado direto pelo navegador (o Dataset usa o serviço `DATASUL_REST_HOMOLOG`; credenciais só no serviço).
+- Campos do registro no JS (coluna do Dataset entre parênteses): `id`/`idEtiqueta` (`idEtiqueta`), `versao`,
+  `itCodigo` (`item`), `codEstabel`, `etiqueta`/`codBarras` (`codEtiqueta`), `lote`, `dtValiLote` (`validadeLote`),
+  `qtidadeIni` (`quantidadeInicial`), `qtidadeAtu` (`quantidadeAtual`), `capacidade`, `unidade`, `deposito`,
+  `localizacao`, `situacao`, `tipoLocal`, `tipoControle`, `idBag`; `descItem` vem de `apoiarItens`.
 
-## Alinhamento com o backend (levantado em 07/10/2026 nos docs de `widget_nw_embalagens/fluig-rest/docs`)
-O mockup foi desenhado a partir da **tela legada**. Ao integrar, o que o backend novo realmente aceita é:
-- **`GET /etiquetas` só filtra por igualdade** em: estabelecimento (`codEstabel`), etiqueta (`codEtiqueta`), item, lote,
-  tipo de embalagem (`codTipo`), `tipoControle`, `tipoLocal`, `situacao` e Bag (`idBag`). Cursor `aposId`/`proximoId`,
-  limite padrão 20, máx. 100. **Sem contrato ainda:** faixa De/Até (estabelecimento, item, lote, validade), Depósito,
-  Cód Barras, Família como filtro de etiqueta, Nota Fiscal (intervalo e específicas). Não enviar filtro que o servidor
-  ignora; preenchido sem contrato, a tela deve impedir a chamada. Apoios (autocomplete) já existem para Estabelecimento,
-  Item, Tipo e Família; Depósito, Localização, Lote e Grupo estão **pendentes** (matriz E01–E16).
-- **Paginação por cursor**, não "tabela inteira": a decisão de mostrar tudo sem paginação (herdada da tela legada)
-  conflita com o limite de 100 por chamada e precisa ser reavaliada com o usuário (ex.: "Carregar mais").
-- **Status:** o backend não tem os 6 status do mockup. Ele separa **situação** (`ATIVA`/`ENCERRADA`/`CANCELADA`/`DESCARTADA`),
-  **posição** (`tipoLocal`: `ESTAB`/`CAMPO`/`TERCEIRO`/`TRANSITO`), **Bag** (`idBag`) e **quantidade** (`qtidadeAtu`/`qtidadeIni`).
-  "Impressa/Não impresso" não aparece como campo persistido. O mapeamento legenda antiga → modelo novo é **decisão do
-  usuário** (não inventar). `PRE_SALDO` (saldo anterior ao controle) não recebe ações individuais.
-- **Ações aprovadas no projeto (DT-093/094):** a manutenção oferece **Transferência** e **Devolução** (compra e empréstimo)
-  em **um modal único** conduzido pela **natureza da operação** (classificada pelo backend; sem código fixo no Widget).
-  Devolução exige documento de origem + contraparte e seleção de subconjunto elegível. O mockup tem Receber, Estornar,
-  Descartar e Transferir por linha: **Receber** corresponde ao recebimento pelo ANFE/Datasul (o Fluig não recria a entrada) e
-  **Estornar/Descartar** não têm contrato — confirmar com o usuário o que permanece na tela.
+## Alinhamento com o backend (conferido em 08/10/2026 no `dsNwEmbalagens.js`)
+- **`consultarEtiquetas`** aceita igualdade (`codEstabel`, `codEtiqueta`, `item`, `lote`, `codTipo`, `tipoControle`,
+  `tipoLocal`, `situacao`, `idBag`), faixas De/Até (`estabelDe/Ate`, `itemDe/Ate`, `depositoDe/Ate`, `etiquetaDe/Ate`,
+  `loteDe/Ate`, `validadeDe/Ate`, `familiaDe/Ate`) e Nota Fiscal por `modoNotas` com `notaDe/notaAte` ou `documento`.
+  Cursor `aposId`/`proximoId`, máx. 100 por chamada. Apoios existem para Estabelecimento, Item, Tipo, Família,
+  Depósito, Lote e Documentos de entrada; Localização e Grupo não têm apoio.
+- **Status:** o backend separa **situação** (`ATIVA`/`ENCERRADA`/`CANCELADA`/`DESCARTADA`), **posição** (`tipoLocal`),
+  **Bag** (`idBag`) e **quantidade** (`qtidadeAtu`/`qtidadeIni`). "Impressa/Não impresso" não aparece como campo
+  persistido. O mapeamento legenda antiga → modelo novo é **decisão do usuário** (não inventar). `PRE_SALDO` (saldo
+  anterior ao controle) não recebe ações individuais.
+- **Ações aprovadas no projeto (DT-093/094):** **Transferência** e **Devolução** (compra e empréstimo) em **um modal único**
+  conduzido pela **natureza da operação** (classificada pelo backend; sem código fixo no Widget). **Receber** corresponde
+  ao recebimento pelo ANFE/Datasul (o Fluig não recria a entrada); **Estornar/Descartar** não têm contrato — confirmar
+  com o usuário o que permanece na tela.
 - **Impressão:** `obterDadosImpressao` devolve os dados de **uma** etiqueta por chamada (recusa `PRE_SALDO`); lote de IDs,
   cópias e layout/serviço de impressão **não estão contratados**. Reimpressão não cria identidade nem movimenta saldo.
 - **Histórico** de movimentos: sem rota (proposta E22). Detalhe usa os dados da própria listagem.
-- **Autorização:** usuário, grupos e estabelecimentos permitidos vêm do Dataset (sessão Fluig), nunca do Widget. Isso
-  responde à pendência "permissão de ADM": a regra por grupo/ação é do Dataset (DT-054), grupos definitivos ainda não definidos.
-- Resposta: conferir HTTP **e** `sucesso`/`codigoErro`; IDs vêm como texto; nome exato das colunas do `resultadoJson` a
-  conferir no retorno real antes de mapear a grade.
+- **Autorização:** usuário, grupos e estabelecimentos permitidos vêm do Dataset (sessão Fluig), nunca do Widget. A
+  regra por grupo/ação é do Dataset (DT-054); grupos definitivos ainda não definidos.
+- Resposta: conferir HTTP **e** `sucesso`/`codigoErro`; IDs vêm como texto; o nome das colunas do `resultadoJson` ainda
+  precisa ser conferido no retorno real (etapa 2 não validada ao vivo).
 
 ## Parâmetros de configuração (`edit.ftl`)
 Nenhum.
 
 ## Regras de negócio
 - Estabelecimento De/Até obrigatório; Itens **ou** Nota Fiscal obrigatório.
-- As ações disponíveis por linha dependem do status (tabela acima).
-- "Escolher item + Quantidade" não cadastra nada: só marca etiquetas cheias (saldo = quantidade da embalagem)
-  com status Em estoque ou Impressa, até atingir a quantidade pedida.
+- As ações disponíveis por linha dependem de `tipoControle` (ver "Status, posição e ações").
+- "Escolher item + Quantidade" não cadastra nada: só marca embalagens inteiras (ativas, no estabelecimento, sem Bag,
+  saldo = quantidade inicial) até atingir a quantidade pedida.
 
 ## Pendências / decisões em aberto
-- Ligar a tela ao Dataset `dsNwEmbalagens` (consulta de etiquetas e apoios dos filtros).
+- Validar a etapa 2 ao vivo no Fluig.
 - Permissão de ADM: a regra grupo × ação fica no Dataset (ver "Autorização"); faltam os grupos definitivos (DT-054).
   Na tela antiga eram `adm_abas_etiquetas` (exibia a aba Administrador) e `adm_etiquetas` (liberava estabelecimento/depósito e ações).
 - Visão do não-ADM (só Receber, campo C. Barras, sem ação em lote e sem Escolher Item/Quantidade).
-- Nota Fiscal "Específicas": a tela antiga usa um array próprio (`arrayDadosNfEspecificas`), provavelmente
-  alimentado por um modal de lista. No mockup é um campo com as notas separadas por vírgula — regra a definir.
-- Regra de **Estornar** (status de destino) e de **Transferir** (destino: estabelecimento? depósito?).
-- "Qtde Sel." da tabela Itens selecionados: no mockup é a soma do **saldo** (`qtidadeAtu`) das etiquetas
+- Legenda dos status: texto definitivo e mapeamento da legenda antiga para situação/posição/Bag/quantidade.
+- Ações sem contrato: Estornar e Descartar; Imprimir aguarda modelo/serviço de impressão; Receber é pelo Datasul (ANFE).
+- "Qtde Sel." da tabela Itens selecionados: hoje é a soma do **saldo** (`qtidadeAtu`) das etiquetas
   marcadas daquele item — confirmar se é isso ou a quantidade da embalagem.
-- Status "Em campo" (ignorado por ora). Obs.: `CAMPO` existe no backend como `tipoLocal`.
-- **Reconciliar o mockup com o backend** (ver "Alinhamento com o backend"): filtros sem contrato, status × situação/posição,
-  paginação por cursor, ações Transferência/Devolução em modal único por natureza. Aguardando decisão do usuário.
+- Status "Em campo" da tela antiga (ignorado por ora). Obs.: `CAMPO` existe no backend como `tipoLocal`.
 - Confirmar se o repositório git deve ficar nesta pasta ou na raiz `brancoperes2026` (hoje está nesta pasta).
