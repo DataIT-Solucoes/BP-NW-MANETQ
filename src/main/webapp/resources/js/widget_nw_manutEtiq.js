@@ -1,24 +1,29 @@
 var NWM_STATUS = {
-    ATIVA: { rotulo: 'Ativa', legenda: 'Situação ATIVA no controle de embalagens.' },
-    ENCERRADA: { rotulo: 'Encerrada', legenda: 'Situação ENCERRADA no controle de embalagens.' },
-    CANCELADA: { rotulo: 'Cancelada', legenda: 'Situação CANCELADA no controle de embalagens.' },
-    DESCARTADA: { rotulo: 'Descartada', legenda: 'Situação DESCARTADA no controle de embalagens.' }
+    ATIVA: { rotulo: 'Ativa' },
+    ENCERRADA: { rotulo: 'Encerrada' },
+    CANCELADA: { rotulo: 'Cancelada' },
+    DESCARTADA: { rotulo: 'Descartada' }
 };
-
-var NWM_STATUS_ORDEM = ['ATIVA', 'ENCERRADA', 'CANCELADA', 'DESCARTADA'];
 var NWM_POSICOES = { ESTAB: 'Estabelecimento', CAMPO: 'Campo', TERCEIRO: 'Terceiro', TRANSITO: 'Trânsito' };
 
 var NWM_ACOES = {
     detalhes: { rotulo: 'Detalhes', icone: 'bi-eye' },
-    imprimir: { rotulo: 'Imprimir', icone: 'bi-printer' },
-    receber: { rotulo: 'Receber', icone: 'bi-box-arrow-in-down' },
-    estornar: { rotulo: 'Estornar', icone: 'bi-arrow-counterclockwise' },
-    descartar: { rotulo: 'Descartar', icone: 'bi-trash3', destrutivo: true },
+    imprimir: { rotulo: 'Imprimir', icone: 'bi-printer', secundaria: true },
+    receber: { rotulo: 'Receber', icone: 'bi-box-arrow-in-down', secundaria: true },
+    estornar: { rotulo: 'Estornar', icone: 'bi-arrow-counterclockwise', secundaria: true },
+    descartar: { rotulo: 'Descartar', icone: 'bi-trash3', destrutivo: true, secundaria: true },
     transferir: { rotulo: 'Transferir / Remessa', icone: 'bi-arrow-left-right' },
     devolver: { rotulo: 'Devolver', icone: 'bi-box-arrow-up' }
 };
 
 var NWM_APOIOS_FILTROS = { est: 'apoiarEstabelecimentos', item: 'apoiarItens', dep: 'apoiarDepositos', lote: 'apoiarLotes', familia: 'apoiarFamilias' };
+
+var NWM_APOIO_DOCUMENTOS = 'apoiarDocumentosEntrada';
+
+var NWM_RESTRICOES_APOIO = {
+    apoiarItens: { tipoControleEstoque: '3' },
+    apoiarDocumentosEntrada: { somenteComEmbalagens: 'true' }
+};
 
 var NWM_PARAMETROS_RECORTE_LOTE = { estDe: 'estabelDe', estAte: 'estabelAte', itemDe: 'itemDe', itemAte: 'itemAte', depDe: 'depositoDe', depAte: 'depositoAte' };
 
@@ -29,7 +34,7 @@ var NWM_PARAMETROS_ETIQUETAS = {
 };
 
 var NWM_PREFIXOS_FAIXAS = ['est', 'item', 'dep', 'barras', 'lote', 'validade', 'familia', 'nf'];
-var NWM_CAMPOS_DOCUMENTO = ['codigo', 'numero', 'serie', 'emitente', 'codEstabel', 'natureza'];
+var NWM_CAMPOS_DOCUMENTO = ['codigo', 'numero', 'emitente', 'codEstabel', 'natureza'];
 var NWM_CAMPOS_ORIGEM = ['emitenteOrigem', 'serieOrigem', 'numeroOrigem', 'naturezaOrigem'];
 var NWM_CAMPOS_NUMERICOS_ETIQUETA = ['quantidadeInicial', 'quantidadeAtual', 'capacidade'];
 var NWM_CAMPOS_TEXTO_OPCIONAL_ETIQUETA = ['lote', 'validadeLote', 'deposito', 'localizacao', 'unidade', 'idBag'];
@@ -46,19 +51,37 @@ var NWM_ATRASO_APOIO_MS = 350;
 var NWM_TEMPO_MARCACAO_INVALIDO_MS = 2000;
 var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
 var NWM_ESCALA_QUANTIDADE = 10000;
+var NWM_ALTURA_MAXIMA_TABELA = 560;
+var NWM_CRESCIMENTO_DESCRICAO = 3;
+
+var NWM_LARGURAS_COLUNAS = {
+    marcacao: 44, codigo: 88, descricaoMinima: 154, fazenda: 96, etiqueta: 110, lote: 90,
+    validade: 100, quantidadeEmbalagem: 72, quantidadeSaldo: 76, status: 136, acoes: 160
+};
+
+var NWM_TIPOS_ERRO = { TECNICO: 'tecnico', FUNCIONAL: 'funcional', AUTORIZACAO: 'autorizacao', CANCELAMENTO: 'cancelamento' };
+
+var NWM_ESTADOS_OPERACAO = {
+    EDICAO: 'edicao', CLASSIFICANDO: 'classificando', CARREGANDO_ORIGEM: 'carregando-origem', CONFIRMACAO: 'confirmacao',
+    ENVIANDO: 'enviando', INCERTA: 'incerta', CONSULTANDO: 'consultando', CONCLUIDA: 'concluida'
+};
 
 var NWM_CODIGO_POSITIVO = /^[1-9][0-9]*$/;
 var NWM_SOMENTE_DIGITOS = /^[0-9]+$/;
 var NWM_CARACTERE_CONTROLE = /[\x00-\x1f]/;
 var NWM_DECIMAL_ATE_QUATRO_CASAS = /^[0-9]+(?:\.[0-9]{1,4})?$/;
 
+var NWM_APLICATIVO_IMPRESSAO = 'http://localhost:32478';
+var NWM_URL_TEMPLATE_ETIQUETA = '/webdesk/webdownload?documentId=423&version=1000&tenantId=1&replication=';
+var NWM_CHAVE_IMPRESSORA = 'impressora';
+var NWM_TEMPO_LIMITE_IMPRESSAO_MS = 15000;
+var NWM_ETIQUETA_TESTE = { PRODUTO: 'PRODUTO TESTE', CODIGO: '1234', LOTE: '2020-9876', DATAVAL: '31/12/2020', CBARRA: '1234567', QTD: '10', UN: 'LT' };
+
 var widget_nw_manutEtiq = SuperWidget.extend({
 
     tabela: null,
 
     selecionados: null,
-
-    pendente: null,
 
     temporizadorFiltros: null,
 
@@ -71,6 +94,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     documentosSelecionados: null,
 
     operacaoAtual: null,
+
+    templateEtiqueta: null,
+
+    impressoraOcupada: false,
+
+    linhaMaisAcoes: null,
 
     init() {
         this.selecionados = {};
@@ -95,10 +124,16 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             'nf-modo': ['change_trocarModoNf'],
             'aplicar-lote': ['click_aplicarLote'],
             'executar-qtde': ['click_executarQuantidade'],
+            'caixa-item-qtde': ['click_avisarItemQuantidadeVazio'],
             'fechar-detalhes': ['click_fecharDetalhes'],
-            'fechar-confirmar': ['click_fecharConfirmar'],
-            'confirmar-acao': ['click_confirmarAcao'],
-            'fechar-legenda': ['click_fecharLegenda']
+            'fechar-legenda': ['click_fecharLegenda'],
+            'abrir-impressora': ['click_abrirImpressora'],
+            'fechar-impressora': ['click_fecharImpressora'],
+            'atualizar-impressoras': ['click_carregarImpressoras'],
+            'impressora-lista': ['change_atualizarBotoesImpressora'],
+            'testar-impressora': ['click_testarImpressora'],
+            'salvar-impressora': ['click_salvarImpressora'],
+            'fechar-mais-acoes': ['click_fecharMaisAcoes']
         },
         global: {}
     },
@@ -136,7 +171,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
                 self.prepararApoioFiltro(prefixo + sufixo, acao);
             });
         });
-        this.prepararApoioFiltro('nfEspecificas', 'apoiarDocumentosEntrada');
+        $.each(['nfDe', 'nfAte', 'nfEspecificas'], function (indice, campo) {
+            self.prepararApoioFiltro(campo, NWM_APOIO_DOCUMENTOS);
+        });
         $('[data-documentos-selecionados]', this.DOM).on('click.nwm', '[data-remover-documento]', function () {
             self.removerDocumento($(this).attr('data-remover-documento'));
         });
@@ -149,6 +186,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         var $lista = this.criarListaSugestoes($input, idLista);
         var apoio = this.criarEstadoApoio(campo, acao, $input, $lista);
         this.apoiosFiltros[campo] = apoio;
+        if (campo !== 'nfEspecificas') this.criarSelecionado(apoio);
         this.ligarEventosCampoApoio(apoio);
         this.ligarEventosListaApoio(apoio);
     },
@@ -164,8 +202,62 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         return {
             campo: campo, acao: acao, $input: $input, $lista: $lista, sequencia: 0,
             temporizador: null, termo: '', parametros: null, dados: [], cursores: Object.create(null),
-            cursor: '', temMais: false, carregando: false, erro: null, ativo: -1
+            cursor: '', temMais: false, carregando: false, erro: null, ativo: -1, selecionado: false
         };
+    },
+
+    criarSelecionado(apoio) {
+        var self = this;
+        apoio.$selecionadoCodigo = $('<span>', { 'class': 'nwm-selecionado-codigo' });
+        apoio.$selecionadoDescricao = $('<span>', { 'class': 'nwm-selecionado-descricao' });
+        apoio.$selecionadoTexto = $('<span>', { 'class': 'nwm-selecionado-texto' }).append(apoio.$selecionadoCodigo).append(apoio.$selecionadoDescricao);
+        apoio.$selecionadoRemover = $('<button>', { type: 'button', 'class': 'nwm-selecionado-remover', 'aria-label': 'Remover ' + apoio.$input.attr('aria-label'), title: 'Remover' })
+            .append($('<i>', { 'class': 'bi bi-x', 'aria-hidden': 'true' }))
+            .on('click.nwmApoio', function () { self.removerSelecionado(apoio); });
+        apoio.$selecionadoChip = $('<span>', { 'class': 'nwm-selecionado-chip' }).append(apoio.$selecionadoTexto).append(apoio.$selecionadoRemover);
+        apoio.$selecionado = $('<span>', { 'class': 'nwm-selecionado', hidden: true }).append(apoio.$selecionadoChip).insertAfter(apoio.$input);
+    },
+
+    mostrarSelecionado(apoio, registro) {
+        if (!apoio.$selecionado) return;
+        apoio.selecionado = true;
+        var partes = this.partesSelecionado(apoio, registro);
+        apoio.$selecionadoCodigo.text(partes.codigo);
+        apoio.$selecionadoDescricao.text(partes.descricao ? ' - ' + partes.descricao : '');
+        apoio.$selecionadoChip.attr('title', this.textoTituloSelecionado(apoio, registro));
+        apoio.$input.addClass('is-selecionado').prop('readOnly', true);
+        apoio.$selecionado.prop('hidden', false);
+        apoio.$selecionadoRemover.trigger('focus');
+    },
+
+    partesSelecionado(apoio, registro) {
+        var codigo = this.valorSelecionadoApoio(apoio, registro);
+        var descricao = this.descricaoSelecionada(apoio, registro);
+        return { codigo: codigo, descricao: descricao !== codigo ? descricao : '' };
+    },
+
+    descricaoSelecionada(apoio, registro) {
+        if (!this.apoioDeDocumentos(apoio)) return String(registro.descricao || '').trim();
+        var emitente = String(registro.descricaoEmitente || '').trim();
+        if (emitente) return emitente;
+        return String(registro.serie || '').trim() ? 'série ' + registro.serie : 'sem série';
+    },
+
+    textoTituloSelecionado(apoio, registro) {
+        var textos = this.textosOpcaoApoio(apoio, registro);
+        return textos.principal + ' — ' + textos.complemento;
+    },
+
+    esconderSelecionado(apoio) {
+        if (!apoio.$selecionado) return;
+        apoio.selecionado = false;
+        apoio.$input.removeClass('is-selecionado').prop('readOnly', false);
+        apoio.$selecionado.prop('hidden', true);
+    },
+
+    removerSelecionado(apoio) {
+        this.esconderSelecionado(apoio);
+        apoio.$input.val('').trigger('input').trigger('focus');
     },
 
     ligarEventosCampoApoio(apoio) {
@@ -175,7 +267,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             $input.removeData('registro');
             self.agendarApoioFiltro(apoio);
         }).on('focus.nwmApoio', function () {
-            if (!self.campoTemRegistroSelecionado($input)) self.agendarApoioFiltro(apoio);
+            if (!apoio.selecionado && !self.campoTemRegistroSelecionado(apoio)) self.agendarApoioFiltro(apoio);
         }).on('blur.nwmApoio', function () {
             self.cancelarApoioFiltro(apoio);
         }).on('keydown.nwmApoio', function (evento) {
@@ -183,9 +275,17 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         });
     },
 
-    campoTemRegistroSelecionado($input) {
-        var registro = $input.data('registro');
-        return !!registro && $input.val() === registro.codigo;
+    campoTemRegistroSelecionado(apoio) {
+        var registro = apoio.$input.data('registro');
+        return !!registro && apoio.$input.val() === this.valorSelecionadoApoio(apoio, registro);
+    },
+
+    apoioDeDocumentos(apoio) {
+        return apoio.acao === NWM_APOIO_DOCUMENTOS;
+    },
+
+    valorSelecionadoApoio(apoio, registro) {
+        return this.apoioDeDocumentos(apoio) ? registro.numero : registro.codigo;
     },
 
     ligarEventosListaApoio(apoio) {
@@ -203,10 +303,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         if (this.apoioAceitaEstabelecimentoExato(acao) && filtros.estDe && filtros.estDe === filtros.estAte) {
             parametros.codEstabel = filtros.estDe;
         }
-        if (acao === 'apoiarLotes' || acao === 'apoiarDocumentosEntrada') {
+        if (acao === 'apoiarLotes' || acao === NWM_APOIO_DOCUMENTOS) {
             this.copiarRecorteApoio(acao, filtros, parametros);
         }
-        return parametros;
+        return $.extend(parametros, NWM_RESTRICOES_APOIO[acao]);
     },
 
     apoioAceitaEstabelecimentoExato(acao) {
@@ -215,7 +315,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     copiarRecorteApoio(acao, filtros, parametros) {
         $.each(NWM_PARAMETROS_RECORTE_LOTE, function (campo, parametro) {
-            var somenteEstabelecimento = acao === 'apoiarDocumentosEntrada';
+            var somenteEstabelecimento = acao === NWM_APOIO_DOCUMENTOS;
             if (somenteEstabelecimento && campo !== 'estDe' && campo !== 'estAte') return;
             if (filtros[campo]) parametros[parametro] = filtros[campo];
         });
@@ -230,7 +330,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             this.renderizarDocumentosSelecionados();
         }
         $.each(this.apoiosFiltros || {}, function (nome, apoio) {
-            var dependeEstabelecimento = mudouEstabelecimento && /^(item|dep|nfEspecificas)/.test(nome);
+            var dependeEstabelecimento = mudouEstabelecimento && /^(item|dep|nf)/.test(nome);
             var dependeRecorteLote = mudouRecorteLote && /^lote/.test(nome);
             if (dependeEstabelecimento || dependeRecorteLote) self.limparApoioDependente(nome, apoio);
         });
@@ -240,7 +340,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.cancelarApoioFiltro(apoio);
         apoio.dados = [];
         apoio.$input.removeData('registro');
-        if (/^(lote|nfEspecificas)/.test(nome)) apoio.$input.val('');
+        if (!/^(lote|nfEspecificas)/.test(nome)) return;
+        apoio.$input.val('');
+        this.esconderSelecionado(apoio);
     },
 
     cancelarApoioFiltro(apoio) {
@@ -260,7 +362,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.reiniciarPesquisaApoio(apoio);
         if (apoio.termo.length < 2) return;
         if (this.faltaEstabelecimentoParaDocumentos(apoio)) {
-            apoio.erro = this.erroDataset('CONTEXTO_OBRIGATORIO', 'Informe o estabelecimento De e Até para buscar documentos.', 'funcional');
+            apoio.erro = this.erroDataset('CONTEXTO_OBRIGATORIO', 'Informe o estabelecimento De e Até para buscar documentos.', NWM_TIPOS_ERRO.FUNCIONAL);
             this.renderizarApoioFiltro(apoio);
             return;
         }
@@ -273,7 +375,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     reiniciarPesquisaApoio(apoio) {
-        apoio.termo = $.trim(apoio.$input.val() || '');
+        apoio.termo = String(apoio.$input.val() || '').trim();
         apoio.dados = [];
         apoio.cursor = '';
         apoio.cursores = Object.create(null);
@@ -282,7 +384,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     faltaEstabelecimentoParaDocumentos(apoio) {
-        if (apoio.acao !== 'apoiarDocumentosEntrada') return false;
+        if (!this.apoioDeDocumentos(apoio)) return false;
         var filtros = this.lerFiltros();
         return !filtros.estDe || !filtros.estAte;
     },
@@ -305,7 +407,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     falharPaginaApoio(apoio, sequencia, erro) {
-        if (apoio.sequencia !== sequencia || erro.tipo === 'cancelamento') return;
+        if (apoio.sequencia !== sequencia || erro.tipo === NWM_TIPOS_ERRO.CANCELAMENTO) return;
         apoio.carregando = false;
         apoio.erro = erro;
         this.renderizarApoioFiltro(apoio);
@@ -328,10 +430,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     validarPaginaApoio(apoio, resultado, cursorEnviado) {
         if (this.cursorApoioRepetido(apoio, resultado, cursorEnviado)) {
-            return this.erroDataset('CURSOR_INVALIDO', 'Não foi possível continuar as sugestões: o cursor não avançou. Digite novamente para pesquisar.', 'tecnico');
+            return this.erroDataset('CURSOR_INVALIDO', 'Não foi possível continuar as sugestões: o cursor não avançou. Digite novamente para pesquisar.', NWM_TIPOS_ERRO.TECNICO);
         }
         if (!this.sugestoesValidas(apoio, resultado) || resultado.dados.length > NWM_LIMITE_SUGESTOES) {
-            return this.erroDataset('RESPOSTA_INVALIDA', 'As sugestões estão fora do contrato esperado. Digite novamente para pesquisar.', 'tecnico');
+            return this.erroDataset('RESPOSTA_INVALIDA', 'As sugestões estão fora do contrato esperado. Digite novamente para pesquisar.', NWM_TIPOS_ERRO.TECNICO);
         }
         return null;
     },
@@ -346,7 +448,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         var validas = typeof resultado.proximoCodigo === 'string';
         $.each(resultado.dados, function (indice, registro) {
             if (!self.sugestaoValida(registro)) validas = false;
-            if (apoio.acao === 'apoiarDocumentosEntrada' && !self.documentoValido(registro)) validas = false;
+            if (self.apoioDeDocumentos(apoio) && !self.documentoValido(registro)) validas = false;
         });
         return validas;
     },
@@ -387,9 +489,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     textosOpcaoApoio(apoio, registro) {
-        if (apoio.acao !== 'apoiarDocumentosEntrada') return { principal: registro.codigo, complemento: registro.descricao };
+        if (!this.apoioDeDocumentos(apoio)) return { principal: registro.codigo, complemento: registro.descricao };
         return {
-            principal: 'NF ' + registro.numero + ' · série ' + registro.serie,
+            principal: this.textoNotaSerie(registro),
             complemento: 'Emitente ' + registro.emitente + ' · estabelecimento ' + registro.codEstabel + ' · natureza ' + registro.natureza
         };
     },
@@ -410,13 +512,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     selecionarApoioFiltro(apoio, indice) {
         var registro = apoio.dados[indice];
         if (!registro) return;
-        if (apoio.acao === 'apoiarDocumentosEntrada') {
+        if (apoio.campo === 'nfEspecificas') {
             this.adicionarDocumento(registro);
             return;
         }
         this.cancelarApoioFiltro(apoio);
-        apoio.$input.val(registro.codigo).trigger('input').data('registro', registro);
+        apoio.$input.val(this.valorSelecionadoApoio(apoio, registro)).trigger('input').data('registro', registro);
         this.cancelarApoioFiltro(apoio);
+        this.mostrarSelecionado(apoio, registro);
     },
 
     teclaApoioFiltro(apoio, evento) {
@@ -477,9 +580,17 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     documentoValido(registro) {
         var valido = $.isPlainObject(registro);
         $.each(NWM_CAMPOS_DOCUMENTO, function (indice, campo) {
-            if (!registro || typeof registro[campo] !== 'string' || !$.trim(registro[campo]) || NWM_CARACTERE_CONTROLE.test(registro[campo])) valido = false;
+            if (!registro || typeof registro[campo] !== 'string' || !registro[campo].trim() || NWM_CARACTERE_CONTROLE.test(registro[campo])) valido = false;
         });
-        return valido;
+        return valido && this.serieDocumentoValida(registro.serie);
+    },
+
+    serieDocumentoValida(serie) {
+        return typeof serie === 'string' && !NWM_CARACTERE_CONTROLE.test(serie);
+    },
+
+    textoNotaSerie(documento) {
+        return 'NF ' + documento.numero + (String(documento.serie || '').trim() ? ' · série ' + documento.serie : ' · sem série');
     },
 
     adicionarDocumento(registro) {
@@ -522,7 +633,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     montarItemDocumento(documento) {
-        var texto = 'NF ' + documento.numero + ' · série ' + documento.serie + ' · emitente ' + documento.emitente +
+        var texto = this.textoNotaSerie(documento) + ' · emitente ' + documento.emitente +
             ' · estabelecimento ' + documento.codEstabel + ' · natureza ' + documento.natureza;
         var $remover = $('<button>', { type: 'button', 'class': 'nwm-modal-fechar', 'data-remover-documento': documento.codigo, 'aria-label': 'Remover ' + texto, title: 'Remover documento' })
             .append($('<i>', { 'class': 'bi bi-x-lg', 'aria-hidden': 'true' }));
@@ -541,7 +652,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         try {
             corpo = this.montarCorpoDataset(acao, parametros);
         } catch (erro) {
-            return $.Deferred().reject(this.erroDataset('ENTRADA_INVALIDA', 'Não foi possível preparar os parâmetros da consulta.', 'tecnico')).promise();
+            return $.Deferred().reject(this.erroDataset('ENTRADA_INVALIDA', 'Não foi possível preparar os parâmetros da consulta.', NWM_TIPOS_ERRO.TECNICO)).promise();
         }
         var requisicao = $.ajax({
             url: '/api/public/ecm/dataset/search',
@@ -555,7 +666,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     montarCorpoDataset(acao, parametros) {
         if (typeof acao !== 'string' || !acao || !$.isPlainObject(parametros)) {
-            throw this.erroDataset('ENTRADA_INVALIDA', 'Informe a ação e os parâmetros de negócio.', 'tecnico');
+            throw this.erroDataset('ENTRADA_INVALIDA', 'Informe a ação e os parâmetros de negócio.', NWM_TIPOS_ERRO.TECNICO);
         }
         return JSON.stringify({
             datasetId: 'dsNwEmbalagens',
@@ -574,14 +685,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     erroTransporte(xhr, status) {
-        if (status === 'abort') return this.erroDataset('CANCELADA', 'Consulta cancelada.', 'cancelamento');
-        if (status === 'parsererror') return this.erroDataset('RESPOSTA_INVALIDA', 'O Fluig não retornou JSON válido.', 'tecnico');
-        if (status === 'timeout') return this.erroDataset('TEMPO_ESGOTADO', 'A consulta excedeu o tempo de espera. Tente buscar novamente.', 'tecnico');
-        return this.erroDataset('FALHA_TRANSPORTE', 'Não foi possível consultar o Fluig (HTTP ' + xhr.status + '). Tente buscar novamente.', 'tecnico');
+        if (status === 'abort') return this.erroDataset('CANCELADA', 'Consulta cancelada.', NWM_TIPOS_ERRO.CANCELAMENTO);
+        if (status === 'parsererror') return this.erroDataset('RESPOSTA_INVALIDA', 'O Fluig não retornou JSON válido.', NWM_TIPOS_ERRO.TECNICO);
+        if (status === 'timeout') return this.erroDataset('TEMPO_ESGOTADO', 'A consulta excedeu o tempo de espera. Tente buscar novamente.', NWM_TIPOS_ERRO.TECNICO);
+        return this.erroDataset('FALHA_TRANSPORTE', 'Não foi possível consultar o Fluig (HTTP ' + xhr.status + '). Tente buscar novamente.', NWM_TIPOS_ERRO.TECNICO);
     },
 
     extrairEnvelopeDataset(transporte, acao) {
-        var invalido = this.erroDataset('RESPOSTA_INVALIDA', 'A resposta da consulta está fora do contrato esperado.', 'tecnico');
+        var invalido = this.erroDataset('RESPOSTA_INVALIDA', 'A resposta da consulta está fora do contrato esperado.', NWM_TIPOS_ERRO.TECNICO);
         var linha = this.linhaUnicaDataset(transporte, acao, invalido);
         var resultado = this.lerResultadoJson(linha, invalido);
         if (!resultado.sucesso) {
@@ -690,9 +801,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     tipoErroRecusa(codigoErro) {
-        if (/^(HTTP_|FALHA_CHAMADA$|RESPOSTA_INVALIDA$)/.test(codigoErro)) return 'tecnico';
-        if (codigoErro === 'SEM_PERMISSAO' || codigoErro === 'AUTORIZACAO_NAO_CONFIGURADA') return 'autorizacao';
-        return 'funcional';
+        if (/^(HTTP_|FALHA_CHAMADA$|RESPOSTA_INVALIDA$)/.test(codigoErro)) return NWM_TIPOS_ERRO.TECNICO;
+        if (codigoErro === 'SEM_PERMISSAO' || codigoErro === 'AUTORIZACAO_NAO_CONFIGURADA') return NWM_TIPOS_ERRO.AUTORIZACAO;
+        return NWM_TIPOS_ERRO.FUNCIONAL;
     },
 
     falharConsultaDataset(canal, consulta, erro) {
@@ -714,7 +825,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         if (consulta.requisicao && consulta.requisicao.abort) consulta.requisicao.abort();
         consulta.requisicao = null;
         if (canal === 'tabela') this.definirCarregamentoConsulta(false);
-        consulta.conclusao.reject(this.erroDataset('CANCELADA', 'Consulta cancelada.', 'cancelamento'));
+        consulta.conclusao.reject(this.erroDataset('CANCELADA', 'Consulta cancelada.', NWM_TIPOS_ERRO.CANCELAMENTO));
     },
 
     invalidarConsultasDataset() {
@@ -741,21 +852,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     montarTabela() {
         var self = this;
-        this.tabela = new Tabulator($('[data-tabela]', this.DOM)[0], {
-            data: [],
-            index: 'id',
-            layout: 'fitColumns',
-            responsiveLayout: false,
-            maxHeight: 560,
-            pagination: false,
-            initialSort: [
-                { column: 'itCodigo', dir: 'asc' },
-                { column: 'etiqueta', dir: 'asc' }
-            ],
-            placeholder: 'Nenhuma etiqueta encontrada.',
-            footerElement: '<span class="nwm-tabela-contador" data-contador-tabela></span>',
-            columns: this.montarColunasTabela()
-        });
+        this.tabela = new Tabulator($('[data-tabela]', this.DOM)[0], this.opcoesTabela());
         this.tabela.on('renderComplete', function () {
             self.pintarMarcadas();
             self.atualizarContadorTabela();
@@ -765,17 +862,35 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         });
     },
 
+    opcoesTabela() {
+        return {
+            data: [],
+            index: 'id',
+            layout: 'fitColumns',
+            responsiveLayout: false,
+            maxHeight: NWM_ALTURA_MAXIMA_TABELA,
+            pagination: false,
+            initialSort: [
+                { column: 'itCodigo', dir: 'asc' },
+                { column: 'etiqueta', dir: 'asc' }
+            ],
+            placeholder: 'Nenhuma etiqueta encontrada.',
+            footerElement: '<span class="nwm-tabela-contador" data-contador-tabela></span>',
+            columns: this.montarColunasTabela()
+        };
+    },
+
     montarColunasTabela() {
         return [
             this.colunaMarcacao(),
             this.colunaCodigo(),
-            this.colunaTexto('Descrição', 'descItem', { widthGrow: 3, minWidth: 180 }),
-            this.colunaTexto('Fazenda', 'codEstabel', { width: 96 }),
-            this.colunaTexto('Etiqueta', 'etiqueta', { width: 110 }),
-            this.colunaTexto('Lote', 'lote', { width: 90 }),
+            this.colunaTexto('Descrição', 'descItem', { widthGrow: NWM_CRESCIMENTO_DESCRICAO, minWidth: NWM_LARGURAS_COLUNAS.descricaoMinima }),
+            this.colunaTexto('Fazenda', 'codEstabel', { width: NWM_LARGURAS_COLUNAS.fazenda }),
+            this.colunaTexto('Etiqueta', 'etiqueta', { width: NWM_LARGURAS_COLUNAS.etiqueta }),
+            this.colunaTexto('Lote', 'lote', { width: NWM_LARGURAS_COLUNAS.lote }),
             this.colunaDataValidade(),
-            this.colunaQuantidade('Qtde Emb', 'qtidadeIni', 72, false),
-            this.colunaQuantidade('Qtde Saldo', 'qtidadeAtu', 76, true),
+            this.colunaQuantidade('Qtde Emb', 'qtidadeIni', NWM_LARGURAS_COLUNAS.quantidadeEmbalagem, false),
+            this.colunaQuantidade('Qtde Saldo', 'qtidadeAtu', NWM_LARGURAS_COLUNAS.quantidadeSaldo, true),
             this.colunaStatus(),
             this.colunaAcoes()
         ];
@@ -784,7 +899,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     colunaMarcacao() {
         var self = this;
         return {
-            title: '', headerSort: false, width: 44, hozAlign: 'center', vertAlign: 'middle',
+            title: '', headerSort: false, width: NWM_LARGURAS_COLUNAS.marcacao, hozAlign: 'center', vertAlign: 'middle',
             titleFormatter: function () { return self.montarCheckTodos(); },
             formatter: function (cell) { return self.montarCheckLinha(cell.getRow()); }
         };
@@ -792,7 +907,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     colunaCodigo() {
         return {
-            title: 'Código', field: 'itCodigo', sorter: 'string', width: 88, vertAlign: 'middle',
+            title: 'Código', field: 'itCodigo', sorter: 'string', width: NWM_LARGURAS_COLUNAS.codigo, vertAlign: 'middle',
             formatter: function (cell) { return $('<span>', { 'class': 'nwm-codigo', text: cell.getValue() })[0]; }
         };
     },
@@ -804,7 +919,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     colunaDataValidade() {
         var self = this;
         return {
-            title: 'Data Val.', field: 'dtValiLote', sorter: 'string', width: 100, vertAlign: 'middle',
+            title: 'Data Val.', field: 'dtValiLote', sorter: 'string', width: NWM_LARGURAS_COLUNAS.validade, vertAlign: 'middle',
             formatter: function (cell) { return self.formatarData(cell.getValue()); }
         };
     },
@@ -820,16 +935,19 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     colunaStatus() {
         var self = this;
         return {
-            title: 'Status', field: 'situacao', sorter: 'string', width: 180, vertAlign: 'middle',
+            title: 'Status', field: 'descricaoSituacao', sorter: 'string', width: NWM_LARGURAS_COLUNAS.status, vertAlign: 'middle',
             titleFormatter: function () { return self.montarTituloStatus(); },
-            formatter: function (cell) { return self.montarChipStatus(cell.getValue()); }
+            formatter: function (cell) {
+                var etiqueta = cell.getRow().getData();
+                return self.montarChipStatus(etiqueta.situacaoApresentada, etiqueta.descricaoSituacao);
+            }
         };
     },
 
     colunaAcoes() {
         var self = this;
         return {
-            title: 'Ações', headerSort: false, width: 210, hozAlign: 'right', vertAlign: 'middle',
+            title: 'Ações', headerSort: false, width: NWM_LARGURAS_COLUNAS.acoes, hozAlign: 'right', vertAlign: 'middle',
             formatter: function (cell) { return self.montarBotoesAcoes(cell.getRow().getData()); },
             cellClick: function (event, cell) {
                 var $botao = $(event.target).closest('[data-acao]');
@@ -846,11 +964,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         })[0];
     },
 
-    montarChipStatus(situacao) {
-        var status = NWM_STATUS[situacao];
-        return $('<span>', { 'class': 'nwm-chip nwm-chip-' + situacao })
+    montarChipStatus(codigo, descricao) {
+        return $('<span>', { 'class': 'nwm-chip nwm-chip-' + codigo, title: descricao })
             .append($('<span>', { 'class': 'nwm-chip-ponto', 'aria-hidden': 'true' }))
-            .append($('<span>', { text: status ? status.rotulo : situacao }))[0];
+            .append($('<span>', { text: descricao }))[0];
     },
 
     montarTituloStatus() {
@@ -870,10 +987,18 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         var self = this;
         var $grupo = $('<div>', { 'class': 'nwm-acoes' });
         $.each(NWM_ACOES, function (acao, configuracao) {
-            if (etiqueta.tipoControle === 'PRE_SALDO' && acao !== 'detalhes') return;
+            if (configuracao.secundaria || (etiqueta.tipoControle === 'PRE_SALDO' && acao !== 'detalhes')) return;
             self.montarBotaoAcao(acao, configuracao, etiqueta).appendTo($grupo);
         });
+        if (etiqueta.tipoControle !== 'PRE_SALDO') this.montarBotaoMaisAcoes(etiqueta).appendTo($grupo);
         return $grupo[0];
+    },
+
+    montarBotaoMaisAcoes(etiqueta) {
+        return $('<button>', {
+            type: 'button', 'class': 'nwm-acao nwm-acao-mais', 'data-acao': 'mais', 'aria-haspopup': 'dialog',
+            title: 'Mais ações', 'aria-label': 'Mais ações da etiqueta ' + etiqueta.etiqueta + ' do item ' + etiqueta.itCodigo
+        }).append($('<i>', { 'class': 'bi bi-three-dots', 'aria-hidden': 'true' }));
     },
 
     montarBotaoAcao(acao, configuracao, etiqueta) {
@@ -893,7 +1018,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     motivoAcaoIndisponivel(acao, disponivel) {
         if (disponivel) return '';
-        return acao === 'imprimir' ? ' — aguardando modelo de impressão' : ' — sem operação disponível';
+        return ' — ' + this.textoMotivoIndisponivel(acao).toLowerCase();
+    },
+
+    textoMotivoIndisponivel(acao) {
+        return acao === 'imprimir' ? 'Aguardando modelo de impressão' : 'Sem operação disponível';
     },
 
     atualizarContadorTabela() {
@@ -1128,7 +1257,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     receberPaginaEtiquetas(carga, resultado, limite) {
         if (typeof resultado.proximoId !== 'string' || resultado.dados.length > limite) {
-            throw this.erroDataset('RESPOSTA_INVALIDA', 'A página de etiquetas está fora do contrato esperado.', 'tecnico');
+            throw this.erroDataset('RESPOSTA_INVALIDA', 'A página de etiquetas está fora do contrato esperado.', NWM_TIPOS_ERRO.TECNICO);
         }
         var maiorId = this.acrescentarPaginaEtiquetas(carga, resultado.dados);
         if (resultado.temMais) {
@@ -1155,13 +1284,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     validarOrdemEtiqueta(carga, id) {
-        if (carga.ids[id]) throw this.erroDataset('RESPOSTA_INVALIDA', 'A consulta devolveu uma etiqueta repetida entre páginas. Busque novamente.', 'tecnico');
-        if (carga.cursor && this.compararIds(id, carga.cursor) <= 0) throw this.erroDataset('CURSOR_INVALIDO', 'A página contém uma etiqueta anterior ao cursor. Busque novamente.', 'tecnico');
+        if (carga.ids[id]) throw this.erroDataset('RESPOSTA_INVALIDA', 'A consulta devolveu uma etiqueta repetida entre páginas. Busque novamente.', NWM_TIPOS_ERRO.TECNICO);
+        if (carga.cursor && this.compararIds(id, carga.cursor) <= 0) throw this.erroDataset('CURSOR_INVALIDO', 'A página contém uma etiqueta anterior ao cursor. Busque novamente.', NWM_TIPOS_ERRO.TECNICO);
     },
 
     avancarCursorEtiquetas(carga, proximoId, maiorId) {
         var cursorValido = NWM_SOMENTE_DIGITOS.test(proximoId) && this.compararIds(proximoId, carga.cursor || '0') > 0 && this.compararIds(proximoId, maiorId) === 0;
-        if (!cursorValido) throw this.erroDataset('CURSOR_INVALIDO', 'O cursor de etiquetas não avançou corretamente. Busque novamente.', 'tecnico');
+        if (!cursorValido) throw this.erroDataset('CURSOR_INVALIDO', 'O cursor de etiquetas não avançou corretamente. Busque novamente.', NWM_TIPOS_ERRO.TECNICO);
         carga.cursor = proximoId;
     },
 
@@ -1226,7 +1355,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             if (!self.cargaEtiquetasAtual(carga)) return;
             self.receberDescricaoItem(descricao, cursor, resultado);
         }, function (erro) {
-            if (!self.cargaEtiquetasAtual(carga) || erro.tipo === 'cancelamento') return;
+            if (!self.cargaEtiquetasAtual(carga) || erro.tipo === NWM_TIPOS_ERRO.CANCELAMENTO) return;
             self.registrarDescricaoAusente(descricao);
         });
     },
@@ -1308,7 +1437,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     mapearEtiqueta(registro) {
         if (!this.registroEtiquetaValido(registro)) {
-            throw this.erroDataset('RESPOSTA_INVALIDA', 'Um registro de etiqueta está fora do contrato esperado.', 'tecnico');
+            throw this.erroDataset('RESPOSTA_INVALIDA', 'Um registro de etiqueta está fora do contrato esperado.', NWM_TIPOS_ERRO.TECNICO);
         }
         return {
             id: registro.idEtiqueta, idEtiqueta: registro.idEtiqueta, versao: registro.versao,
@@ -1318,8 +1447,23 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             qtidadeAtu: registro.quantidadeAtual, capacidade: registro.capacidade, unidade: registro.unidade || '',
             deposito: registro.deposito || '', localizacao: registro.localizacao || '',
             situacao: registro.situacao, tipoLocal: registro.tipoLocal, tipoControle: registro.tipoControle,
+            situacaoApresentada: this.situacaoApresentadaDe(registro), descricaoSituacao: this.descricaoSituacaoDe(registro),
+            impressaoConfirmada: this.confirmacaoDe(registro.impressaoConfirmada),
+            recebimentoFisicoConfirmado: this.confirmacaoDe(registro.recebimentoFisicoConfirmado),
             idBag: registro.idBag, dadosOriginais: $.extend({}, registro)
         };
+    },
+
+    situacaoApresentadaDe(registro) {
+        return typeof registro.situacaoApresentada === 'string' ? registro.situacaoApresentada : registro.situacao;
+    },
+
+    descricaoSituacaoDe(registro) {
+        return typeof registro.descricaoSituacao === 'string' ? registro.descricaoSituacao : NWM_STATUS[registro.situacao].rotulo;
+    },
+
+    confirmacaoDe(valor) {
+        return typeof valor === 'boolean' ? valor : null;
     },
 
     registroEtiquetaValido(registro) {
@@ -1328,7 +1472,21 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             this.classificacaoEtiquetaValida(registro) &&
             this.numerosEtiquetaValidos(registro) &&
             this.textosOpcionaisEtiquetaValidos(registro) &&
+            this.apresentacaoEtiquetaValida(registro) &&
             (!registro.validadeLote || this.dataIsoValida(registro.validadeLote));
+    },
+
+    apresentacaoEtiquetaValida(registro) {
+        return this.textoOpcionalValido(registro.situacaoApresentada) && this.textoOpcionalValido(registro.descricaoSituacao) &&
+            this.booleanoOpcional(registro.impressaoConfirmada) && this.booleanoOpcional(registro.recebimentoFisicoConfirmado);
+    },
+
+    textoOpcionalValido(valor) {
+        return typeof valor === 'undefined' || (this.textoPreenchido(valor) && !NWM_CARACTERE_CONTROLE.test(valor));
+    },
+
+    booleanoOpcional(valor) {
+        return typeof valor === 'undefined' || typeof valor === 'boolean';
     },
 
     identificacaoEtiquetaValida(registro) {
@@ -1385,7 +1543,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     lerFiltros() {
         var filtros = {};
         $('[data-filtro]', this.DOM).each(function () {
-            filtros[$(this).data('filtro')] = $.trim($(this).val() || '');
+            filtros[$(this).data('filtro')] = String($(this).val() || '').trim();
         });
         filtros.modoNf = $('[data-nf-modo]:checked', this.DOM).val() || 'intervalo';
         return filtros;
@@ -1493,7 +1651,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         var $primeiro = $();
         $.each(campos, function (indice, campo) {
             var $input = $('[data-filtro="' + campo + '"]', self.DOM);
-            if (!preenchidos && $.trim($input.val() || '')) return;
+            if (!preenchidos && String($input.val() || '').trim()) return;
             $input.addClass('is-invalido').attr('aria-invalid', 'true');
             if (!$primeiro.length) $primeiro = $input;
         });
@@ -1509,11 +1667,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             this.abrirDetalhes(linha);
             return;
         }
+        if (acao === 'mais') {
+            this.abrirMaisAcoes(linha);
+            return;
+        }
         if (!this.podeSelecionarEtiqueta(linha.getData())) {
             this.avisar('warning', 'Clique em Buscar para atualizar as etiquetas antes de iniciar uma operação.');
             return;
         }
-        this.pedirConfirmacao(acao, [linha], 0);
+        this.aplicarAcao(acao, [linha]);
     },
 
     aplicarLote(htmlElement, event) {
@@ -1565,7 +1727,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     executarQuantidade(htmlElement, event) {
         var item = $('[data-item-qtde]', this.DOM).val();
-        var texto = $.trim($('[data-qtde]', this.DOM).val() || '');
+        var texto = String($('[data-qtde]', this.DOM).val() || '').trim();
         if (!item || !this.quantidadePedidaValida(texto)) {
             this.avisar('warning', 'Escolha um item e informe uma quantidade positiva, com até quatro casas decimais.');
             return;
@@ -1577,6 +1739,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.redesenharChecks();
         this.atualizarSelecao();
         this.avisarResultadoQuantidade(escolha, pedido);
+    },
+
+    avisarItemQuantidadeVazio(htmlElement, event) {
+        if (Object.keys(this.itensElegiveisQuantidade()).length) return;
+        this.avisar('warning', 'É necessário ter ao menos um item selecionado.');
     },
 
     quantidadePedidaValida(texto) {
@@ -1604,17 +1771,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     prepararModais() {
         this.$modalDetalhes = $('[data-modal-detalhes]', this.DOM);
-        this.$modalConfirmar = $('[data-modal-confirmar]', this.DOM);
         this.$modalLegenda = $('[data-modal-legenda]', this.DOM);
         this.$modalOperacao = $('[data-modal-operacao]', this.DOM);
+        this.$modalImpressora = $('[data-modal-impressora]', this.DOM);
+        this.$modalMaisAcoes = $('[data-modal-mais-acoes]', this.DOM);
+        this.ligarAcoesSecundarias();
         this.ligarEventosModalOperacao();
         this.ligarFechamentoPeloFundo();
-        this.ligarDescarteConfirmacao();
-    },
-
-    ligarDescarteConfirmacao() {
-        var self = this;
-        this.$modalConfirmar.on('close', function () { self.pendente = null; });
     },
 
     ligarEventosModalOperacao() {
@@ -1643,7 +1806,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         if (!operacao || this.operacaoTravada(operacao)) return;
         this.cancelarConsultaDataset('operacao:natureza');
         this.cancelarConsultaDataset('operacao:origem');
-        operacao.estado = 'edicao';
+        operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
         operacao.comando = null;
         if (campo === 'natureza') operacao.classificacao = null;
         if (/^(natureza|emitenteOrigem|serieOrigem|numeroOrigem|naturezaOrigem)$/.test(campo)) this.descartarOrigemOperacao(operacao);
@@ -1658,7 +1821,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     ligarFechamentoPeloFundo() {
         var self = this;
-        $.each([this.$modalDetalhes, this.$modalConfirmar, this.$modalLegenda], function (indice, $modal) {
+        $.each([this.$modalDetalhes, this.$modalLegenda, this.$modalImpressora, this.$modalMaisAcoes], function (indice, $modal) {
             $modal.on('click', function (event) {
                 if ($(event.target).is($modal)) self.fechar($modal);
             });
@@ -1688,9 +1851,21 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     camposDetalhes(etiqueta) {
+        return this.camposSituacaoDetalhes(etiqueta).concat(this.camposEmbalagemDetalhes(etiqueta));
+    },
+
+    camposSituacaoDetalhes(etiqueta) {
         var status = NWM_STATUS[etiqueta.situacao];
         return [
-            { rotulo: 'Status', valor: status ? status.rotulo : etiqueta.situacao },
+            { rotulo: 'Status', valor: etiqueta.descricaoSituacao },
+            { rotulo: 'Situação técnica', valor: status ? status.rotulo : etiqueta.situacao },
+            { rotulo: 'Impressão confirmada', valor: this.textoConfirmacao(etiqueta.impressaoConfirmada) },
+            { rotulo: 'Recebimento físico confirmado', valor: this.textoConfirmacao(etiqueta.recebimentoFisicoConfirmado) }
+        ];
+    },
+
+    camposEmbalagemDetalhes(etiqueta) {
+        return [
             { rotulo: 'Etiqueta', valor: etiqueta.etiqueta },
             { rotulo: 'Item', valor: etiqueta.itCodigo + ' — ' + etiqueta.descItem, largo: true },
             { rotulo: 'Fazenda', valor: etiqueta.codEstabel },
@@ -1710,6 +1885,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         ];
     },
 
+    textoConfirmacao(valor) {
+        if (valor === true) return 'Sim';
+        if (valor === false) return 'Não';
+        return '—';
+    },
+
     quantidadeComUnidade(quantidade, unidade) {
         return this.formatarQuantidade(quantidade) + ' ' + unidade;
     },
@@ -1718,21 +1899,43 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.fechar(this.$modalDetalhes);
     },
 
-    pedirConfirmacao(acao, linhas, ignoradas) {
-        this.aplicarAcao(acao, linhas);
+    abrirMaisAcoes(linha) {
+        var self = this;
+        var etiqueta = linha.getData();
+        this.linhaMaisAcoes = linha;
+        $('[data-mais-acoes-subtitulo]', this.DOM).text('Etiqueta ' + etiqueta.etiqueta + ' · item ' + etiqueta.itCodigo + ' — ' + etiqueta.descItem);
+        var $lista = $('[data-mais-acoes-lista]', this.DOM).empty();
+        $.each(NWM_ACOES, function (acao, configuracao) {
+            if (configuracao.secundaria) self.montarItemMaisAcoes(acao, configuracao, etiqueta).appendTo($lista);
+        });
+        this.abrir(this.$modalMaisAcoes);
     },
 
-    fecharConfirmar(htmlElement, event) {
-        this.fechar(this.$modalConfirmar);
-        this.pendente = null;
+    montarItemMaisAcoes(acao, configuracao, etiqueta) {
+        var disponivel = this.acaoDisponivel(acao, etiqueta);
+        var $botao = $('<button>', { type: 'button', 'class': 'nwm-mais-acoes-botao nwm-mais-acoes-' + acao, 'data-acao-secundaria': acao, disabled: !disponivel })
+            .append($('<i>', { 'class': 'bi ' + configuracao.icone, 'aria-hidden': 'true' }))
+            .append($('<span>', { 'class': 'nwm-mais-acoes-rotulo', text: configuracao.rotulo }))
+            .append($('<span>', { 'class': 'nwm-mais-acoes-motivo', text: disponivel ? '' : this.textoMotivoIndisponivel(acao) }));
+        return $('<li>').append($botao);
     },
 
-    confirmarAcao(htmlElement, event) {
-        var pendente = this.pendente;
-        this.fechar(this.$modalConfirmar);
-        this.pendente = null;
-        if (!pendente) return;
-        this.aplicarAcao(pendente.acao, pendente.linhas);
+    ligarAcoesSecundarias() {
+        var self = this;
+        this.$modalMaisAcoes.on('click.nwm', '[data-acao-secundaria]', function () {
+            self.executarAcaoSecundaria($(this).attr('data-acao-secundaria'));
+        });
+    },
+
+    executarAcaoSecundaria(acao) {
+        var linha = this.linhaMaisAcoes;
+        this.fecharMaisAcoes();
+        if (linha) this.acaoNaLinha(acao, linha);
+    },
+
+    fecharMaisAcoes(htmlElement, event) {
+        this.fechar(this.$modalMaisAcoes);
+        this.linhaMaisAcoes = null;
     },
 
     aplicarAcao(acao, linhas) {
@@ -1745,19 +1948,23 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     operacaoTravada(operacao) {
-        return /^(enviando|incerta|consultando|concluida)$/.test(operacao.estado);
+        return this.estadoOperacaoEntre(operacao, [NWM_ESTADOS_OPERACAO.ENVIANDO, NWM_ESTADOS_OPERACAO.INCERTA, NWM_ESTADOS_OPERACAO.CONSULTANDO, NWM_ESTADOS_OPERACAO.CONCLUIDA]);
     },
 
     operacaoEmComunicacao(operacao) {
-        return !!operacao && /^(enviando|consultando)$/.test(operacao.estado);
+        return !!operacao && this.estadoOperacaoEntre(operacao, [NWM_ESTADOS_OPERACAO.ENVIANDO, NWM_ESTADOS_OPERACAO.CONSULTANDO]);
     },
 
     operacaoAguardandoResultado(operacao) {
-        return !!operacao && /^(enviando|incerta|consultando)$/.test(operacao.estado);
+        return !!operacao && this.estadoOperacaoEntre(operacao, [NWM_ESTADOS_OPERACAO.ENVIANDO, NWM_ESTADOS_OPERACAO.INCERTA, NWM_ESTADOS_OPERACAO.CONSULTANDO]);
+    },
+
+    estadoOperacaoEntre(operacao, estados) {
+        return estados.indexOf(operacao.estado) >= 0;
     },
 
     campoOperacao(campo) {
-        return $.trim($('[data-operacao-campo="' + campo + '"]', this.DOM).val() || '');
+        return String($('[data-operacao-campo="' + campo + '"]', this.DOM).val() || '').trim();
     },
 
     textoOperacaoValido(valor) {
@@ -1775,7 +1982,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             this.avisar('warning', 'Use um único estabelecimento e no máximo 100 embalagens por operação.');
             return;
         }
-        this.operacaoAtual = { estado: 'edicao', codEstabel: estabelecimento, dados: selecao.dados, classificacao: null, origem: null, selecaoOrigem: Object.create(null), comando: null };
+        this.operacaoAtual = { estado: NWM_ESTADOS_OPERACAO.EDICAO, codEstabel: estabelecimento, dados: selecao.dados, classificacao: null, origem: null, selecaoOrigem: Object.create(null), comando: null };
         this.prepararFormularioOperacao(estabelecimento, selecao.dados.length);
         this.mostrarEstadoOperacao('A preparação cria o documento de trabalho. A efetivação da nota ocorre no Datasul.');
         this.abrir(this.$modalOperacao);
@@ -1806,8 +2013,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         $('[data-operacao-estabelecimento]', this.DOM).text(estabelecimento);
         $('[data-operacao-selecao]', this.DOM).text(quantidade + ' embalagem(ns) da grade. Para devolução, selecione as embalagens da origem abaixo.');
         $('[data-origem-corpo]', this.DOM).empty();
-        $('[data-operacao-direta], [data-operacao-origem]', this.DOM).prop('hidden', true);
+        this.esconderRamosOperacao();
         $('[data-operacao-classificacao]', this.DOM).text('Informe a natureza e clique em Validar natureza.');
+    },
+
+    esconderRamosOperacao() {
+        $('[data-operacao-direta], [data-operacao-origem]', this.DOM).prop('hidden', true);
     },
 
     fecharOperacao() {
@@ -1816,7 +2027,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         this.cancelarConsultaDataset('operacao:natureza');
         this.cancelarConsultaDataset('operacao:origem');
         this.fechar(this.$modalOperacao);
-        if (!operacao || operacao.estado !== 'incerta') this.operacaoAtual = null;
+        if (!operacao || operacao.estado !== NWM_ESTADOS_OPERACAO.INCERTA) this.operacaoAtual = null;
     },
 
     mostrarEstadoOperacao(mensagem) {
@@ -1833,15 +2044,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         var travada = this.operacaoTravada(operacao);
         var semClassificacao = !operacao.classificacao;
         $('[data-operacao-campo]', this.DOM).prop('disabled', travada);
-        $('[data-classificar-natureza]', this.DOM).prop('disabled', travada || operacao.estado === 'classificando');
-        $('[data-carregar-origem]', this.DOM).prop('disabled', travada || semClassificacao || operacao.estado === 'carregando-origem');
-        $('[data-preparar-operacao]', this.DOM).prop('disabled', travada || semClassificacao || /^(classificando|carregando-origem)$/.test(operacao.estado));
+        $('[data-classificar-natureza]', this.DOM).prop('disabled', travada || operacao.estado === NWM_ESTADOS_OPERACAO.CLASSIFICANDO);
+        $('[data-carregar-origem]', this.DOM).prop('disabled', travada || semClassificacao || operacao.estado === NWM_ESTADOS_OPERACAO.CARREGANDO_ORIGEM);
+        $('[data-preparar-operacao]', this.DOM).prop('disabled', travada || semClassificacao || this.estadoOperacaoEntre(operacao, [NWM_ESTADOS_OPERACAO.CLASSIFICANDO, NWM_ESTADOS_OPERACAO.CARREGANDO_ORIGEM]));
         $('[data-fechar-operacao]', this.DOM).prop('disabled', this.operacaoEmComunicacao(operacao));
     },
 
     atualizarControlesEnvioOperacao(operacao) {
-        var aguardandoConfirmacao = operacao.estado === 'confirmacao';
-        var incerta = operacao.estado === 'incerta';
+        var aguardandoConfirmacao = operacao.estado === NWM_ESTADOS_OPERACAO.CONFIRMACAO;
+        var incerta = operacao.estado === NWM_ESTADOS_OPERACAO.INCERTA;
         var podeReenviar = incerta && !!operacao.resultadoConsultado && !operacao.conflitoIdempotente;
         $('[data-enviar-operacao]', this.DOM).prop('hidden', !aguardandoConfirmacao).prop('disabled', !aguardandoConfirmacao);
         $('[data-resultado-operacao]', this.DOM).prop('hidden', !incerta).prop('disabled', !incerta);
@@ -1857,7 +2068,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     classificarOperacao() {
         var self = this;
         var operacao = this.operacaoAtual;
-        if (!operacao || this.operacaoTravada(operacao) || operacao.estado === 'classificando') return;
+        if (!operacao || this.operacaoTravada(operacao) || operacao.estado === NWM_ESTADOS_OPERACAO.CLASSIFICANDO) return;
         var natureza = this.campoOperacao('natureza');
         if (!this.textoOperacaoValido(natureza)) {
             this.mostrarEstadoOperacao('Informe o código exato da natureza, com até 100 caracteres.');
@@ -1868,8 +2079,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             if (self.operacaoAtual !== operacao || self.campoOperacao('natureza') !== natureza) return;
             self.receberClassificacao(operacao, natureza, resultado.dados[0]);
         }, function (erro) {
-            if (self.operacaoAtual !== operacao || erro.tipo === 'cancelamento') return;
-            operacao.estado = 'edicao';
+            if (self.operacaoAtual !== operacao || erro.tipo === NWM_TIPOS_ERRO.CANCELAMENTO) return;
+            operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
             self.mostrarEstadoOperacao(erro.message);
         });
     },
@@ -1879,14 +2090,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         operacao.classificacao = null;
         operacao.origem = null;
         operacao.comando = null;
-        operacao.estado = 'classificando';
-        $('[data-operacao-direta], [data-operacao-origem]', this.DOM).prop('hidden', true);
+        operacao.estado = NWM_ESTADOS_OPERACAO.CLASSIFICANDO;
+        this.esconderRamosOperacao();
         $('[data-origem-corpo]', this.DOM).empty();
         this.mostrarEstadoOperacao('Validando natureza…');
     },
 
     receberClassificacao(operacao, natureza, classificacao) {
-        operacao.estado = 'edicao';
+        operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
         if (!this.classificacaoValida(classificacao, natureza, operacao.codEstabel)) {
             this.mostrarEstadoOperacao('Esta natureza não pertence aos fluxos disponíveis de transferência, remessa ou devolução.');
             return;
@@ -1939,7 +2150,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         var carga = { parametros: parametros, dados: [], ids: Object.create(null), cursor: '' };
         operacao.origem = carga;
         operacao.selecaoOrigem = Object.create(null);
-        operacao.estado = 'carregando-origem';
+        operacao.estado = NWM_ESTADOS_OPERACAO.CARREGANDO_ORIGEM;
         operacao.comando = null;
         $('[data-origem-corpo]', this.DOM).empty();
         this.mostrarEstadoOperacao('Carregando embalagens da origem…');
@@ -1948,17 +2159,17 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     podeCarregarOrigem(operacao) {
         if (!operacao || !operacao.classificacao || !operacao.classificacao.exigeOrigem) return false;
-        return !this.operacaoTravada(operacao) && operacao.estado !== 'carregando-origem';
+        return !this.operacaoTravada(operacao) && operacao.estado !== NWM_ESTADOS_OPERACAO.CARREGANDO_ORIGEM;
     },
 
     cargaOrigemAtual(operacao, carga) {
-        return this.operacaoAtual === operacao && operacao.origem === carga && operacao.estado === 'carregando-origem';
+        return this.operacaoAtual === operacao && operacao.origem === carga && operacao.estado === NWM_ESTADOS_OPERACAO.CARREGANDO_ORIGEM;
     },
 
     falharCargaOrigem(operacao, carga, erro) {
-        if (!this.cargaOrigemAtual(operacao, carga) || erro.tipo === 'cancelamento') return;
+        if (!this.cargaOrigemAtual(operacao, carga) || erro.tipo === NWM_TIPOS_ERRO.CANCELAMENTO) return;
         operacao.origem = null;
-        operacao.estado = 'edicao';
+        operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
         this.mostrarEstadoOperacao(erro.message);
     },
 
@@ -1985,7 +2196,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             return;
         }
         carga.completa = true;
-        operacao.estado = 'edicao';
+        operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
         this.renderizarOrigemOperacao();
         this.mostrarEstadoOperacao(carga.dados.length + ' embalagem(ns) da origem. Marque somente as que deseja devolver.');
     },
@@ -2062,7 +2273,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         if (marcado) operacao.selecaoOrigem[registro.idEtiqueta] = true;
         else delete operacao.selecaoOrigem[registro.idEtiqueta];
         operacao.comando = null;
-        operacao.estado = 'edicao';
+        operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
         this.mostrarEstadoOperacao('Seleção alterada. Revise e confirme a preparação.');
     },
 
@@ -2185,7 +2396,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         if (!operacao || this.operacaoTravada(operacao)) return;
         try {
             operacao.comando = this.montarComandoOperacao();
-            operacao.estado = 'confirmacao';
+            operacao.estado = NWM_ESTADOS_OPERACAO.CONFIRMACAO;
         } catch (erro) {
             this.mostrarEstadoOperacao(erro.message);
             return;
@@ -2199,7 +2410,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         var self = this;
         var operacao = this.operacaoAtual;
         if (!this.podeEnviarOperacao(operacao, reenviar)) return;
-        operacao.estado = 'enviando';
+        operacao.estado = NWM_ESTADOS_OPERACAO.ENVIANDO;
         operacao.resultadoConsultado = false;
         this.guardarOperacaoPendente(operacao);
         this.mostrarEstadoOperacao('Preparando documento de trabalho… Aguarde o resultado.');
@@ -2212,8 +2423,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     podeEnviarOperacao(operacao, reenviar) {
         if (!operacao || !operacao.comando || operacao.conflitoIdempotente) return false;
-        if (reenviar) return operacao.estado === 'incerta' && !!operacao.resultadoConsultado;
-        return operacao.estado === 'confirmacao';
+        if (reenviar) return operacao.estado === NWM_ESTADOS_OPERACAO.INCERTA && !!operacao.resultadoConsultado;
+        return operacao.estado === NWM_ESTADOS_OPERACAO.CONFIRMACAO;
     },
 
     receberEnvioOperacao(operacao, resultado) {
@@ -2226,17 +2437,17 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             this.guardarOperacaoPendente(operacao);
         }
         if (/^(HTTP_|FALHA_|RESPOSTA_INVALIDA|HTTP_STATUS_|CHAVE_IDEMPOTENTE_)/.test(resultado.codigoErro)) {
-            this.marcarOperacaoIncerta(operacao, this.erroDataset(resultado.codigoErro, resultado.mensagem, 'funcional'));
+            this.marcarOperacaoIncerta(operacao, this.erroDataset(resultado.codigoErro, resultado.mensagem, NWM_TIPOS_ERRO.FUNCIONAL));
             return;
         }
-        operacao.estado = 'edicao';
+        operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
         operacao.comando = null;
         this.guardarOperacaoPendente(null);
         this.mostrarEstadoOperacao(resultado.mensagem);
     },
 
     concluirEnvioOperacao(operacao, resultado) {
-        operacao.estado = 'concluida';
+        operacao.estado = NWM_ESTADOS_OPERACAO.CONCLUIDA;
         this.guardarOperacaoPendente(null);
         this.mostrarEstadoOperacao('Documento de trabalho ' + resultado.wt + ' · operação ' + resultado.idOperacao +
             (resultado.repeticao ? ' já registrada.' : ' preparada.') + ' A efetivação da nota ocorre no Datasul.');
@@ -2245,7 +2456,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     marcarOperacaoIncerta(operacao, erro) {
-        operacao.estado = 'incerta';
+        operacao.estado = NWM_ESTADOS_OPERACAO.INCERTA;
         this.mostrarEstadoOperacao(erro.message + (operacao.conflitoIdempotente ?
             ' O identificador foi preservado. Consulte o resultado e confira o conflito com o responsável antes de continuar.' :
             ' Consulte o resultado antes de reenviar esta mesma solicitação.'));
@@ -2254,15 +2465,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     consultarResultadoAtual() {
         var self = this;
         var operacao = this.operacaoAtual;
-        if (!operacao || operacao.estado !== 'incerta' || !operacao.comando) return;
+        if (!operacao || operacao.estado !== NWM_ESTADOS_OPERACAO.INCERTA || !operacao.comando) return;
         var consulta = this.parametrosConsultaResultado(operacao.comando);
-        operacao.estado = 'consultando';
+        operacao.estado = NWM_ESTADOS_OPERACAO.CONSULTANDO;
         operacao.resultadoConsultado = false;
         this.mostrarEstadoOperacao('Consultando o resultado da mesma solicitação…');
         this.consultarDataset('consultarResultadoOperacao', consulta, 'operacao:resultado').then(function (resultado) {
             self.receberResultadoOperacao(operacao, resultado);
         }, function (erro) {
-            operacao.estado = 'incerta';
+            operacao.estado = NWM_ESTADOS_OPERACAO.INCERTA;
             self.mostrarEstadoOperacao(erro.message + ' O identificador foi preservado. Consulte novamente.');
         });
     },
@@ -2281,7 +2492,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             return;
         }
         if (resultado.temMais || resultado.dados.length > 1) {
-            operacao.estado = 'incerta';
+            operacao.estado = NWM_ESTADOS_OPERACAO.INCERTA;
             operacao.resultadoConsultado = false;
             this.mostrarEstadoOperacao('A consulta não confirmou um resultado único. O identificador foi preservado para conferência.');
             return;
@@ -2289,19 +2500,19 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         operacao.resultadoConsultado = true;
         if (resultado.dados.length) this.concluirOperacaoLocalizada(operacao);
         else {
-            operacao.estado = 'incerta';
+            operacao.estado = NWM_ESTADOS_OPERACAO.INCERTA;
             this.mostrarEstadoOperacao('Nenhum resultado persistido localizado até agora. Você pode consultar novamente ou reenviar a mesma solicitação, preservando o identificador.');
         }
     },
 
     informarResultadoComConflito(operacao, resultado) {
-        operacao.estado = 'incerta';
+        operacao.estado = NWM_ESTADOS_OPERACAO.INCERTA;
         this.mostrarEstadoOperacao((resultado.dados.length ? 'Há resultado registrado para este identificador.' : 'Nenhum resultado persistido localizado até agora.') +
             ' A solicitação permanece com conflito. Confira o identificador e o conteúdo com o responsável; o reenvio está bloqueado.');
     },
 
     concluirOperacaoLocalizada(operacao) {
-        operacao.estado = 'concluida';
+        operacao.estado = NWM_ESTADOS_OPERACAO.CONCLUIDA;
         this.mostrarEstadoOperacao('Operação localizada para esta solicitação. Confira o documento de trabalho no Datasul.');
         this.guardarOperacaoPendente(null);
         this.cancelarConsultaEtiquetas();
@@ -2354,13 +2565,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     reabrirOperacaoSalva(salvo) {
         var parametros = salvo.comando.parametros;
         this.operacaoAtual = {
-            estado: 'incerta', codEstabel: salvo.codEstabel, comando: salvo.comando, dados: [], origem: null, classificacao: null,
+            estado: NWM_ESTADOS_OPERACAO.INCERTA, codEstabel: salvo.codEstabel, comando: salvo.comando, dados: [], origem: null, classificacao: null,
             resultadoConsultado: false, conflitoIdempotente: salvo.conflitoIdempotente === true
         };
         $('[data-operacao-estabelecimento]', this.DOM).text(salvo.codEstabel);
         $('[data-operacao-selecao]', this.DOM).text(parametros.selecao.length + ' embalagem(ns) na solicitação preservada.');
         $('[data-operacao-classificacao]', this.DOM).text('Natureza ' + parametros.natureza + ' · série ' + parametros.serie);
-        $('[data-operacao-direta], [data-operacao-origem]', this.DOM).prop('hidden', true);
+        this.esconderRamosOperacao();
         this.mostrarEstadoOperacao(this.operacaoAtual.conflitoIdempotente ?
             'Há uma solicitação anterior com conflito de identificação. Consulte o resultado e confira o conflito com o responsável; o reenvio está bloqueado.' :
             'Há uma solicitação anterior sem resultado confirmado. Consulte o resultado antes de reenviar.');
@@ -2382,20 +2593,178 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     montarLegenda() {
         var self = this;
         var $lista = $('[data-legenda-lista]', this.DOM).empty();
-        $.each(NWM_STATUS_ORDEM, function (indice, chave) {
+        var situacoes = this.situacoesApresentadas();
+        if (!situacoes.length) {
+            $('<li>').append($('<span>').addClass('nwm-legenda-texto').text('Faça uma busca para ver os status das etiquetas listadas.')).appendTo($lista);
+            return;
+        }
+        $.each(situacoes, function (indice, situacao) {
             $('<li>')
-                .append($(self.montarChipStatus(chave)))
-                .append($('<span>').addClass('nwm-legenda-texto').text(NWM_STATUS[chave].legenda))
+                .append($(self.montarChipStatus(situacao.codigo, situacao.descricao)))
+                .append($('<span>').addClass('nwm-legenda-texto').text(self.textoQuantidadeEtiquetas(situacao.quantidade)))
                 .appendTo($lista);
         });
     },
 
+    situacoesApresentadas() {
+        var porCodigo = Object.create(null);
+        var lista = [];
+        if (!this.tabela) return lista;
+        $.each(this.tabela.getRows(), function (indice, linha) {
+            var etiqueta = linha.getData();
+            if (!porCodigo[etiqueta.situacaoApresentada]) {
+                porCodigo[etiqueta.situacaoApresentada] = { codigo: etiqueta.situacaoApresentada, descricao: etiqueta.descricaoSituacao, quantidade: 0 };
+                lista.push(porCodigo[etiqueta.situacaoApresentada]);
+            }
+            porCodigo[etiqueta.situacaoApresentada].quantidade++;
+        });
+        return lista;
+    },
+
+    textoQuantidadeEtiquetas(quantidade) {
+        return quantidade === 1 ? '1 etiqueta nesta consulta' : quantidade + ' etiquetas nesta consulta';
+    },
+
     abrirLegenda() {
+        this.montarLegenda();
         this.abrir(this.$modalLegenda);
     },
 
     fecharLegenda(htmlElement, event) {
         this.fechar(this.$modalLegenda);
+    },
+
+    abrirImpressora(htmlElement, event) {
+        this.abrir(this.$modalImpressora);
+        this.carregarImpressoras();
+    },
+
+    fecharImpressora(htmlElement, event) {
+        this.fechar(this.$modalImpressora);
+    },
+
+    carregarImpressoras(htmlElement, event) {
+        var self = this;
+        this.definirEstadoImpressora(true, 'Procurando o aplicativo de impressão neste computador…');
+        this.chamarAplicativoImpressao('GET', '/impressoras').then(function (resposta) {
+            self.preencherImpressoras(resposta);
+        }, function (xhr) {
+            self.limparImpressoras();
+            self.definirEstadoImpressora(false, self.mensagemFalhaImpressao(xhr));
+        });
+    },
+
+    chamarAplicativoImpressao(metodo, caminho, corpo) {
+        var opcoes = { url: NWM_APLICATIVO_IMPRESSAO + caminho, method: metodo, timeout: NWM_TEMPO_LIMITE_IMPRESSAO_MS };
+        if (corpo) $.extend(opcoes, { contentType: 'application/json', processData: false, data: JSON.stringify(corpo) });
+        return $.ajax(opcoes);
+    },
+
+    preencherImpressoras(resposta) {
+        var impressoras = this.listaImpressoras(resposta);
+        var $lista = this.limparImpressoras();
+        $.each(impressoras, function (indice, nome) {
+            $lista.append($('<option>', { value: nome, text: nome }));
+        });
+        $lista.val(this.impressoraInicial(impressoras, resposta));
+        this.definirEstadoImpressora(false, impressoras.length ? '' : 'O aplicativo de impressão não encontrou nenhuma impressora neste computador.');
+    },
+
+    limparImpressoras() {
+        return $('[data-impressora-lista]', this.DOM).empty().append($('<option>', { value: '', text: 'Selecione' }));
+    },
+
+    listaImpressoras(resposta) {
+        var impressoras = [];
+        if (!resposta || !resposta.impressoras) return impressoras;
+        $.each(resposta.impressoras, function (chave, nome) {
+            if (typeof nome === 'string' && nome) impressoras.push(nome);
+        });
+        return impressoras;
+    },
+
+    impressoraInicial(impressoras, resposta) {
+        var salva = this.lerImpressoraSalva();
+        if (impressoras.indexOf(salva) >= 0) return salva;
+        return impressoras.indexOf(resposta.impressorapadrao) >= 0 ? resposta.impressorapadrao : '';
+    },
+
+    definirEstadoImpressora(ocupado, mensagem) {
+        this.impressoraOcupada = ocupado;
+        $('[data-impressora-mensagem]', this.DOM).text(mensagem);
+        this.atualizarBotoesImpressora();
+    },
+
+    atualizarBotoesImpressora(htmlElement, event) {
+        var ocupado = this.impressoraOcupada;
+        var $lista = $('[data-impressora-lista]', this.DOM);
+        $lista.prop('disabled', ocupado || $lista.children('option').length < 2);
+        $('[data-atualizar-impressoras]', this.DOM).prop('disabled', ocupado);
+        $('[data-testar-impressora], [data-salvar-impressora]', this.DOM).prop('disabled', ocupado || !$lista.val());
+    },
+
+    mensagemFalhaImpressao(xhr) {
+        var detalhe = xhr && xhr.responseJSON && xhr.responseJSON.message;
+        if (detalhe) return detalhe;
+        return 'Não foi possível falar com o aplicativo de impressão (' + NWM_APLICATIVO_IMPRESSAO + '). Verifique se ele está instalado e aberto neste computador e clique em Atualizar.';
+    },
+
+    salvarImpressora(htmlElement, event) {
+        var impressora = $('[data-impressora-lista]', this.DOM).val();
+        if (!impressora) return;
+        if (!this.gravarImpressoraSalva(impressora)) {
+            this.definirEstadoImpressora(false, 'Este navegador não permitiu guardar a impressora escolhida.');
+            return;
+        }
+        this.fechar(this.$modalImpressora);
+        this.avisar('success', 'Impressora ' + impressora + ' salva com sucesso.');
+    },
+
+    lerImpressoraSalva() {
+        try {
+            return window.localStorage.getItem(NWM_CHAVE_IMPRESSORA) || '';
+        } catch (erro) {
+            return '';
+        }
+    },
+
+    gravarImpressoraSalva(impressora) {
+        try {
+            window.localStorage.setItem(NWM_CHAVE_IMPRESSORA, impressora);
+            return true;
+        } catch (erro) {
+            return false;
+        }
+    },
+
+    testarImpressora(htmlElement, event) {
+        var self = this;
+        var impressora = $('[data-impressora-lista]', this.DOM).val();
+        if (!impressora) return;
+        this.definirEstadoImpressora(true, 'Enviando etiqueta de teste para ' + impressora + '…');
+        this.obterTemplateEtiqueta().then(function (template) {
+            return self.chamarAplicativoImpressao('POST', '/imprimir', { impressora: impressora, template: template, dados: NWM_ETIQUETA_TESTE });
+        }).then(function () {
+            self.definirEstadoImpressora(false, 'Etiqueta de teste enviada para ' + impressora + '.');
+        }, function (falha) {
+            self.definirEstadoImpressora(false, self.mensagemFalhaTeste(falha));
+        });
+    },
+
+    obterTemplateEtiqueta() {
+        var self = this;
+        if (this.templateEtiqueta !== null) return $.Deferred().resolve(this.templateEtiqueta).promise();
+        return $.ajax({ url: NWM_URL_TEMPLATE_ETIQUETA, method: 'GET', timeout: NWM_TEMPO_LIMITE_IMPRESSAO_MS }).then(function (template) {
+            self.templateEtiqueta = template;
+            return template;
+        }, function () {
+            return $.Deferred().reject({ templateAusente: true }).promise();
+        });
+    },
+
+    mensagemFalhaTeste(falha) {
+        if (falha && falha.templateAusente) return 'Template de etiqueta não foi encontrado, entre em contato com a TI para resolver.';
+        return this.mensagemFalhaImpressao(falha);
     },
 
     avisar(tipo, mensagem) {
@@ -2414,10 +2783,5 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
     formatarQuantidade(valor) {
         return Number(valor || 0).toLocaleString('pt-BR', { maximumFractionDigits: 4 });
-    },
-
-    normalizar(texto) {
-        return $.trim(String(texto || '')).toLowerCase()
-            .normalize('NFD').replace(/[̀-ͯ]/g, '');
     }
 });

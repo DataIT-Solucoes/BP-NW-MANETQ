@@ -76,6 +76,11 @@
     color: var(--nwm-tinta-suave);
 }
 
+.fluig-style-guide.nwm .nwm-cabecalho-acoes {
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
 /* ---------- Filtros ---------- */
 /*
  * Cartão marfim inteiro. Linha de cima: o que a busca exige (Estabelecimento; Itens ou Nota Fiscal);
@@ -369,6 +374,89 @@
     padding: 0 8px;
 }
 
+.fluig-style-guide.nwm .nwm-campo-input.is-selecionado {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-selecionado {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 38px;
+    min-width: 0;
+    padding: 0 6px;
+}
+
+.fluig-style-guide.nwm .nwm-selecionado[hidden] {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-selecionado-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 2px 2px 2px 8px;
+    border: 1px solid var(--nwm-verde);
+    border-radius: 999px;
+    background-color: var(--nwm-nevoa);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-selecionado-texto {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.fluig-style-guide.nwm .nwm-selecionado-codigo {
+    flex: 0 0 auto;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fluig-style-guide.nwm .nwm-selecionado-descricao {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+}
+
+.fluig-style-guide.nwm .nwm-selecionado-remover {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    font-size: 14px;
+    color: var(--nwm-tinta-suave);
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-selecionado-remover:hover {
+    background-color: rgba(0, 107, 53, 0.12);
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-selecionado-remover:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
+}
+
 /* o traço vira a divisória vertical entre De e Até */
 .fluig-style-guide.nwm .nwm-filtros .nwm-faixa-tracinho {
     flex: 0 0 1px;
@@ -645,15 +733,28 @@
 /* tabela à esquerda; ações à direita, centralizadas na altura da tabela */
 .fluig-style-guide.nwm .nwm-selecao {
     display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 0 0 18px;
+}
+
+.fluig-style-guide.nwm .nwm-selecao-linha {
+    display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 20px 28px;
-    margin: 0 0 18px;
+}
+
+.fluig-style-guide.nwm .nwm-selecao-linha + .nwm-selecao-linha {
+    align-items: flex-end;
+    padding-top: 18px;
+    border-top: 1px solid var(--nwm-linha);
 }
 
 /* metade da largura (6 de 12), descontada metade do espaço entre as colunas */
-.fluig-style-guide.nwm .nwm-selecao-resumo {
+.fluig-style-guide.nwm .nwm-selecao-resumo,
+.fluig-style-guide.nwm .nwm-selecao-coluna {
     flex: 0 1 calc(50% - 14px);
     min-width: 0;
 }
@@ -1026,9 +1127,33 @@
 .fluig-style-guide.nwm .nwm-chip-DESCARTADA { border-color: var(--nwm-vermelho); background-color: var(--nwm-marfim); }
 .fluig-style-guide.nwm .nwm-chip-DESCARTADA .nwm-chip-ponto { background-color: var(--nwm-vermelho); }
 
+.fluig-style-guide.nwm .nwm-chip-EM_ESTOQUE { border-color: var(--nwm-verde); background-color: var(--nwm-nevoa); }
+.fluig-style-guide.nwm .nwm-chip-EM_ESTOQUE .nwm-chip-ponto { background-color: var(--nwm-verde); }
+
+.fluig-style-guide.nwm .nwm-chip-NAO_IMPRESSA { border-color: var(--nwm-linha); background-color: var(--nwm-marfim); }
+.fluig-style-guide.nwm .nwm-chip-NAO_IMPRESSA .nwm-chip-ponto { background-color: var(--nwm-tinta-suave); }
+
+.fluig-style-guide.nwm .nwm-tabela .nwm-chip {
+    max-width: 100%;
+}
+
+.fluig-style-guide.nwm .nwm-tabela .nwm-chip > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .fluig-style-guide.nwm .nwm-acao:disabled,
 .fluig-style-guide.nwm .nwm-campo-input:disabled {
     opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.fluig-style-guide.nwm [data-caixa-item-qtde] .nwm-campo-select:disabled {
+    pointer-events: none;
+}
+
+.fluig-style-guide.nwm [data-caixa-item-qtde]:has(.nwm-campo-select:disabled) {
     cursor: not-allowed;
 }
 
@@ -1095,6 +1220,68 @@
     border-color: var(--nwm-verde);
     background-color: #fff;
     color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes-botao {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 12px;
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--nwm-linha);
+    border-radius: 10px;
+    background-color: #fff;
+    font: inherit;
+    text-align: left;
+    color: var(--nwm-tinta);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes-botao i {
+    grid-row: span 2;
+    font-size: 18px;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes-botao:hover:not(:disabled) {
+    border-color: var(--nwm-verde);
+    background-color: var(--nwm-nevoa);
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes-botao:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes-botao:disabled {
+    background-color: var(--nwm-marfim);
+    color: var(--nwm-tinta-suave);
+    cursor: not-allowed;
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes-rotulo {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes-motivo {
+    font-size: 12px;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-mais-acoes-motivo:empty {
+    display: none;
 }
 
 /* descartar é destrutivo: hover vermelho, como o excluir das outras telas */
@@ -1255,38 +1442,6 @@
     grid-column: 1 / -1;
 }
 
-/* confirmação de ação */
-.fluig-style-guide.nwm .nwm-modal-confirmacao {
-    padding: 28px 24px 0;
-}
-
-.fluig-style-guide.nwm .nwm-confirmacao-icone {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    margin-bottom: 16px;
-    border-radius: 50%;
-    background-color: var(--nwm-nevoa);
-    font-size: 20px;
-    color: var(--nwm-verde);
-}
-
-.fluig-style-guide.nwm .nwm-confirmacao-icone.is-perigo {
-    background-color: rgba(237, 28, 36, 0.1);
-    color: var(--nwm-vermelho-escuro);
-}
-
-.fluig-style-guide.nwm .nwm-modal-confirmacao .nwm-modal-subtitulo {
-    margin-top: 8px;
-}
-
-.fluig-style-guide.nwm .nwm-modal-confirmacao strong {
-    font-weight: 700;
-    color: var(--nwm-tinta);
-}
-
 /* legenda dos status */
 .fluig-style-guide.nwm .nwm-legenda {
     margin: 0;
@@ -1324,6 +1479,7 @@
     }
 
     .fluig-style-guide.nwm .nwm-selecao-resumo,
+    .fluig-style-guide.nwm .nwm-selecao-coluna,
     .fluig-style-guide.nwm .nwm-selecao-acoes {
         flex: 1 1 100%;
     }
@@ -1380,6 +1536,14 @@
 
     .fluig-style-guide.nwm .nwm-filtros-acoes .nwm-btn {
         flex: 1 1 0;
+        width: 100%;
+    }
+
+    .fluig-style-guide.nwm .nwm-cabecalho-acoes {
+        flex: 1 1 100%;
+    }
+
+    .fluig-style-guide.nwm .nwm-cabecalho-acoes .nwm-btn {
         width: 100%;
     }
 
@@ -1506,7 +1670,8 @@
     margin-top: 16px;
 }
 
-.fluig-style-guide.nwm .nwm-operacao-mensagem {
+.fluig-style-guide.nwm .nwm-operacao-mensagem,
+.fluig-style-guide.nwm .nwm-impressora-mensagem {
     padding: 12px;
     margin: 16px 0 8px;
     background: #f0f5f3;
@@ -1522,4 +1687,22 @@
 
 .fluig-style-guide.nwm .nwm-modal-operacao .nwm-modal-rodape {
     flex-wrap: wrap;
+}
+
+.fluig-style-guide.nwm .nwm-impressora-orientacoes {
+    margin: 0 0 18px;
+    padding-left: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--nwm-tinta-suave);
+}
+
+.fluig-style-guide.nwm .nwm-impressora-mensagem:empty {
+    display: none;
+}
+
+@media (min-width: 1200px) {
+    .fluig-style-guide.nwm .nwm-selecao-linha:first-child .nwm-selecao-acoes {
+        padding-bottom: 25px;
+    }
 }

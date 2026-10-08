@@ -22,8 +22,8 @@ Refaz a tela legada **Manutenção Itens/Etiquetas** (`v2_widget_manutencao_etiq
 ## Estado atual (2026-10-08)
 Etapa 2 **commitada, ainda não validada ao vivo no Fluig**: a tela consulta o Dataset
 `dsNwEmbalagens`; não há dados mockados.
-- `view.ftl`: cabeçalho + 8 filtros + barra de seleção + tabela + 4 `<dialog>` (detalhes, confirmação,
-  operação "Movimentar embalagens", legenda). Bibliotecas externas declaradas no próprio `view.ftl` com SRI (ver "Recursos externos").
+- `view.ftl`: cabeçalho + 8 filtros + barra de seleção + tabela + 5 `<dialog>` (detalhes, operação "Movimentar
+  embalagens", legenda, "Configurar impressora", "Mais ações"). Bibliotecas externas declaradas no próprio `view.ftl` com SRI (ver "Recursos externos").
 - `widget_nw_manutEtiq.js`: SuperWidget com Tabulator 6.4.0 (CDN), autocompletes próprios ligados aos apoios do
   Dataset, validação dos filtros, seleção por caixa de marcação, ação em lote e modal de operação — configurados em
   `NWM_STATUS` / `NWM_POSICOES` / `NWM_ACOES`. Transporte: método da instância `chamarEmbalagens(acao, parametros)`
@@ -36,13 +36,30 @@ Etapa 2 **commitada, ainda não validada ao vivo no Fluig**: a tela consulta o D
 o Widget não checa permissão (quem autoriza é o Dataset), não há a visão do não-ADM e **não há o campo C. Barras** (é exclusivo do não-ADM).
 Cabeçalho sem botão **Gerar etiquetas** (decisão do usuário): a geração é interna ao backend (gatilho do RE1001);
 o Fluig só consulta o resultado (`consultarGeracao`).
+Cabeçalho com botão **Impressora** (`bi-gear`, mesma classe do **Buscar**: `nwm-btn nwm-btn-destaque`) no lugar do "+ Novo" do
+padrão. Abre o `<dialog>` "Configurar impressora" (padrão `nwm`, não `FLUIGC.modal`): lista as impressoras do aplicativo local
+`http://localhost:32478` (o mesmo da tela antiga); **Salvar** guarda no `localStorage` (chave `impressora`, compartilhada com a tela
+antiga); **Testar** imprime etiqueta de exemplo com o template do GED (documento 423); **Atualizar** refaz a busca. Sem o aplicativo,
+o modal limpa a lista e mostra a orientação. A impressão real das etiquetas ainda não está integrada.
 
 ## Tela
 ### Filtros (todos visíveis, sem bloco colapsável; todos faixa De/Até)
 Estabelecimento (**obrigatório**) · Itens · Depósito · Cód Barras · Lote · Data Validade (`input type=date`)
 · Família · Nota Fiscal (rádio **Intervalo** × **Específicas**). Ação: **Buscar**.
+Campos de texto dos filtros com `maxlength="100"` (limite do `filtro` dos apoios na DT120).
+Ao escolher uma sugestão (todos os autocompletes, **exceto Notas Específicas**), o campo vira um **selo** "código - descrição"
+(Nota Fiscal: "número - nome do emitente" de `descricaoEmitente`, ou a série; Lote com descrição igual ao código mostra só o código),
+texto completo no `title` e um **×** para remover (pedido do usuário, 08/10/2026). O código nunca encolhe; a descrição corta com "…".
+Seleção única: com o selo o campo fica
+`readOnly` e escondido (`is-selecionado`); remover limpa o valor e devolve o foco ao campo. O valor continua no input para busca/validação.
 Autocomplete (2+ caracteres, busca por código ou descrição, 20 por página com "Carregar mais resultados") em
 Estabelecimento, Itens, Depósito, Lote e Família; nos campos de faixa o autocomplete preenche **só o código**.
+Nota Fiscal **De/Até** usa a mesma busca de documentos de entrada das **Específicas** (`apoiarDocumentosEntrada`, exige
+Estabelecimento De e Até) e preenche o **número da nota** (`numero`), que vai em `notaDe`/`notaAte` (pedido do usuário, 08/10/2026).
+DT124 (pedido do usuário, 08/10/2026): o autocomplete de **Itens** envia `tipoControleEstoque: "3"` (só itens com controle Lote) e o de
+**Nota Fiscal** (De/Até e Específicas) envia `somenteComEmbalagens: "true"` (só notas com etiquetas do recebimento vigente; no De/Até
+por decisão do usuário, já que a DT124 cita só as Específicas). Ambos como
+texto, aceitos no `NW_ACOES` do Dataset. A busca interna da descrição do item na grade não usa o filtro.
 Item e Depósito só filtram por estabelecimento quando Estabelecimento De = Até; Lote recebe as faixas de
 estabelecimento, item e depósito. Cód Barras é a faixa do código da etiqueta (`etiquetaDe`/`etiquetaAte`).
 Nota Fiscal **Específicas**: busca documentos de entrada (pela faixa de estabelecimento) e monta uma lista de
@@ -60,6 +77,7 @@ de operação) + **Aplicar** acoplado à direita · **Escolher item** (select) +
 direita (marca embalagens inteiras do item — ativas, no estabelecimento, sem Bag e com saldo igual à quantidade
 inicial — até atingir a quantidade pedida; o total pode passar do pedido).
 Os dois selects usam **Select2 4.0.13** (pt-BR, com busca). Não há contador de etiquetas selecionadas (decisão do usuário).
+Clicar em **Escolher item** sem item elegível na grade mostra `FLUIGC.toast` de aviso "É necessário ter ao menos um item selecionado." (pedido do usuário, 08/10/2026).
 
 ### Tabela
 marcação | Código | Descrição | Fazenda | Etiqueta | Lote | Data Val. | Qtde Emb | Qtde Saldo | Status | Ações
@@ -71,17 +89,26 @@ marcação | Código | Descrição | Fazenda | Etiqueta | Lote | Data Val. | Qtd
   Só etiquetas `EMBALAGEM` de uma busca concluída podem ser marcadas.
 - **Status é chip colorido na célula** (a tela antiga pintava a linha inteira). A legenda do rodapé virou o
   botão de ajuda ao lado do título da coluna Status, que abre o modal "Legenda dos status".
-- **Ações são botões só-ícone** com `title` + `aria-label`: Detalhes `bi-eye` · Imprimir `bi-printer` ·
-  Receber `bi-box-arrow-in-down` · Estornar `bi-arrow-counterclockwise` · Descartar `bi-trash3` ·
-  Transferir / Remessa `bi-arrow-left-right` · Devolver `bi-box-arrow-up`.
+- **Ações são botões só-ícone** com `title` + `aria-label`. Na linha ficam só os que funcionam: Detalhes `bi-eye` ·
+  Transferir / Remessa `bi-arrow-left-right` · Devolver `bi-box-arrow-up` · **"…"** `bi-three-dots` (pedido do usuário, 08/10/2026).
+  O "…" abre o `<dialog>` **"Mais ações"** (`data-modal-mais-acoes`) com Imprimir `bi-printer` · Receber `bi-box-arrow-in-down` ·
+  Estornar `bi-arrow-counterclockwise` · Descartar `bi-trash3` (marcadas `secundaria` em `NWM_ACOES`), desabilitadas com o motivo
+  escrito; quando habilitadas, executam pela mesma `acaoNaLinha`. Larguras para caber em 1127px sem rolagem: Ações 160,
+  Status 136, Descrição mínimo 154.
 
 ### Status, posição e ações
-- **Status** = situação do backend (`NWM_STATUS`): `ATIVA` Ativa · `ENCERRADA` Encerrada · `CANCELADA` Cancelada ·
-  `DESCARTADA` Descartada. A legenda atual é provisória ("Situação X no controle de embalagens.").
+- **Coluna Status e legenda** = status operacional do backend (pedido do usuário, 08/10/2026): selo com o texto de
+  `descricaoSituacao` e a cor pelo código `situacaoApresentada` (vistos no TESTE: `NAO_IMPRESSA` "Nao impressa", `EM_ESTOQUE`
+  "Em estoque", `CANCELADA` "Cancelada"; código desconhecido usa o selo padrão; texto longo corta com "…" e mostra inteiro no
+  `title`). A legenda lista os status presentes na consulta atual, com a quantidade de etiquetas (o contrato não traz a lista completa).
+- **`situacao`** (`NWM_STATUS`: `ATIVA`, `ENCERRADA`, `CANCELADA`, `DESCARTADA`) continua sendo o estado técnico da identidade: usado nas
+  regras (elegibilidade, Transferir/Devolver) e exibido em Detalhes como "Situação técnica"; não substitui o status operacional.
+- **`impressaoConfirmada`** e **`recebimentoFisicoConfirmado`** (booleanos) aparecem em Detalhes (Sim/Não). Sem os campos novos
+  (backend antigo), a tela usa a situação técnica e mostra "—"; tipo errado é recusado como fora do contrato.
 - **Posição** (`tipoLocal`, `NWM_POSICOES`): `ESTAB` Estabelecimento · `CAMPO` Campo · `TERCEIRO` Terceiro ·
   `TRANSITO` Trânsito; aparece no modal de detalhes.
-- **Ações por linha** dependem de `tipoControle`, não do status: Detalhes sempre; Transferir / Remessa e Devolver
-  só em `EMBALAGEM`; Imprimir, Receber, Estornar e Descartar aparecem desabilitados (o `title` diz o motivo).
+- **Ações por linha** dependem de `tipoControle`, não do status: Detalhes sempre; Transferir / Remessa, Devolver e "…"
+  só em `EMBALAGEM`; no "Mais ações", Imprimir, Receber, Estornar e Descartar aparecem desabilitados com o motivo.
   `PRE_SALDO` só tem Detalhes.
 
 ### Modal de operação ("Movimentar embalagens")
