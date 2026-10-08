@@ -19,32 +19,20 @@
         <!-- campos que a regra exige: Estabelecimento sempre; Itens OU Nota Fiscal -->
         <div class="nwm-filtros-principais">
             <div class="nwm-campo nwm-faixa">
-                <span class="nwm-campo-rotulo" id="nwm-rot-est-${instanceId}">Estabelecimento <abbr class="nwm-obrigatorio" title="Obrigatório">*</abbr></span>
+                <span class="nwm-campo-rotulo" id="nwm-rot-est-${instanceId}">Estabelecimento</span>
                 <div class="nwm-faixa-caixa" role="group" aria-labelledby="nwm-rot-est-${instanceId}">
-                    <div class="nwm-campo-caixa" data-auto="estabelecimentos">
-                        <input type="text" id="nwm-est-de-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="De" aria-label="Estabelecimento de" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-est-de-lista-${instanceId}" data-filtro="estDe">
-                        <ul class="nwm-sugestoes" id="nwm-est-de-lista-${instanceId}" role="listbox" aria-label="Estabelecimentos encontrados" hidden></ul>
-                    </div>
+                    <input type="text" id="nwm-est-de-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="De" aria-label="Estabelecimento de" autocomplete="off" data-filtro="estDe">
                     <span class="nwm-faixa-tracinho" aria-hidden="true">&ndash;</span>
-                    <div class="nwm-campo-caixa" data-auto="estabelecimentos">
-                        <input type="text" id="nwm-est-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Estabelecimento até" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-est-ate-lista-${instanceId}" data-filtro="estAte">
-                        <ul class="nwm-sugestoes" id="nwm-est-ate-lista-${instanceId}" role="listbox" aria-label="Estabelecimentos encontrados" hidden></ul>
-                    </div>
+                    <input type="text" id="nwm-est-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Estabelecimento até" autocomplete="off" data-filtro="estAte">
                 </div>
             </div>
 
             <div class="nwm-campo nwm-faixa">
                 <span class="nwm-campo-rotulo" id="nwm-rot-item-${instanceId}">Itens</span>
                 <div class="nwm-faixa-caixa" role="group" aria-labelledby="nwm-rot-item-${instanceId}">
-                    <div class="nwm-campo-caixa" data-auto="itens">
-                        <input type="text" id="nwm-item-de-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="De" aria-label="Item de" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-item-de-lista-${instanceId}" data-filtro="itemDe">
-                        <ul class="nwm-sugestoes" id="nwm-item-de-lista-${instanceId}" role="listbox" aria-label="Itens encontrados" hidden></ul>
-                    </div>
+                    <input type="text" id="nwm-item-de-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="De" aria-label="Item de" autocomplete="off" data-filtro="itemDe">
                     <span class="nwm-faixa-tracinho" aria-hidden="true">&ndash;</span>
-                    <div class="nwm-campo-caixa" data-auto="itens">
-                        <input type="text" id="nwm-item-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Item até" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-item-ate-lista-${instanceId}" data-filtro="itemAte">
-                        <ul class="nwm-sugestoes" id="nwm-item-ate-lista-${instanceId}" role="listbox" aria-label="Itens encontrados" hidden></ul>
-                    </div>
+                    <input type="text" id="nwm-item-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Item até" autocomplete="off" data-filtro="itemAte">
                 </div>
             </div>
 
@@ -77,15 +65,9 @@
             <div class="nwm-campo nwm-faixa">
                 <span class="nwm-campo-rotulo" id="nwm-rot-dep-${instanceId}">Depósito</span>
                 <div class="nwm-faixa-caixa" role="group" aria-labelledby="nwm-rot-dep-${instanceId}">
-                    <div class="nwm-campo-caixa" data-auto="depositos">
-                        <input type="text" id="nwm-dep-de-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="De" aria-label="Depósito de" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-dep-de-lista-${instanceId}" data-filtro="depDe">
-                        <ul class="nwm-sugestoes" id="nwm-dep-de-lista-${instanceId}" role="listbox" aria-label="Depósitos encontrados" hidden></ul>
-                    </div>
+                    <input type="text" id="nwm-dep-de-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="De" aria-label="Depósito de" autocomplete="off" data-filtro="depDe">
                     <span class="nwm-faixa-tracinho" aria-hidden="true">&ndash;</span>
-                    <div class="nwm-campo-caixa" data-auto="depositos">
-                        <input type="text" id="nwm-dep-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Depósito até" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-dep-ate-lista-${instanceId}" data-filtro="depAte">
-                        <ul class="nwm-sugestoes" id="nwm-dep-ate-lista-${instanceId}" role="listbox" aria-label="Depósitos encontrados" hidden></ul>
-                    </div>
+                    <input type="text" id="nwm-dep-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Depósito até" autocomplete="off" data-filtro="depAte">
                 </div>
             </div>
             <div class="nwm-campo nwm-faixa">
@@ -115,15 +97,9 @@
             <div class="nwm-campo nwm-faixa">
                 <span class="nwm-campo-rotulo" id="nwm-rot-familia-${instanceId}">Família</span>
                 <div class="nwm-faixa-caixa" role="group" aria-labelledby="nwm-rot-familia-${instanceId}">
-                    <div class="nwm-campo-caixa" data-auto="familias">
-                        <input type="text" id="nwm-familia-de-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="De" aria-label="Família de" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-familia-de-lista-${instanceId}" data-filtro="familiaDe">
-                        <ul class="nwm-sugestoes" id="nwm-familia-de-lista-${instanceId}" role="listbox" aria-label="Famílias encontradas" hidden></ul>
-                    </div>
+                    <input type="text" id="nwm-familia-de-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="De" aria-label="Família de" autocomplete="off" data-filtro="familiaDe">
                     <span class="nwm-faixa-tracinho" aria-hidden="true">&ndash;</span>
-                    <div class="nwm-campo-caixa" data-auto="familias">
-                        <input type="text" id="nwm-familia-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Família até" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="nwm-familia-ate-lista-${instanceId}" data-filtro="familiaAte">
-                        <ul class="nwm-sugestoes" id="nwm-familia-ate-lista-${instanceId}" role="listbox" aria-label="Famílias encontradas" hidden></ul>
-                    </div>
+                    <input type="text" id="nwm-familia-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Família até" autocomplete="off" data-filtro="familiaAte">
                 </div>
             </div>
         </div>
@@ -167,7 +143,7 @@
                                 <option value="transferir">Transferir</option>
                             </select>
                         </div>
-                        <button type="button" class="nwm-btn nwm-btn-contorno" data-aplicar-lote><i class="bi bi-check2-all" aria-hidden="true"></i>Aplicar</button>
+                        <button type="button" class="nwm-btn nwm-btn-destaque" data-aplicar-lote><i class="bi bi-check2-all" aria-hidden="true"></i>Aplicar</button>
                     </div>
                 </div>
             </div>
@@ -184,7 +160,7 @@
                     <label class="nwm-campo-rotulo" for="nwm-qtde-${instanceId}">Quantidade</label>
                     <div class="nwm-acoplado">
                         <input type="number" id="nwm-qtde-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" min="0" step="0.0001" placeholder="0" autocomplete="off" data-qtde>
-                        <button type="button" class="nwm-btn nwm-btn-contorno" data-executar-qtde><i class="bi bi-ui-checks" aria-hidden="true"></i>Executar</button>
+                        <button type="button" class="nwm-btn nwm-btn-destaque" data-executar-qtde><i class="bi bi-ui-checks" aria-hidden="true"></i>Executar</button>
                     </div>
                 </div>
             </div>

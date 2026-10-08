@@ -1,24 +1,10 @@
 // DADOS MOCKADOS, só para visualizar a tela. Trocar pelos datasets/REST quando forem definidos.
-// Listas de apoio usadas pelos autocompletes dos filtros.
+// Lista de itens usada pelo select de seleção por quantidade.
 var NWM_FONTES = {
-    estabelecimentos: [
-        { codigo: '10901', descricao: 'Fazenda 10901' },
-        { codigo: '10902', descricao: 'Fazenda 10902' },
-        { codigo: '10904', descricao: 'Fazenda 10904' }
-    ],
     itens: [
         { codigo: '357867', descricao: 'REGLONE', unidade: 'LT' },
         { codigo: '361378', descricao: 'OMITE 720 CE BR - ONU 3082', unidade: 'LT' },
         { codigo: '365131', descricao: 'DIMEXION - ONU 3018', unidade: 'LT' }
-    ],
-    depositos: [
-        { codigo: 'ALM01', descricao: 'Almoxarifado central' },
-        { codigo: 'BAR02', descricao: 'Barracão de defensivos' },
-        { codigo: 'BAG03', descricao: 'Bag de embalagens vazias' }
-    ],
-    familias: [
-        { codigo: 'DEF', descricao: 'Defensivos' },
-        { codigo: 'FER', descricao: 'Fertilizantes' }
     ]
 };
 
@@ -74,7 +60,7 @@ var NWM_ACOES = {
 
 // Etiquetas mockadas. Nomes dos campos do Progress ao lado: it-codigo, desc-item, cod-estabel,
 // char-1 (etiqueta), lote, dt-vali-lote, qtidade-ini, qtidade-atu, sit_etiqueta.
-// Depósito, família, código de barras e nota fiscal existem nos filtros da tela antiga;
+// Depósito, família e nota fiscal são usados pelos filtros;
 // o nome do campo no banco ainda não foi confirmado.
 var NWM_DADOS_MOCK = [
     { id: 1, itCodigo: '365131', descItem: 'DIMEXION - ONU 3018', codEstabel: '10901', deposito: 'BAR02', etiqueta: '000123', lote: 'L2601', dtValiLote: '2026-12-10', qtidadeIni: 20, qtidadeAtu: 20, unidade: 'LT', familia: 'DEF', codBarras: '7891000000123', notaFiscal: '12345', situacao: 'impressa' },
@@ -121,7 +107,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             $('[data-tabela]', this.DOM).html('<p class="nwm-tabela-erro">Não foi possível carregar a tabela. Verifique a conexão com a internet e recarregue a página.</p>');
         }
 
-        this.prepararAutocompletes();
+        this.prepararFiltros();
         this.montarSelectItens();
         if ($.fn.select2) this.prepararSelect2();
 
@@ -145,128 +131,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         global: {}
     },
 
-    // ---------- Autocomplete (estabelecimento, item, depósito e família) ----------
+    // ---------- Entrada dos filtros ----------
 
-    //um só conjunto de handlers, delegado a partir da div do widget: vale para os filtros e para o bloco de quantidade
-    prepararAutocompletes() {
-        var self = this;
-        var $raiz = $(this.DOM);
-
-        $raiz.on('input.nwm', '[data-auto] .nwm-campo-input', function () {
-            $(this).removeData('codigo');
-            self.abrirSugestoes($(this));
-        });
-
-        $raiz.on('focus.nwm', '[data-auto] .nwm-campo-input', function () {
-            self.abrirSugestoes($(this));
-        });
-
-        $raiz.on('keydown.nwm', '[data-auto] .nwm-campo-input', function (event) {
-            self.teclaNoAutocomplete($(this), event);
-        });
-
-        //clique na sugestão: mousedown, porque o blur do input fecha a lista antes do click
-        $raiz.on('mousedown.nwm', '[data-auto] .nwm-sugestao', function (event) {
-            event.preventDefault();
-            var $caixa = $(this).closest('[data-auto]');
-            self.escolherSugestao($caixa.find('.nwm-campo-input'), $(this).data('indice'));
-        });
-
-        $raiz.on('blur.nwm', '[data-auto] .nwm-campo-input', function () {
-            var $input = $(this);
-            setTimeout(function () { self.fecharSugestoes($input); }, 150);
-        });
-
+    prepararFiltros() {
         //o aviso de filtro obrigatório sai assim que a pessoa volta a digitar no campo
-        $raiz.on('input.nwm', '.nwm-filtros .nwm-campo-input', function () {
+        $(this.DOM).on('input.nwm', '.nwm-filtros .nwm-campo-input', function () {
             $(this).removeClass('is-invalido').removeAttr('aria-invalid');
         });
-    },
-
-    //lista filtrada pelo que foi digitado (a partir de 2 caracteres, como nas outras telas)
-    sugestoesPara($input) {
-        var $caixa = $input.closest('[data-auto]');
-        var fonte = NWM_FONTES[$caixa.data('auto')] || [];
-        var termo = this.normalizar($input.val());
-        if (termo.length < 2) return null;
-
-        var self = this;
-        return fonte.filter(function (x) {
-            return self.normalizar(x.codigo + ' ' + x.descricao).indexOf(termo) !== -1;
-        }).slice(0, 20);
-    },
-
-    abrirSugestoes($input) {
-        var $lista = $input.closest('[data-auto]').find('.nwm-sugestoes');
-        var achados = this.sugestoesPara($input);
-
-        if (achados === null) {
-            this.fecharSugestoes($input);
-            return;
-        }
-
-        $lista.empty();
-        if (!achados.length) {
-            $lista.append($('<li>').addClass('nwm-sugestao-vazia').text('Nenhuma opção encontrada.'));
-        } else {
-            achados.forEach(function (x, i) {
-                $('<li>')
-                    .addClass('nwm-sugestao')
-                    .attr({ role: 'option', 'aria-selected': 'false' })
-                    .data('indice', i)
-                    .append($('<span>').addClass('nwm-sugestao-codigo').text(x.codigo))
-                    .append($('<span>').addClass('nwm-sugestao-descricao').text(x.descricao))
-                    .appendTo($lista);
-            });
-        }
-        $lista.prop('hidden', false);
-        $input.attr('aria-expanded', 'true');
-    },
-
-    fecharSugestoes($input) {
-        $input.closest('[data-auto]').find('.nwm-sugestoes').prop('hidden', true).empty();
-        $input.attr('aria-expanded', 'false');
-    },
-
-    //setas navegam, Enter escolhe, Esc fecha
-    teclaNoAutocomplete($input, event) {
-        var $opcoes = $input.closest('[data-auto]').find('.nwm-sugestao');
-
-        if (event.key === 'Escape') {
-            this.fecharSugestoes($input);
-            return;
-        }
-        if (!$opcoes.length) return;
-
-        var atual = $opcoes.index($opcoes.filter('.is-ativa'));
-
-        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-            event.preventDefault();
-            var destino = event.key === 'ArrowDown'
-                ? (atual + 1) % $opcoes.length
-                : (atual <= 0 ? $opcoes.length - 1 : atual - 1);
-            $opcoes.removeClass('is-ativa').attr('aria-selected', 'false');
-            $opcoes.eq(destino).addClass('is-ativa').attr('aria-selected', 'true');
-            $opcoes.eq(destino)[0].scrollIntoView({ block: 'nearest' });
-            return;
-        }
-        if (event.key === 'Enter' && atual !== -1) {
-            event.preventDefault();
-            this.escolherSugestao($input, $opcoes.eq(atual).data('indice'));
-        }
-    },
-
-    escolherSugestao($input, indice) {
-        var achados = this.sugestoesPara($input);
-        if (!achados || !achados[indice]) return;
-        var escolhido = achados[indice];
-
-        //nos filtros De/Até vale só o código (é faixa); no "Escolher item" cabe código e descrição
-        var soCodigo = $input.closest('.nwm-faixa').length > 0;
-        $input.val(soCodigo ? escolhido.codigo : escolhido.codigo + ' — ' + escolhido.descricao);
-        $input.data('codigo', escolhido.codigo);
-        $input.removeClass('is-invalido').removeAttr('aria-invalid');
-        this.fecharSugestoes($input);
     },
 
     // ---------- Tabela ----------
@@ -563,10 +434,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     buscar(htmlElement, event) {
-        if (!this.tabela) return;
         var self = this;
         var f = this.lerFiltros();
         if (!this.validarFiltros(f)) return;
+        if (!this.tabela) return;
 
         //a seleção não sobrevive à troca de filtro: ficaria contando etiqueta que saiu da tela
         this.limparSelecao();

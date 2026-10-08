@@ -509,61 +509,6 @@
     z-index: 1;
 }
 
-/* ---------- Autocomplete ---------- */
-.fluig-style-guide.nwm .nwm-sugestoes {
-    position: absolute;
-    z-index: 30;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    min-width: 240px;
-    max-height: 260px;
-    margin: 0;
-    padding: 6px;
-    overflow-y: auto;
-    list-style: none;
-    border: 1px solid var(--nwm-linha);
-    border-radius: 12px;
-    background-color: #fff;
-    box-shadow: 0 12px 32px rgba(32, 32, 30, 0.16);
-}
-
-.fluig-style-guide.nwm .nwm-sugestoes[hidden] {
-    display: none;
-}
-
-.fluig-style-guide.nwm .nwm-sugestao {
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    line-height: 1.35;
-    color: var(--nwm-tinta);
-    cursor: pointer;
-}
-
-.fluig-style-guide.nwm .nwm-sugestao-codigo {
-    margin-right: 6px;
-    font-weight: 700;
-}
-
-.fluig-style-guide.nwm .nwm-sugestao-descricao {
-    color: var(--nwm-tinta-suave);
-}
-
-.fluig-style-guide.nwm .nwm-sugestao:hover,
-.fluig-style-guide.nwm .nwm-sugestao.is-ativa {
-    background-color: var(--nwm-nevoa);
-}
-
-.fluig-style-guide.nwm .nwm-sugestao-vazia,
-.fluig-style-guide.nwm .nwm-sugestao-vazia:hover {
-    padding: 10px 12px;
-    background-color: transparent;
-    font-size: 14px;
-    color: var(--nwm-tinta-suave);
-    cursor: default;
-}
-
 /* ---------- Botões ---------- */
 .fluig-style-guide.nwm .nwm-btn {
     display: inline-flex;
