@@ -53,6 +53,18 @@ var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
 var NWM_ESCALA_QUANTIDADE = 10000;
 var NWM_ALTURA_MAXIMA_TABELA = 560;
 var NWM_TAMANHO_PAGINA = 20;
+
+var NWM_LEGENDA_STATUS = [
+    { codigo: 'NAO_IMPRESSA', rotulo: 'Não impressa', descricao: 'Impressão ainda não confirmada.' },
+    { codigo: 'IMPRESSA', rotulo: 'Impressa', descricao: 'Aguarda recebimento físico no almoxarifado.' },
+    { codigo: 'EM_ESTOQUE', rotulo: 'Em estoque', descricao: 'Recebimento físico confirmado.' },
+    { codigo: 'EM_CAMPO', rotulo: 'Em campo', descricao: 'Registrada na posição de campo.' },
+    { codigo: 'AGUARDANDO_RECEBIMENTO', rotulo: 'Aguardando recebimento', descricao: 'Em trânsito para o destino.' },
+    { codigo: 'EM_TERCEIRO', rotulo: 'Em terceiro', descricao: 'Embalagem sob custódia de terceiro para armazenagem.' },
+    { codigo: 'ZERADA', rotulo: 'Zerada', descricao: 'Sem conteúdo, ainda fora de uma Bag.' },
+    { codigo: 'EM_BAG', rotulo: 'Em Bag', descricao: 'Vinculada a uma Bag ainda não enviada.' },
+    { codigo: 'DESCARTADA', rotulo: 'Descartada', descricao: 'Descarte registrado no envio da Bag.' }
+];
 var NWM_CRESCIMENTO_DESCRICAO = 3;
 
 var NWM_LARGURAS_COLUNAS = {
@@ -2626,15 +2638,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     montarLegenda() {
         var self = this;
         var $lista = $('[data-legenda-lista]', this.DOM).empty();
-        var situacoes = this.situacoesApresentadas();
-        if (!situacoes.length) {
-            $('<li>').append($('<span>').addClass('nwm-legenda-texto').text('Faça uma busca para ver os status das etiquetas listadas.')).appendTo($lista);
-            return;
-        }
-        $.each(situacoes, function (indice, situacao) {
+        $.each(NWM_LEGENDA_STATUS, function (indice, status) {
             $('<li>')
-                .append($(self.montarChipStatus(situacao.codigo, situacao.descricao)))
-                .append($('<span>').addClass('nwm-legenda-texto').text(self.textoQuantidadeEtiquetas(situacao.quantidade)))
+                .append($(self.montarChipStatus(status.codigo, status.rotulo)))
+                .append($('<span>').addClass('nwm-legenda-texto').text(status.descricao))
                 .appendTo($lista);
         });
     },

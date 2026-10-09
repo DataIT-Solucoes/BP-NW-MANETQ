@@ -1167,17 +1167,35 @@
 .fluig-style-guide.nwm .nwm-chip-ENCERRADA { border-color: var(--nwm-linha); background-color: var(--nwm-marfim); }
 .fluig-style-guide.nwm .nwm-chip-ENCERRADA .nwm-chip-ponto { background-color: var(--nwm-tinta-suave); }
 
-.fluig-style-guide.nwm .nwm-chip-CANCELADA { border-color: var(--nwm-vermelho-escuro); background-color: var(--nwm-marfim); }
-.fluig-style-guide.nwm .nwm-chip-CANCELADA .nwm-chip-ponto { background-color: var(--nwm-vermelho-escuro); }
+.fluig-style-guide.nwm .nwm-chip-NAO_IMPRESSA { border-color: #5E5D57; background-color: #F7F5EE; }
+.fluig-style-guide.nwm .nwm-chip-NAO_IMPRESSA .nwm-chip-ponto { background-color: #5E5D57; }
 
-.fluig-style-guide.nwm .nwm-chip-DESCARTADA { border-color: var(--nwm-vermelho); background-color: var(--nwm-marfim); }
-.fluig-style-guide.nwm .nwm-chip-DESCARTADA .nwm-chip-ponto { background-color: var(--nwm-vermelho); }
+.fluig-style-guide.nwm .nwm-chip-IMPRESSA { border-color: #B39400; background-color: #FFF8CC; }
+.fluig-style-guide.nwm .nwm-chip-IMPRESSA .nwm-chip-ponto { background-color: #FFD200; }
 
-.fluig-style-guide.nwm .nwm-chip-EM_ESTOQUE { border-color: var(--nwm-verde); background-color: var(--nwm-nevoa); }
-.fluig-style-guide.nwm .nwm-chip-EM_ESTOQUE .nwm-chip-ponto { background-color: var(--nwm-verde); }
+.fluig-style-guide.nwm .nwm-chip-EM_ESTOQUE { border-color: #006B35; background-color: #E5EDE3; }
+.fluig-style-guide.nwm .nwm-chip-EM_ESTOQUE .nwm-chip-ponto { background-color: #006B35; }
 
-.fluig-style-guide.nwm .nwm-chip-NAO_IMPRESSA { border-color: var(--nwm-linha); background-color: var(--nwm-marfim); }
-.fluig-style-guide.nwm .nwm-chip-NAO_IMPRESSA .nwm-chip-ponto { background-color: var(--nwm-tinta-suave); }
+.fluig-style-guide.nwm .nwm-chip-EM_CAMPO { border-color: #1F6FB2; background-color: #E3EEF7; }
+.fluig-style-guide.nwm .nwm-chip-EM_CAMPO .nwm-chip-ponto { background-color: #1F6FB2; }
+
+.fluig-style-guide.nwm .nwm-chip-AGUARDANDO_RECEBIMENTO { border-color: #D9701A; background-color: #FBEBDD; }
+.fluig-style-guide.nwm .nwm-chip-AGUARDANDO_RECEBIMENTO .nwm-chip-ponto { background-color: #D9701A; }
+
+.fluig-style-guide.nwm .nwm-chip-EM_TERCEIRO { border-color: #6B4C9A; background-color: #EEE9F5; }
+.fluig-style-guide.nwm .nwm-chip-EM_TERCEIRO .nwm-chip-ponto { background-color: #6B4C9A; }
+
+.fluig-style-guide.nwm .nwm-chip-ZERADA { border-color: #9A988F; background-color: #EEEDE8; }
+.fluig-style-guide.nwm .nwm-chip-ZERADA .nwm-chip-ponto { background-color: #9A988F; }
+
+.fluig-style-guide.nwm .nwm-chip-EM_BAG { border-color: #16837F; background-color: #E0F0EF; }
+.fluig-style-guide.nwm .nwm-chip-EM_BAG .nwm-chip-ponto { background-color: #16837F; }
+
+.fluig-style-guide.nwm .nwm-chip-DESCARTADA { border-color: #ED1C24; background-color: #FCE6E7; }
+.fluig-style-guide.nwm .nwm-chip-DESCARTADA .nwm-chip-ponto { background-color: #ED1C24; }
+
+.fluig-style-guide.nwm .nwm-chip-CANCELADA { border-color: #A8245F; background-color: #F7E3EC; }
+.fluig-style-guide.nwm .nwm-chip-CANCELADA .nwm-chip-ponto { background-color: #A8245F; }
 
 .fluig-style-guide.nwm .nwm-tabela .nwm-chip {
     max-width: 100%;
