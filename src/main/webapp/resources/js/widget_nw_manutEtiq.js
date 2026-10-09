@@ -240,16 +240,18 @@ var NWM_ETIQUETA_TESTE = {
 
 var NWM_ACOES_POR_STATUS = {
   NAO_IMPRESSA: ["detalhes", "imprimir"],
-  IMPRESSA: ["detalhes", "imprimir", "reimprimir"],
-  EM_ESTOQUE: ["detalhes", "imprimir", "reimprimir"],
-  EM_CAMPO: ["detalhes", "imprimir", "reimprimir"],
-  AGUARDANDO_RECEBIMENTO: ["detalhes", "imprimir", "reimprimir"],
-  EM_TERCEIRO: ["detalhes", "imprimir", "reimprimir"],
-  ZERADA: ["detalhes", "imprimir", "reimprimir"],
-  EM_BAG: ["detalhes", "imprimir", "reimprimir"],
-  DESCARTADA: ["detalhes", "imprimir", "reimprimir"],
-  CANCELADA: ["detalhes", "imprimir", "reimprimir"],
+  IMPRESSA: ["detalhes", "receber", "descartar", "transferir"],
+  EM_ESTOQUE: ["detalhes", "estornar", "descartar", "transferir"],
+  EM_CAMPO: ["detalhes", "estornar", "descartar"],
+  AGUARDANDO_RECEBIMENTO: ["detalhes"],
+  EM_TERCEIRO: ["detalhes"],
+  ZERADA: ["detalhes", "estornar", "descartar"],
+  EM_BAG: ["detalhes"],
+  DESCARTADA: ["detalhes", "estornar"],
+  CANCELADA: ["detalhes"],
 };
+
+var NWM_ACOES_PADRAO = ["detalhes"];
 
 var widget_nw_manutEtiq = SuperWidget.extend({
   tabela: null,
@@ -1626,58 +1628,20 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return $("<span>", { text: "Status" }).append($ajuda)[0];
   },
 
-  htmlBotaoColAcoes(acao, etiqueta) {
-    var configuracaoAcao = NWM_ACOES[acao];
-    if (configuracaoAcao) return;
-    var $botaoAcao = $("<button>", {
-      type: "button",
-      class: "nwm-acao nwm-acao-" + acao,
-      "data-acao": acao,
-      title: configuracaoAcao.rotulo,
-      "aria-label":
-        configuracaoAcao.rotulo +
-        " etiqueta " +
-        etiqueta.etiqueta +
-        " do item " +
-        etiqueta.itCodigo,
-    });
-
-    var $iconeAcao = $("<i>", {
-      class: "bi " + configuracaoAcao.icone,
-      "aria-hidden": "true",
-    });
-
-    return $botaoAcao.append($iconeAcao).prop("outerHTML");
-
-    // switch (acao) {
-    //   case "detalhes":
-    //     return `<button type="button" class="nwm-acao nwm-acao-detalhes" data-acao="detalhes" title="Detalhes" aria-label="Detalhes etiqueta ${etiqueta.etiqueta} do item ${etiqueta.itCodigo}"><i class="bi bi-eye" aria-hidden="true"></i></button>`;
-    //   case "imprimir":
-    //     return `<button type="button" class="nwm-acao nwm-acao-imprimir" data-acao="imprimir" title="Imprimir" aria-label="Imprimir etiqueta ${etiqueta.etiqueta} do item ${etiqueta.itCodigo}"><i class="bi bi-printer" aria-hidden="true"></i></button>`;
-    //   case "reimprimir":
-    //     return `<button type="button" class="nwm-acao nwm-acao-reimprimir" data-acao="reimprimir" title="Reimprimir" aria-label="Reimprimir etiqueta ${etiqueta.etiqueta} do item ${etiqueta.itCodigo}"><i class="bi bi-printer-fill" aria-hidden="true"></i></button>`;
-    //   case "receber":
-    //     return `<button type="button" class="nwm-acao nwm-acao-receber" data-acao="receber" title="Receber" aria-label="Receber etiqueta ${etiqueta.etiqueta} do item ${etiqueta.itCodigo}"><i class="bi bi-box-arrow-in-down" aria-hidden="true"></i></button>`;
-    //   case "estornar":
-    //     return `<button type="button" class="nwm-acao nwm-acao-estornar" data-acao="estornar" title="Estornar" aria-label="Estornar etiqueta ${etiqueta.etiqueta} do item ${etiqueta.itCodigo}"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i></button>`;
-    //   case "descartar":
-    //     return `<button type="button" class="nwm-acao nwm-acao-descartar" data-acao="descartar" title="Descartar" aria-label="Descartar etiqueta ${etiqueta.etiqueta} do item ${etiqueta.itCodigo}"><i class="bi bi-trash3" aria-hidden="true"></i></button>`;
-    //   case "transferir":
-    //     return `<button type="button" class="nwm-acao nwm-acao-transferir" data-acao="transferir" title="Transferir / Remessa" aria-label="Transferir / Remessa etiqueta ${etiqueta.etiqueta} do item ${etiqueta.itCodigo}"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>`;
-    //   case "devolver":
-    //     return `<button type="button" class="nwm-acao nwm-acao-devolver" data-acao="devolver" title="Devolver" aria-label="Devolver etiqueta ${etiqueta.etiqueta} do item ${etiqueta.itCodigo}"><i class="bi bi-box-arrow-up" aria-hidden="true"></i></button>`;
-    // }
-  },
-
   montarBotoesAcoes(etiqueta) {
     var self = this;
-    var botoes = $.map(
-      NWM_ACOES_POR_STATUS[etiqueta.situacaoApresentada],
-      function (acao) {
-        return self.htmlBotaoColAcoes(acao, etiqueta);
-      },
-    ).join("");
-    return `<div class="nwm-acoes">${botoes}</div>`;
+    var $acoes = $("<div>", { class: "nwm-acoes" });
+    $.each(this.acoesDaEtiqueta(etiqueta), function (indice, acao) {
+      $acoes.append(self.montarBotaoAcao(acao, NWM_ACOES[acao], etiqueta));
+    });
+    return $acoes[0];
+  },
+
+  acoesDaEtiqueta(etiqueta) {
+    if (etiqueta.tipoControle !== "EMBALAGEM") return NWM_ACOES_PADRAO;
+    return (
+      NWM_ACOES_POR_STATUS[etiqueta.situacaoApresentada] || NWM_ACOES_PADRAO
+    );
   },
 
   montarBotaoMaisAcoes(etiqueta) {
