@@ -162,11 +162,11 @@
                         <div class="nwm-campo-caixa nwm-campo-caixa-select">
                             <select id="nwm-acao-lote-${instanceId}" class="nwm-campo-input nwm-campo-select" data-acao-lote>
                                 <option value="">Selecione</option>
-                                <option value="imprimir" disabled>Imprimir (aguardando modelo)</option>
-                                <option value="receber" disabled>Receber (via Datasul)</option>
-                                <option value="estornar" disabled>Estornar (indisponível)</option>
-                                <option value="transferir">Transferência / Remessa</option>
-                                <option value="devolver">Devolução</option>
+                                <option value="imprimir">Imprimir</option>
+                                <option value="receber">Receber</option>
+                                <option value="estornar">Estornar</option>
+                                <option value="transferir">Transferir</option>
+                                <!-- <option value="devolver">Devolução</option> -->
                             </select>
                         </div>
                         <button type="button" class="nwm-btn nwm-btn-destaque" data-aplicar-lote><i class="bi bi-check2-all" aria-hidden="true"></i>Aplicar</button>
