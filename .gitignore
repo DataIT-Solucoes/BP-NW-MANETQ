@@ -4,3 +4,4 @@ debug.log
 evidencias/
 pagina_antiga_manutencao_etiquetas/
 testes/*.cjs
+.playwright-mcp/
