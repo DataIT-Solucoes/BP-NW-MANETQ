@@ -52,6 +52,7 @@ var NWM_TEMPO_MARCACAO_INVALIDO_MS = 2000;
 var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
 var NWM_ESCALA_QUANTIDADE = 10000;
 var NWM_ALTURA_MAXIMA_TABELA = 560;
+var NWM_TAMANHO_PAGINA = 20;
 var NWM_CRESCIMENTO_DESCRICAO = 3;
 
 var NWM_LARGURAS_COLUNAS = {
@@ -863,13 +864,20 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     },
 
     opcoesTabela() {
+        var self = this;
         return {
             data: [],
             index: 'id',
             layout: 'fitColumns',
             responsiveLayout: false,
             maxHeight: NWM_ALTURA_MAXIMA_TABELA,
-            pagination: false,
+            pagination: true,
+            paginationSize: NWM_TAMANHO_PAGINA,
+            paginationCounter: function (tamanhoPagina, primeiraLinha, pagina, total) {
+                return self.textoPaginacao(tamanhoPagina, primeiraLinha, total);
+            },
+            locale: 'pt-br',
+            langs: this.textosPaginacao(),
             initialSort: [
                 { column: 'itCodigo', dir: 'asc' },
                 { column: 'etiqueta', dir: 'asc' }
@@ -878,6 +886,34 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             footerElement: '<span class="nwm-tabela-contador" data-contador-tabela></span>',
             columns: this.montarColunasTabela()
         };
+    },
+
+    textoPaginacao(tamanhoPagina, primeiraLinha, total) {
+        if (!total) return '';
+        var ultimaLinha = Math.min(primeiraLinha + tamanhoPagina - 1, total);
+        return 'Mostrando ' + primeiraLinha + '–' + ultimaLinha + ' de ' + total + (total === 1 ? ' etiqueta' : ' etiquetas');
+    },
+
+    textosPaginacao() {
+        return {
+            'pt-br': {
+                pagination: {
+                    first: this.iconePaginacao('bi-chevron-double-left'), first_title: 'Primeira página',
+                    prev: this.iconePaginacao('bi-chevron-left'), prev_title: 'Página anterior',
+                    next: this.iconePaginacao('bi-chevron-right'), next_title: 'Próxima página',
+                    last: this.iconePaginacao('bi-chevron-double-right'), last_title: 'Última página'
+                }
+            }
+        };
+    },
+
+    iconePaginacao(classeIcone) {
+        return '<i class="bi ' + classeIcone + '" aria-hidden="true"></i>';
+    },
+
+    exibirDadosNaTabela(dados) {
+        var tabela = this.tabela;
+        return tabela.setData(dados).then(function () { return tabela.setPage(1); });
     },
 
     montarColunasTabela() {
@@ -1035,10 +1071,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         if (carga && carga.estado === 'erro') return 'Consulta não concluída. Clique em Buscar para tentar novamente.';
         if (carga && carga.estado === 'cancelada') return 'Consulta cancelada. Clique em Buscar.';
         if (!carga) return '';
-        var total = this.tabela.getRows('active').length;
-        var texto = total === 1 ? '1 etiqueta' : total + ' etiquetas';
-        var aviso = carga.descricoesAusentes ? ' · Descrição indisponível para ' + carga.descricoesAusentes + ' item(ns).' : '';
-        return 'Mostrando ' + texto + aviso;
+        return carga.descricoesAusentes ? 'Descrição indisponível para ' + carga.descricoesAusentes + ' item(ns).' : '';
     },
 
     montarCheckTodos() {
@@ -1399,7 +1432,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         var self = this;
         if (!this.cargaEtiquetasAtual(carga)) return;
         carga.prontaParaExibir = true;
-        this.tabela.setData(carga.dados).then(function () {
+        this.exibirDadosNaTabela(carga.dados).then(function () {
             if (self.cargaEtiquetasAtual(carga)) self.exibirCargaConcluida(carga);
             else self.reexibirCargaVigente();
         }, function (erro) {
@@ -1421,7 +1454,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
             this.tabela.clearData();
             return;
         }
-        this.tabela.setData(vigente.dados).then(function () {
+        this.exibirDadosNaTabela(vigente.dados).then(function () {
             self.atualizarSelecao();
             self.atualizarContadorTabela();
         }, function (erro) { self.mostrarErroConsulta(erro); });

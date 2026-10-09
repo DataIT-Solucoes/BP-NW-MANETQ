@@ -1017,6 +1017,52 @@
     color: var(--nwm-tinta-suave);
 }
 
+.fluig-style-guide.nwm .nwm-tabela-contador:empty {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-footer .tabulator-page-counter {
+    font-size: 13px;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-footer .tabulator-page {
+    min-width: 34px;
+    height: 34px;
+    margin: 0 2px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-footer .tabulator-page:not(:disabled):hover {
+    border-color: var(--nwm-linha);
+    background-color: #fff;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-footer .tabulator-page.active {
+    border-color: var(--nwm-verde);
+    background-color: #fff;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-footer .tabulator-page:disabled {
+    opacity: 0.35;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-footer .tabulator-page i {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 1;
+    vertical-align: -1px;
+    -webkit-text-stroke: 1.2px currentColor;
+}
+
 .fluig-style-guide.nwm .nwm-tabela-erro {
     margin: 0;
     padding: 24px;
