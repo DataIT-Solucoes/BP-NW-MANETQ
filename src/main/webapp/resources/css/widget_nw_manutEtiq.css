@@ -957,6 +957,29 @@
     border-top-color: var(--nwm-verde);
 }
 
+/* Ações não ordena, mas mostra uma seta igual à das outras colunas (mesmo tamanho, cor e posição) */
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col.nwm-coluna-acoes {
+    cursor: default;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col.nwm-coluna-acoes .tabulator-col-title {
+    padding-right: 18px;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-header .tabulator-col.nwm-coluna-acoes .tabulator-col-content::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    width: 0;
+    height: 0;
+    margin-top: -3px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #C4C2B8;
+    pointer-events: none;
+}
+
 .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row {
     border-bottom: 1px solid #EEECE4;
     background-color: #fff;

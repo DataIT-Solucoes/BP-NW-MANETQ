@@ -995,7 +995,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     colunaAcoes() {
         var self = this;
         return {
-            title: 'Ações', headerSort: false, width: NWM_LARGURAS_COLUNAS.acoes, hozAlign: 'right', vertAlign: 'middle',
+            title: 'Ações', headerSort: false, cssClass: 'nwm-coluna-acoes', width: NWM_LARGURAS_COLUNAS.acoes, hozAlign: 'right', vertAlign: 'middle',
             formatter: function (cell) { return self.montarBotoesAcoes(cell.getRow().getData()); },
             cellClick: function (event, cell) {
                 var $botao = $(event.target).closest('[data-acao]');
