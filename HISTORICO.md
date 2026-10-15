@@ -67,6 +67,9 @@
 - **15/10** — `8961773`: botão Histórico (`bi-clock-history`), sem ação. Docs consolidados de 7 para 3 arquivos (este, `CLAUDE.md`, `AGENTS.md`).
 - **15/10** — `d110c0d`: consolidação dos docs. Regra nova do usuário: após **toda** alteração, commit, push e gerar o .war
   (Ctrl+F7 = tarefa "Fluig: gerar .war", `pack-widget.ps1 -Path`, saída `target/widget_nw_manutEtiq.war`).
+- **15/10** — Lidos os docs do Cheli (dev Progress) em `cheli/` (referência, fora do git): matriz de situações/ações de 13/10
+  (DT132/133), DT121 (confirmações/situação/histórico, REST aprovado no TESTE em 08/10), DT126 (estorno, ABL aceito em 14/10, REST
+  pendente), Código de barras De/Até mantido + busca local na grade. O Dataset ainda não tem as ações DT121/DT126. Nada alterado no widget.
 
 ## Tela antiga (`pagina_antiga_manutencao_etiquetas/`, só leitura, versão "v30.07.2026")
 - Dados por `dsGetExecBO` chamando BOs Progress: `_bp/api/etiquetas_v2.p` (`pi-relatorio-saldo-fisico`, `pi-registra-log`,
