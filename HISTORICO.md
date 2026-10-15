@@ -65,6 +65,8 @@
 - **09/10 ~16h30** — `1684edb`: ações por status. Causa da coluna vazia: `htmlBotaoColAcoes` tinha `if (configuracaoAcao) return;`
   invertido. Removido `htmlBotaoColAcoes`; botões por `montarBotaoAcao`; Devolver e "…" saíram da linha. JS está em LF (0 CR).
 - **15/10** — `8961773`: botão Histórico (`bi-clock-history`), sem ação. Docs consolidados de 7 para 3 arquivos (este, `CLAUDE.md`, `AGENTS.md`).
+- **15/10** — `d110c0d`: consolidação dos docs. Regra nova do usuário: após **toda** alteração, commit, push e gerar o .war
+  (Ctrl+F7 = tarefa "Fluig: gerar .war", `pack-widget.ps1 -Path`, saída `target/widget_nw_manutEtiq.war`).
 
 ## Tela antiga (`pagina_antiga_manutencao_etiquetas/`, só leitura, versão "v30.07.2026")
 - Dados por `dsGetExecBO` chamando BOs Progress: `_bp/api/etiquetas_v2.p` (`pi-relatorio-saldo-fisico`, `pi-registra-log`,
