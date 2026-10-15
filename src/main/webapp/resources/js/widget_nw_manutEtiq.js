@@ -13,6 +13,7 @@ var NWM_POSICOES = {
 
 var NWM_ACOES = {
   detalhes: { rotulo: "Detalhes", icone: "bi-eye" },
+  historico: { rotulo: "Histórico", icone: "bi-clock-history" },
   imprimir: { rotulo: "Imprimir", icone: "bi-printer", secundaria: true },
   receber: {
     rotulo: "Receber",
@@ -239,19 +240,19 @@ var NWM_ETIQUETA_TESTE = {
 };
 
 var NWM_ACOES_POR_STATUS = {
-  NAO_IMPRESSA: ["detalhes", "imprimir"],
-  IMPRESSA: ["detalhes", "receber", "descartar", "transferir"],
-  EM_ESTOQUE: ["detalhes", "estornar", "descartar", "transferir"],
-  EM_CAMPO: ["detalhes", "estornar", "descartar"],
-  AGUARDANDO_RECEBIMENTO: ["detalhes"],
-  EM_TERCEIRO: ["detalhes"],
-  ZERADA: ["detalhes", "estornar", "descartar"],
-  EM_BAG: ["detalhes"],
-  DESCARTADA: ["detalhes", "estornar"],
-  CANCELADA: ["detalhes"],
+  NAO_IMPRESSA: ["detalhes", "historico", "imprimir"],
+  IMPRESSA: ["detalhes", "historico", "receber", "descartar", "transferir"],
+  EM_ESTOQUE: ["detalhes", "historico", "estornar", "descartar", "transferir"],
+  EM_CAMPO: ["detalhes", "historico", "estornar", "descartar"],
+  AGUARDANDO_RECEBIMENTO: ["detalhes", "historico"],
+  EM_TERCEIRO: ["detalhes", "historico"],
+  ZERADA: ["detalhes", "historico", "estornar", "descartar"],
+  EM_BAG: ["detalhes", "historico"],
+  DESCARTADA: ["detalhes", "historico", "estornar"],
+  CANCELADA: ["detalhes", "historico"],
 };
 
-var NWM_ACOES_PADRAO = ["detalhes"];
+var NWM_ACOES_PADRAO = ["detalhes", "historico"];
 
 var widget_nw_manutEtiq = SuperWidget.extend({
   tabela: null,
@@ -1681,7 +1682,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   acaoDisponivel(acao, etiqueta) {
-    if (acao === "detalhes") return true;
+    if (acao === "detalhes" || acao === "historico") return true;
     return (
       (acao === "transferir" || acao === "devolver") &&
       etiqueta.tipoControle === "EMBALAGEM"
@@ -2567,6 +2568,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       this.abrirMaisAcoes(linha);
       return;
     }
+    if (acao === "historico") return;
     if (!this.podeSelecionarEtiqueta(linha.getData())) {
       this.avisar(
         "warning",
