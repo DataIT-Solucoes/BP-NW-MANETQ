@@ -166,7 +166,9 @@
                                 <option value="receber">Receber</option>
                                 <option value="estornar">Estornar</option>
                                 <option value="transferir">Transferir</option>
-                                <!-- <option value="devolver">Devolução</option> -->
+                                <option value="devolver">Devolução</option>
+                                <option value="inutilizar">Inutilizar</option>
+                                <option value="perda">Registrar perda/extravio</option>
                             </select>
                         </div>
                         <button type="button" class="nwm-btn nwm-btn-destaque" data-aplicar-lote><i class="bi bi-check2-all" aria-hidden="true"></i>Aplicar</button>
@@ -337,6 +339,45 @@
             <button type="button" class="nwm-btn nwm-btn-contorno" data-atualizar-impressoras><i class="bi bi-arrow-clockwise" aria-hidden="true"></i>Atualizar</button>
             <button type="button" class="nwm-btn nwm-btn-contorno" data-testar-impressora disabled><i class="bi bi-printer" aria-hidden="true"></i>Testar</button>
             <button type="button" class="nwm-btn nwm-btn-destaque" data-salvar-impressora disabled><i class="bi bi-check-lg" aria-hidden="true"></i>Salvar</button>
+        </div>
+    </dialog>
+
+    <dialog class="nwm-modal nwm-modal-medio" aria-labelledby="nwm-acao-etiqueta-titulo-${instanceId}" data-modal-acao-etiqueta>
+        <form novalidate>
+            <div class="nwm-modal-cabecalho">
+                <div><h3 class="nwm-modal-titulo" id="nwm-acao-etiqueta-titulo-${instanceId}" data-acao-etiqueta-titulo></h3><p class="nwm-modal-subtitulo" data-acao-etiqueta-resumo></p></div>
+                <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-acao-etiqueta><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+            </div>
+            <div class="nwm-modal-corpo">
+                <div class="nwm-campo" hidden>
+                    <label class="nwm-campo-rotulo" for="nwm-acao-saldo-${instanceId}">Quantidade atual da embalagem (saldo final)</label>
+                    <input id="nwm-acao-saldo-${instanceId}" type="text" inputmode="decimal" class="nwm-campo-input nwm-campo-input-simples" data-acao-etiqueta-quantidade>
+                </div>
+                <div class="nwm-campo">
+                    <label class="nwm-campo-rotulo" for="nwm-acao-motivo-${instanceId}">Justificativa obrigatória</label>
+                    <textarea id="nwm-acao-motivo-${instanceId}" rows="3" maxlength="1000" required class="nwm-campo-input nwm-campo-input-simples" data-acao-etiqueta-motivo></textarea>
+                </div>
+                <p class="nwm-operacao-mensagem" role="status" aria-live="polite" data-acao-etiqueta-estado></p>
+            </div>
+            <div class="nwm-modal-rodape">
+                <button type="button" class="nwm-btn nwm-btn-contorno" data-fechar-acao-etiqueta>Fechar</button>
+                <button type="submit" class="nwm-btn nwm-btn-destaque">Confirmar</button>
+            </div>
+        </form>
+    </dialog>
+    <dialog class="nwm-modal nwm-modal-medio" aria-labelledby="nwm-historico-titulo-${instanceId}" data-modal-historico>
+        <div class="nwm-modal-cabecalho">
+            <div><h3 class="nwm-modal-titulo" id="nwm-historico-titulo-${instanceId}">Histórico da embalagem</h3><p class="nwm-modal-subtitulo" role="status" data-historico-estado></p></div>
+            <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-historico><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+        <div class="nwm-modal-corpo"><div class="nwm-origem-rolagem"><table class="nwm-tabelinha">
+            <thead><tr><th>Data</th><th>Ocorrência</th><th>Usuário</th><th>Anterior</th><th>Atual</th><th>Justificativa</th></tr></thead>
+            <tbody data-historico-corpo></tbody>
+        </table></div></div>
+        <div class="nwm-modal-rodape">
+            <button type="button" class="nwm-btn nwm-btn-contorno" data-historico-anterior disabled>Anterior</button>
+            <button type="button" class="nwm-btn nwm-btn-contorno" data-historico-proximo disabled>Próxima</button>
+            <button type="button" class="nwm-btn nwm-btn-contorno" data-fechar-historico>Fechar</button>
         </div>
     </dialog>
 </div>
