@@ -15,6 +15,9 @@ Caminhos de fontes abaixo são relativos à raiz da widget, salvo indicação.
 SHA256 do Dataset consultado: `1fca73eaa71d05e20d18b3098c762058d0a2d7bef432ace9394c7d6eb1a2d7f3`. Relê-lo antes de alterar integrações; não armazenar credenciais.
 
 ## Descobertas confirmadas — 2026-10-20
+- Fazenda: coluna textual usa campo fazenda, largura 260px, valor codEstabel + " - " + descricao. Código original permanece em codEstabel. Após descrever itens, a carga resolve uma descrição por estabelecimento distinto; reaproveita seleção válida de estDe/estAte ou consulta apoiarEstabelecimentos, com paginação e correspondência exata de codigo. Não fixa o nome do exemplo do usuário.
+- Respostas antigas ignoradas; cursor repetido e erro de apoio não viram carga concluída. Código sem correspondência é exibido com aviso de descrição ausente. Oito cenários específicos simulados passaram; node --check/git diff --check OK.
+- Testes antes/depois: apoios 32, funções 36, transporte 60, FALHAS=0. Consulta mantém falha preexistente HTTP 0/rejeição não tratada; fixture local (fora do Git) atualizada com seleção do estabelecimento para acompanhar a descrição nova.
 - Grade atual: Tipo de Embalagem → codTipo (150px) antes de Fazenda; UN → unidade (48px) depois de Qtde Saldo. codTipo preservado por mapearEtiqueta; unidade já mapeada. Ambos usam formatter plaintext e ordenação textual, sem novas consultas.
 - Verificação local de ordem e mapeamento em 175 registros capturados de consultarEtiquetas: OK (exemplo PL/LT). node --check e git diff --check: OK. Suítes apoios 32, funções 36 e transporte 60 cenários, FALHAS=0 antes/depois. Consulta falha antes/depois por incompatibilidade preexistente do simulador (Node 24, rejeição não tratada; modo warn expõe $.map ausente).
 - JS medido em 20/10: CRLF no disco (4676 antes, 4685 depois); preservado. O registro LF/0 CR de 15/10 é histórico; Git normaliza o conteúdo conforme .gitattributes.
@@ -33,7 +36,7 @@ SHA256 do Dataset consultado: `1fca73eaa71d05e20d18b3098c762058d0a2d7bef432ace93
 - Migração documental: conferir diff e referências; fontes e configuração permanecem sem alteração no Git.
 - Testes funcionais não executados nesta migração; exigência de antes/depois para alterações JS permanece em AGENTS.
 - Testes registrados: `node testes/testar-apoios-filtros.cjs`, `node testes/testar-consulta-etiquetas.cjs`, `node testes/testar-funcoes-manutencao.cjs`, `node testes/testar-transporte-dataset.cjs`. Alguns leem evidencias/etapa1-20261008/resultado-dataset.json (fora do Git).
-- WAR atualizado em 20/10/2026 com as novas colunas: target/widget_nw_manutEtiq.war; SHA256 `475191a894ffa6e9d308c1ed1730d3fccaf28e721355f53c31bb6143b976bc9a`. Empacotamento Python zipfile (Deflate): src/main/webapp/ na raiz e src/main/resources/ em WEB-INF/classes/. 12 arquivos comparados byte a byte aos fontes, ZIP íntegro. Script histórico pack-widget.ps1 não encontrado nos caminhos conferidos. Publicação no Fluig não executada.
+- WAR atualizado em 20/10/2026 com Fazenda código - descrição: target/widget_nw_manutEtiq.war; SHA256 `5debf251df110f2a87dcad8cc6434f16149a2c41276bad7c97e0fb889c499f5d`. Python zipfile Deflate: webapp na raiz e resources em WEB-INF/classes; 12 arquivos comparados byte a byte, ZIP íntegro. Publicação no Fluig não executada.
 - Última validação ao vivo registrada: 08/10/2026, NF 9999801–9999805 → 40 etiquetas. Evidências e hashes parciais em HISTORICO.md; não repetida em 20/10.
 
 ## Retrato técnico anterior — 15/10/2026

@@ -195,7 +195,7 @@ var NWM_LARGURAS_COLUNAS = {
   codigo: 88,
   descricaoMinima: 154,
   tipoEmbalagem: 150,
-  fazenda: 96,
+  fazenda: 260,
   etiqueta: 110,
   lote: 90,
   validade: 100,
@@ -1559,7 +1559,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       this.colunaTexto("Tipo de Embalagem", "codTipo", {
         width: NWM_LARGURAS_COLUNAS.tipoEmbalagem,
       }),
-      this.colunaTexto("Fazenda", "codEstabel", {
+      this.colunaTexto("Fazenda", "fazenda", {
         width: NWM_LARGURAS_COLUNAS.fazenda,
       }),
       this.colunaTexto("Etiqueta", "etiqueta", {
@@ -2212,7 +2212,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (!this.cargaEtiquetasAtual(carga)) return;
     if (descricao.indice === descricao.codigos.length) {
       this.aplicarDescricoesCarga(carga);
-      this.concluirCargaEtiquetas(carga);
+      this.descreverEstabelecimentosCarga(carga);
       return;
     }
     var codigo = descricao.codigos[descricao.indice++];
@@ -2307,6 +2307,74 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     });
   },
 
+  descreverEstabelecimentosCarga(carga) {
+    if (!this.cargaEtiquetasAtual(carga)) return;
+    var estabelecimentos = Object.create(null);
+    $.each(carga.dados, function (indice, etiqueta) {
+      estabelecimentos[etiqueta.codEstabel] = true;
+    });
+    this.descreverProximoEstabelecimento({ carga: carga, codigos: Object.keys(estabelecimentos), indice: 0 });
+  },
+
+  descricaoEstabelecimentoFiltro(codigo) {
+    var self = this;
+    var descricao = "";
+    $.each(["estDe", "estAte"], function (indice, campo) {
+      var $input = $('[data-filtro="' + campo + '"]', self.DOM);
+      var registro = $input.data("registro");
+      if ($input.val() === codigo && registro && registro.codigo === codigo && typeof registro.descricao === "string")
+        descricao = registro.descricao;
+    });
+    return descricao;
+  },
+
+  descreverProximoEstabelecimento(descricao) {
+    if (!this.cargaEtiquetasAtual(descricao.carga)) return;
+    if (descricao.indice === descricao.codigos.length) return this.concluirCargaEtiquetas(descricao.carga);
+    descricao.codigo = descricao.codigos[descricao.indice++];
+    descricao.cursores = Object.create(null);
+    var nome = this.descricaoEstabelecimentoFiltro(descricao.codigo);
+    if (nome) return this.aplicarDescricaoEstabelecimento(descricao, nome);
+    this.consultarDescricaoEstabelecimento(descricao, "");
+  },
+
+  consultarDescricaoEstabelecimento(descricao, cursor) {
+    var self = this;
+    if (!this.cargaEtiquetasAtual(descricao.carga)) return;
+    var parametros = { filtro: descricao.codigo, limite: NWM_LIMITE_SUGESTOES };
+    if (cursor) parametros.aposCodigo = cursor;
+    this.consultarDataset("apoiarEstabelecimentos", parametros, "descricao:estabelecimentos").then(
+      function (resultado) {
+        if (self.cargaEtiquetasAtual(descricao.carga)) self.receberDescricaoEstabelecimento(descricao, cursor, resultado);
+      },
+      function (erro) { self.falharCargaEtiquetas(descricao.carga, erro); },
+    );
+  },
+
+  receberDescricaoEstabelecimento(descricao, cursor, resultado) {
+    var registro = this.registroDoItem(resultado.dados, descricao.codigo);
+    if (registro && registro.descricao) return this.aplicarDescricaoEstabelecimento(descricao, registro.descricao);
+    var proximo = resultado.proximoCodigo;
+    if (resultado.temMais) {
+      if (!proximo || proximo === cursor || descricao.cursores[proximo]) {
+        this.falharCargaEtiquetas(descricao.carga, this.erroDataset("CURSOR_INVALIDO", "O cursor de estabelecimentos não avançou corretamente. Busque novamente.", NWM_TIPOS_ERRO.TECNICO));
+        return;
+      }
+      descricao.cursores[proximo] = true;
+      this.consultarDescricaoEstabelecimento(descricao, proximo);
+      return;
+    }
+    this.avisar("warning", "Descrição do estabelecimento " + descricao.codigo + " não encontrada; exibindo somente o código.");
+    this.descreverProximoEstabelecimento(descricao);
+  },
+
+  aplicarDescricaoEstabelecimento(descricao, nome) {
+    $.each(descricao.carga.dados, function (indice, etiqueta) {
+      if (etiqueta.codEstabel === descricao.codigo) etiqueta.fazenda = etiqueta.codEstabel + " - " + nome;
+    });
+    this.descreverProximoEstabelecimento(descricao);
+  },
+
   concluirCargaEtiquetas(carga) {
     var self = this;
     if (!this.cargaEtiquetasAtual(carga)) return;
@@ -2377,6 +2445,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       itCodigo: registro.item,
       descItem: "—",
       codEstabel: registro.codEstabel,
+      fazenda: registro.codEstabel,
       codTipo: registro.codTipo || "",
       etiqueta: registro.codEtiqueta,
       codBarras: registro.codEtiqueta,
