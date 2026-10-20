@@ -11,6 +11,7 @@ Pendências não autorizam execução. Conferir o contrato vigente antes de plan
 - Eventual aumento de application.version em próxima publicação para evitar cache; sugestão anterior não autoriza alteração.
 
 ## Confirmar no Fluig
+- Publicar e conferir loading global na abertura do Histórico, modal após sucesso e aviso sem modal em caso de erro.
 - Publicar e conferir Data do Histórico da embalagem em DD/MM/AAAA - HH:MM.
 - Publicar e validar Fazenda no formato código - descrição, nome retornado pelo cadastro e largura de 260px.
 - Publicar e conferir as novas colunas Tipo de Embalagem (codTipo) e UN (unidade), incluindo largura/rolagem em tela.

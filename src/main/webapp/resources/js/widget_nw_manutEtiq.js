@@ -4413,15 +4413,31 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   abrirHistorico(etiqueta) {
+    if (this.historicoAtual && this.historicoAtual.carregando) return;
+    var self = this;
+    var carregamento = FLUIGC.loading(window);
     this.historicoAtual = { etiqueta: etiqueta, cursor: "", anteriores: [], proximo: "", carregando: false };
-    this.abrir(this.$modalHistorico);
-    return this.carregarHistoricoEtiqueta();
+    var historico = this.historicoAtual;
+    carregamento.show();
+    return this.carregarHistoricoEtiqueta().always(function () {
+      carregamento.hide();
+    }).then(function () {
+      self.concluirAberturaHistorico(historico);
+    });
+  },
+
+  concluirAberturaHistorico(historico) {
+    if (this.historicoAtual !== historico) return;
+    if (!historico.erro) return this.abrir(this.$modalHistorico);
+    if (historico.erro.tipo !== NWM_TIPOS_ERRO.CANCELAMENTO)
+      this.avisar("danger", historico.erro.message);
   },
 
   carregarHistoricoEtiqueta() {
     var self = this, historico = this.historicoAtual;
     if (!historico || historico.carregando) return;
     historico.carregando = true;
+    historico.erro = null;
     this.botoesHistorico();
     $("[data-historico-estado]", this.DOM).text("Carregando histórico…");
     var parametros = { codEstabel: historico.etiqueta.codEstabel, idEtiqueta: historico.etiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA };
@@ -4432,7 +4448,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       self.renderizarHistoricoEtiqueta(resultado.dados);
       $("[data-historico-estado]", self.DOM).text(resultado.dados.length ? "Etiqueta " + historico.etiqueta.etiqueta : "Nenhum evento encontrado.");
     }, function (erro) {
-      if (self.historicoAtual === historico) { historico.proximo = ""; $("[data-historico-corpo]", self.DOM).empty(); $("[data-historico-estado]", self.DOM).text(erro.message); }
+      if (self.historicoAtual === historico) { historico.erro = erro; historico.proximo = ""; $("[data-historico-corpo]", self.DOM).empty(); $("[data-historico-estado]", self.DOM).text(erro.message); }
     }).always(function () { historico.carregando = false; self.botoesHistorico(); });
   },
 
