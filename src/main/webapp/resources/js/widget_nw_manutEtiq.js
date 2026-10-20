@@ -299,9 +299,9 @@ var NWM_ETIQUETA_TESTE = {
 
 var NWM_ACOES_POR_STATUS = {
   "NAO_IMPRESSA": [
+    "imprimir",
     "detalhes",
     "historico",
-    "imprimir",
     "inutilizar",
     "perda"
   ],

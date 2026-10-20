@@ -11,6 +11,7 @@ Pendências não autorizam execução. Conferir o contrato vigente antes de plan
 - Eventual aumento de application.version em próxima publicação para evitar cache; sugestão anterior não autoriza alteração.
 
 ## Confirmar no Fluig
+- Publicar e conferir Imprimir como primeiro botão de NAO_IMPRESSA.
 - Publicar e validar fechamento pelo fundo nos sete modais, hover por ação e ausência da mensagem inicial Em lote...
 - Publicar e validar badges de Ocorrência no Histórico da embalagem, com o mapa/cores de Bags. Mapa publicado de Bags e CSS comparados em 20/10; a manutenção ainda não publicada nesta tarefa.
 - Publicar e validar toast info Carregando... e overlay da widget no Buscar e no Histórico, com retirada ao terminar/falhar/cancelar.

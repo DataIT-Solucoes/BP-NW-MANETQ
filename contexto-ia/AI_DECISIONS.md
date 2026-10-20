@@ -4,6 +4,7 @@ Somente pedidos e decisões efetivas do usuário. Implementação observada em f
 
 | Data | Decisão | Origem |
 |---|---|---|
+| 2026-10-20 | Em NAO_IMPRESSA, Imprimir deve ser o primeiro botão: Imprimir, Detalhes, Histórico, Inutilizar e Perda. Substitui para esse status a posição anterior do Histórico antes da impressão; demais status preservados. | Pedido explícito do usuário |
 | 2026-10-20 | Remover a mensagem inicial “Em lote, cada embalagem...” dos modais; manter campo para andamento/resultado. | Pedido explícito do usuário durante esta tarefa |
 | 2026-10-20 | Aplicar aos botões de ações o padrão de hover da tela de Bags: fundo/borda coloridos e ícone contrastante por ação. | Pedido explícito do usuário, mesma página de referência |
 | 2026-10-20 | Permitir fechar os modais clicando no fundo escuro externo. | Pedido explícito do usuário |
