@@ -4415,15 +4415,27 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   abrirHistorico(etiqueta) {
     if (this.historicoAtual && this.historicoAtual.carregando) return;
     var self = this;
-    var carregamento = FLUIGC.loading(window);
     this.historicoAtual = { etiqueta: etiqueta, cursor: "", anteriores: [], proximo: "", carregando: false };
     var historico = this.historicoAtual;
-    carregamento.show();
+    this.definirCarregandoGlobal(true);
     return this.carregarHistoricoEtiqueta().always(function () {
-      carregamento.hide();
+      self.definirCarregandoGlobal(false);
     }).then(function () {
       self.concluirAberturaHistorico(historico);
     });
+  },
+
+  definirCarregandoGlobal(carregando) {
+    if (!this.$carregandoGlobal) {
+      this.$carregandoGlobal = $("<div>", {
+        class: "nwm-carregando-global",
+        role: "status",
+        "aria-live": "polite",
+      }).append($("<span>", { class: "nwm-loader", "aria-hidden": "true" }))
+        .append($("<span>", { class: "sr-only", text: "Carregando..." })).appendTo($(this.DOM));
+    }
+    this.$carregandoGlobal.prop("hidden", !carregando);
+    $(this.DOM).attr("aria-busy", String(carregando));
   },
 
   concluirAberturaHistorico(historico) {

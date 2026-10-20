@@ -1,15 +1,18 @@
 # AI_HANDOFF — widget_nw_manutEtiq
 
 ## Última atualização
-2026-10-20 — branch: fechamento-controle-embalagens; base anterior à entrega: cdeba40.
+2026-10-20 — branch: fechamento-controle-embalagens; base anterior à entrega: aeba8eb.
 
 ## Tarefa atual / última entrega
-- Usuário informou que efetuou login e pediu nova conferência da página de Bags.
-- Conferência ao vivo concluída na página manutencao_e_consulta_de_bags: borda 1px solid rgb(0,107,53), cantos 10px, botões 34x34px, fundo transparente e ícones rgb(94,93,87). Dez botões inspecionados via getComputedStyle e screenshot da coluna de ações conferido.
-- Padrão confirmado coincide com o CSS aplicado em cdeba40; nenhum novo ajuste de código necessário. Apenas HANDOFF, REFERENCES e TODO atualizados.
-- Publicação da borda na widget de manutenção e sua validação ao vivo permanecem pendentes; nesta tarefa foi conferida a referência de Bags.
-- WAR regenerado e conferido contra os 12 fontes; dados do artefato em AI_REFERENCES. Sem alteração funcional, testes não executados.
-- Commit/push da atualização de contexto seguem a regra permanente. Git limpo no início; cdeba40 já enviado ao remoto.
+- Usuário corrigiu o significado de loading global: padrão próprio de widget_nw_bags, bloqueando só a widget. FLUIGC.loading(window) era implementação indevida e foi removido.
+- JS: definirCarregandoGlobal cria/reutiliza overlay sob this.DOM, controla hidden e aria-busy local; Histórico ativa antes da consulta e desativa no always, abrindo modal após sucesso. Erro/cancelamento/clique repetido/resposta antiga continuam tratados.
+- CSS: container position:relative; overlay absoluto inset:0/z-index:50, fundo marfim translúcido, cursor progress e spinner existente de 48px. Propriedades copiadas do padrão de Bags; fonte de referência somente lido.
+- Nove cenários específicos passaram: três de overlay/instâncias e seis de Histórico. Navegador em página isolada com CSS atual confirmou área restrita à widget, bloqueio interno, botão externo e segunda widget livres e liberação ao ocultar.
+- Suítes antes/depois: apoios 32, funções 36 e transporte 60 com FALHAS=0. Consulta mantém falha preexistente HTTP 0/rejeição não tratada. node --check/git diff --check OK; encoding e quebras dos fontes preservados.
+- AGENTS e DECISIONS passam a registrar expressamente o padrão: loading global é interno à widget e não é FLUIGC.loading(window).
+- WAR gerado e conferido byte a byte com 12 fontes, ZIP íntegro; SHA256 em AI_REFERENCES.
+- Conteúdo para commit/push: JS, CSS, AGENTS e quatro arquivos de contexto; conferir hash/sincronização ao retomar. Publicação/validação no Fluig não realizadas; teste visual executado em página isolada.
+- Git limpo no início; entrega anterior aeba8eb enviada ao remoto.
 
 ## Para retomar
 - Ler AGENTS e os quatro arquivos AI_*.md; conferir o Git antes de editar.
