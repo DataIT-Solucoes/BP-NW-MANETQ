@@ -256,7 +256,7 @@ var NWM_LARGURAS_COLUNAS = {
   quantidadeSaldo: 76,
   unidade: 48,
   status: 136,
-  acoes: 160,
+  acoes: 320,
 };
 
 var NWM_TIPOS_ERRO = {
