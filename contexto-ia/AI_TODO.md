@@ -11,6 +11,7 @@ Pendências não autorizam execução. Conferir o contrato vigente antes de plan
 - Eventual aumento de application.version em próxima publicação para evitar cache; sugestão anterior não autoriza alteração.
 
 ## Confirmar no Fluig
+- Publicar e validar toast info Carregando... e overlay da widget no Buscar e no Histórico, com retirada ao terminar/falhar/cancelar.
 - Publicar e conferir borda verde permanente dos botões de ações da grade, comparando com Bags. Bags conferida ao vivo após login em 20/10: borda #006B35 de 1px, raio 10px.
 - Publicar e conferir o loading de Bags na abertura do Histórico: overlay limitado à widget, restante da página livre, modal após sucesso e aviso sem modal em caso de erro.
 - Publicar e conferir Data do Histórico da embalagem em DD/MM/AAAA - HH:MM.

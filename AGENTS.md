@@ -18,7 +18,7 @@ Tela **Manutenção Embalagens**, substituindo a tela legada Manutenção Itens/
 - `src/main/resources/view.ftl`: tela e diálogos; `edit.ftl`: identificação, sem parâmetros.
 - `src/main/webapp/resources/js/widget_nw_manutEtiq.js`: SuperWidget, filtros, Tabulator, seleção, operações, histórico e impressora.
 - CSS em `src/main/webapp/resources/css/widget_nw_manutEtiq.css`, sob `.fluig-style-guide.nwm`; DOM escopado por instância.
-- **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando somente a widget. Não usar FLUIGC.loading(window) nem bloquear a página.** Referência: widget_nw_bags, $carregandoGlobal e .nwb-carregando-global.
+- **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando somente a widget. Não usar FLUIGC.loading(window) nem bloquear a página.** Referência: widget_nw_bags, $carregandoGlobal e .nwb-carregando-global. Histórico e Buscar devem exibir também toast Fluig info “Carregando...”, único por instância e removido ao concluir/falhar/cancelar.
 - Usar a skill `fluig-branco-peres`. Ambiente registrado: jQuery 3.6.3, Bootstrap 3.4.1 e Style Guide 2.5.0 fornecidos pelo Fluig; não duplicar essas bibliotecas.
 - **Ler sempre `../widget_nw_embalagens/datasets/dsNwEmbalagens.js`**: NW_CONFIG, NW_ACOES, NW_COLUNAS, regras e escritasHabilitadas. Por definição do usuário é igual ao publicado no Fluig e manda sobre os documentos. Só existe o contrato presente no fonte; se faltar, perguntar ao usuário. Não editar o Dataset sem pedido.
 - `chamarEmbalagens(acao, parametros)` usa $.ajax para `/api/public/ecm/dataset/search`; identidade, autorização e credenciais são resolvidas no servidor.

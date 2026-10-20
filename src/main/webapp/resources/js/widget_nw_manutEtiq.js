@@ -135,6 +135,9 @@ var NWM_LIMITE_EMBALAGENS_OPERACAO = 100;
 var NWM_LIMITE_TEXTO = 100;
 var NWM_ATRASO_APOIO_MS = 350;
 var NWM_TEMPO_MARCACAO_INVALIDO_MS = 2000;
+var NWM_DURACAO_AVISO_CARREGANDO_MS = 600000;
+var NWM_ATRASO_REMOVER_AVISO_MS = 100;
+var NWM_DURACAO_SAIDA_AVISO_MS = 200;
 var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
 var NWM_ESCALA_QUANTIDADE = 10000;
 var NWM_ALTURA_MAXIMA_TABELA = 560;
@@ -1436,15 +1439,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   definirCarregamentoConsulta(carregando) {
+    this.carregandoTela = carregando;
     this.atualizarItensQuantidade();
     $("[data-buscar]", this.DOM).prop("disabled", carregando);
     $("[data-tabela]", this.DOM).attr("aria-busy", String(carregando));
-    if (!this.tabela) return;
-    if (carregando)
-      this.tabela.alert(
-        '<div class="nwm-carregando" role="status" aria-label="Carregando etiquetas"><span class="nwm-loader" aria-hidden="true"></span></div>',
-      );
-    else this.tabela.clearAlert();
+    this.atualizarCarregandoGlobal();
+    if (this.tabela && !carregando) this.tabela.clearAlert();
   },
 
   mostrarErroConsulta(erro) {
@@ -4426,6 +4426,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   definirCarregandoGlobal(carregando) {
+    this.preparandoHistorico = carregando;
+    this.atualizarCarregandoGlobal();
+  },
+
+  atualizarCarregandoGlobal() {
+    var carregando = !!(this.carregandoTela || this.preparandoHistorico);
     if (!this.$carregandoGlobal) {
       this.$carregandoGlobal = $("<div>", {
         class: "nwm-carregando-global",
@@ -4436,6 +4442,28 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }
     this.$carregandoGlobal.prop("hidden", !carregando);
     $(this.DOM).attr("aria-busy", String(carregando));
+    this.atualizarAvisoCarregando(carregando);
+  },
+
+  atualizarAvisoCarregando(carregando) {
+    var self = this;
+    clearTimeout(this.temporizadorAvisoCarregando);
+    if (carregando) {
+      if (!this.$avisoCarregando)
+        this.$avisoCarregando = this.avisar("info", "Carregando...", NWM_DURACAO_AVISO_CARREGANDO_MS);
+      return;
+    }
+    if (!this.$avisoCarregando) return;
+    this.temporizadorAvisoCarregando = setTimeout(function () {
+      self.removerAvisoCarregando();
+    }, NWM_ATRASO_REMOVER_AVISO_MS);
+  },
+
+  removerAvisoCarregando() {
+    var $aviso = this.$avisoCarregando;
+    this.$avisoCarregando = null;
+    if ($aviso && $aviso.length)
+      $aviso.stop(true).fadeOut(NWM_DURACAO_SAIDA_AVISO_MS, function () { $aviso.remove(); });
   },
 
   concluirAberturaHistorico(historico) {
@@ -4760,9 +4788,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return this.mensagemFalhaImpressao(falha);
   },
 
-  avisar(tipo, mensagem) {
+  avisar(tipo, mensagem, duracao) {
     if (window.FLUIGC && FLUIGC.toast) {
-      FLUIGC.toast({ title: "", message: mensagem, type: tipo });
+      var parametros = { title: "", message: mensagem, type: tipo };
+      if (duracao) parametros.timeout = duracao;
+      FLUIGC.toast(parametros);
+      if (duracao) return $("#toaster .alert").last();
       return;
     }
     console.log("[widget_nw_manutEtiq] " + tipo + ": " + mensagem);
