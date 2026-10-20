@@ -4,6 +4,7 @@ Somente pedidos e decisões efetivas do usuário. Implementação observada em f
 
 | Data | Decisão | Origem |
 |---|---|---|
+| 2026-10-20 | Campo Data do modal Histórico da embalagem no formato DD/MM/AAAA - HH:MM. | Pedido explícito do usuário |
 | 2026-10-20 | Coluna Fazenda deve exibir código e descrição juntos, no formato “10904 - JOAO BRANCO PERES”; descrição obtida do cadastro, sem nome fixo no código. | Pedido explícito do usuário |
 | 2026-10-20 | Adicionar coluna “Tipo de Embalagem” imediatamente antes de Fazenda e “UN” imediatamente depois de Qtde Saldo na grade. | Pedido explícito do usuário |
 | 2026-10-20 | Adotar PADRAO_CONTEXTO_IA_WIDGETS.md: AGENTS, README e quatro arquivos de contexto; remover CLAUDE local duplicado. Substitui o espelhamento AGENTS/CLAUDE e a atualização contínua do HISTORICO. | Pedido atual e padrão em Documentos |

@@ -11,6 +11,7 @@ Pendências não autorizam execução. Conferir o contrato vigente antes de plan
 - Eventual aumento de application.version em próxima publicação para evitar cache; sugestão anterior não autoriza alteração.
 
 ## Confirmar no Fluig
+- Publicar e conferir Data do Histórico da embalagem em DD/MM/AAAA - HH:MM.
 - Publicar e validar Fazenda no formato código - descrição, nome retornado pelo cadastro e largura de 260px.
 - Publicar e conferir as novas colunas Tipo de Embalagem (codTipo) e UN (unidade), incluindo largura/rolagem em tela.
 - Suíte local testar-consulta-etiquetas.cjs falha antes e depois desta alteração no Node 24: rejeição não tratada FALHA_TRANSPORTE/HTTP 0; com modo warn, simulador sem $.map. Adequação da suíte fora do escopo desta entrega.

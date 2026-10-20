@@ -1,3 +1,4 @@
+var NWM_DATA_HORA_HISTORICO = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/;
 var NWM_STATUS = {
   ATIVA: { rotulo: "Ativa" },
   ENCERRADA: { rotulo: "Encerrada" },
@@ -4436,10 +4437,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   renderizarHistoricoEtiqueta(registros) {
+    var self = this;
     var $corpo = $("[data-historico-corpo]", this.DOM).empty();
     $.each(registros, function (indice, registro) {
       var $linha = $("<tr>").appendTo($corpo);
-      $.each([registro.dataEvento || registro.dataRegistro, registro.ocorrencia, registro.usuario, registro.quantidadeAnterior, registro.quantidadeAtual, registro.justificativa], function (posicao, valor) { $("<td>", { text: valor == null ? "—" : String(valor) }).appendTo($linha); });
+      $.each([self.formatarDataHoraHistorico(registro.dataEvento || registro.dataRegistro), registro.ocorrencia, registro.usuario, registro.quantidadeAnterior, registro.quantidadeAtual, registro.justificativa], function (posicao, valor) { $("<td>", { text: valor == null ? "—" : String(valor) }).appendTo($linha); });
     });
   },
 
@@ -4736,6 +4738,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       return;
     }
     console.log("[widget_nw_manutEtiq] " + tipo + ": " + mensagem);
+  },
+
+  formatarDataHoraHistorico(valor) {
+    var texto = String(valor || "").trim();
+    var partes = NWM_DATA_HORA_HISTORICO.exec(texto);
+    if (!partes) return texto || "—";
+    return partes[3] + "/" + partes[2] + "/" + partes[1] + " - " + partes[4] + ":" + partes[5];
   },
 
   formatarData(valor) {
