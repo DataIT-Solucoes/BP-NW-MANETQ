@@ -4,6 +4,7 @@ Somente pedidos e decisões efetivas do usuário. Implementação observada em f
 
 | Data | Decisão | Origem |
 |---|---|---|
+| 2026-10-20 | Botões de ações da grade devem ter a borda verde do padrão de Bags, inclusive em repouso. | Pedido explícito do usuário, referência à página manutencao_e_consulta_de_bags |
 | 2026-10-20 | Ao clicar no Histórico, ativar loading global e abrir o modal somente depois de carregar os dados. | Pedido explícito do usuário |
 | 2026-10-20 | Campo Data do modal Histórico da embalagem no formato DD/MM/AAAA - HH:MM. | Pedido explícito do usuário |
 | 2026-10-20 | Coluna Fazenda deve exibir código e descrição juntos, no formato “10904 - JOAO BRANCO PERES”; descrição obtida do cadastro, sem nome fixo no código. | Pedido explícito do usuário |

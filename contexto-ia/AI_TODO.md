@@ -11,6 +11,7 @@ Pendências não autorizam execução. Conferir o contrato vigente antes de plan
 - Eventual aumento de application.version em próxima publicação para evitar cache; sugestão anterior não autoriza alteração.
 
 ## Confirmar no Fluig
+- Publicar e conferir borda verde permanente dos botões de ações da grade, comparando com Bags. Página de referência exigiu login na verificação de 20/10.
 - Publicar e conferir loading global na abertura do Histórico, modal após sucesso e aviso sem modal em caso de erro.
 - Publicar e conferir Data do Histórico da embalagem em DD/MM/AAAA - HH:MM.
 - Publicar e validar Fazenda no formato código - descrição, nome retornado pelo cadastro e largura de 260px.

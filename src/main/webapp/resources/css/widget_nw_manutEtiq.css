@@ -1288,7 +1288,7 @@
     height: 34px;
     margin: 0;
     padding: 0;
-    border: 1px solid transparent;
+    border: 1px solid var(--nwm-verde);
     border-radius: 10px;
     background: transparent;
     font-size: 15px;
