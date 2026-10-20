@@ -1,0 +1,24 @@
+# AI_TODO — widget_nw_manutEtiq
+
+Pendências não autorizam execução. Conferir o contrato vigente antes de planejar integração.
+
+## Esperando decisão do usuário
+- Comportamento do campo Código de barras (`data-leitor-cod-barras`).
+- Qtde Sel.: confirmar soma de saldo (qtidadeAtu) ou quantidade inicial.
+- Eventual visão não-ADM: decisão vigente mantém tela ADM de aba única.
+- Inclusão de testes/ e evidencias/ no Git; manter fora dos commits até decisão.
+- Limpeza opcional de situacoesApresentadas(), textoQuantidadeEtiquetas() e modal Mais ações.
+- Eventual aumento de application.version em próxima publicação para evitar cache; sugestão anterior não autoriza alteração.
+
+## Confirmar no Fluig
+- Publicação/validação das alterações de 09 e 15/10 e das ações operacionais/histórico do commit 9d1611d, de 16/10.
+- Transferência, Remessa e Devolução: não testadas no TESTE segundo registro anterior; geram documentos reais no Datasul.
+- Receber, Estornar, Inutilizar, Perda/Extravio e Histórico: presentes nos fontes, sem validação ao vivo nesta tarefa.
+- Impressão real: existe método para obterDadosImpressao, mas o fluxo completo não está confirmado.
+- Status e cores: registro anterior confirma NAO_IMPRESSA, EM_ESTOQUE e CANCELADA no backend; demais códigos e contraste ao vivo não confirmados. Reavaliar legenda atual antes de decidir inclusão de CANCELADA.
+- Desempenho em produção não medido; registro de TESTE anterior: cerca de 50 etiquetas, 2,3–2,8 s por chamada.
+
+## Dependências externas
+- Grupos definitivos de autorização (DT-054), responsável a definir. Dataset consultado mantém DefaultGroup-1 e estabelecimentos 10904/11301.
+- Modelo/serviço e fluxo completo de impressão real: a definir com o usuário.
+- Origem da aprovação funcional do commit de 16/10 não comprovada nesta migração; consultar o usuário se uma nova decisão depender dela. Não reabrir decisões aprovadas registradas em AI_DECISIONS.

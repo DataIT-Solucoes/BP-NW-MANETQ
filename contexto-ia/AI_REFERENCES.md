@@ -1,50 +1,42 @@
-# widget_nw_manutEtiq
+# AI_REFERENCES — widget_nw_manutEtiq
 
-> Regras gerais (versões, SuperWidget, Style Guide): `CLAUDE.md` da raiz do repositório. Aqui fica só o que é deste widget.
-> Preencher só com o que o usuário informou ou o que está nos fontes. O que não se sabe fica "a definir".
-> Histórico de decisões, levantamento da tela antiga e evidências: `HISTORICO.md` desta pasta (registro contínuo; atualizar a cada interação).
-> Padrões gerais do Fluig da Branco Peres (visual, Dataset, Style Guide): skill `fluig-branco-peres`.
-> `AGENTS.md` (Codex) e `CLAUDE.md` (Claude Code) desta pasta têm o mesmo conteúdo, exceto a linha 3: ao alterar um, altere o outro.
+## Fontes da verdade
+Caminhos de fontes abaixo são relativos à raiz da widget, salvo indicação.
 
-## Objetivo
-Tela **Manutenção Embalagens**: consulta, recebimento, impressão e movimentação de etiquetas de embalagem.
-Refaz a tela legada **Manutenção Itens/Etiquetas** (`v2_widget_manutencao_etiquetas`, widget
-`ver2_manutencaodeetiquetas` no servidor de teste; cópia só leitura em `pagina_antiga_manutencao_etiquetas/`) no padrão
-visual do `widget_nw_embalagens` (`nwe`) e `widget_nw_itensComCtrllDeEmb` (`nwi`). Prefixo de classe aqui: **`nwm`**.
+| Assunto | Local | Versão / consulta |
+|---|---|---|
+| Organização | C:/Users/DataIt/Documents/PADRAO_CONTEXTO_IA_WIDGETS.md | 2026-10-20 |
+| Widget | src/main/resources/ e src/main/webapp/resources/ | HEAD 9d1611d, consulta em 2026-10-20 |
+| Dataset | ../widget_nw_embalagens/datasets/dsNwEmbalagens.js | NW_CONFIG, NW_ACOES, NW_COLUNAS em 2026-10-20 |
+| Regras comuns | Skill fluig-branco-peres, SKILL.md e references/ambiente-e-regras.md | Consulta em 2026-10-20; pedido atual prevalece |
+| Histórico | HISTORICO.md | Registro até 15/10 preservado |
+| Backend | ../widget_nw_embalagens/fluig-rest/docs/ | Referência histórica; não relida nesta tarefa |
 
-## Identificação
-- `application.code`: `widget_nw_manutEtiq`
-- Título (`application.title`): `widget_nw_manutEtiq` (valor gerado pela extensão); o título **exibido** é "Manutenção Embalagens"
-- Versão: `0.1.0` · categoria `SYSTEM` · `application.uiwidget=true` · `application.mobileapp=false`
-- Context-root: `/widget_nw_manutEtiq`
-- Página de teste: `http://fluig-web-teste.brancoperes.com.br:8190/portal/p/1/ManutencaoDeEmbNew`
-- Repositório: este widget é um git próprio; remoto atual redireciona para `https://github.com/DataIT-Solucoes/BP-NW-MANETQ.git`
-  (trocar o `origin` só com autorização).
+SHA256 do Dataset consultado: `1fca73eaa71d05e20d18b3098c762058d0a2d7bef432ace9394c7d6eb1a2d7f3`. Relê-lo antes de alterar integrações; não armazenar credenciais.
 
-## Estado atual (2026-10-15)
-Integrada ao Dataset `dsNwEmbalagens` (sem dados mockados), publicada no TESTE em 08/10/2026 e conferida ao vivo
-(busca por NF 9999801–9999805 → 40 etiquetas). Alterações de 09 e 15/10 (cores por status, paginação, ações por status,
-Histórico) estão commitadas; publicação delas no Fluig não confirmada.
-- `view.ftl`: cabeçalho + 8 filtros + barra de seleção + tabela + 5 `<dialog>` (detalhes, operação "Movimentar
-  embalagens", legenda, "Configurar impressora", "Mais ações"). Bibliotecas externas declaradas no próprio `view.ftl` com SRI.
-- `widget_nw_manutEtiq.js`: SuperWidget com Tabulator 6.4.0, autocompletes próprios ligados aos apoios do Dataset,
-  validação dos filtros, seleção, ação em lote e modal de operação. Transporte: método da instância
-  `chamarEmbalagens(acao, parametros)` (`$.ajax` para `/api/public/ecm/dataset/search`, uma linha, sem credencial no navegador).
-- `widget_nw_manutEtiq.css`: paleta Branco Peres sob `.fluig-style-guide.nwm`.
-- `edit.ftl`: card de identificação.
-- Testes locais (Node): `testes/*.cjs` (pasta no `.gitignore`).
+## Descobertas confirmadas — 2026-10-20
+- application.info: versão 0.1.0; recurso JS índice 1, CSS índice 2; próximo livre 3.
+- view.ftl: sete diálogos, incluindo ação de etiqueta e histórico; CDN declarativo com SRI. O registro anterior de cinco diálogos está superado.
+- JS, NWM_ACOES_POR_STATUS: matriz ampliada com inutilização/perda e status INUTILIZADA/ENCERRADA. A matriz de 15/10 abaixo é histórica.
+- JS, NWM_COMANDOS_ETIQUETA: receber → confirmarEtiqueta/RECEBER_FISICO; estornar → estornarEtiqueta; inutilizar → inutilizarEtiqueta; perda → registrarPerdaExtravio.
+- JS, consultarEstadoEtiqueta/despacharAcaoEtiqueta: consulta situação/versão antes do comando; execução individual por etiqueta para na recusa; resultado incerto persistido no sessionStorage bloqueia escritas.
+- JS, carregarHistoricoEtiqueta: histórico implementado via consultarHistoricoEtiqueta, cursor aposRegistro/proximoRegistro.
+- JS, obterDadosImpressaoEtiqueta: método chama obterDadosImpressao; isso não comprova fluxo completo de impressão real.
+- Dataset: confirmarEtiqueta, estornarEtiqueta, inutilizarEtiqueta, registrarPerdaExtravio, consultarSituacaoEtiqueta e consultarHistoricoEtiqueta existem. Escritas correspondentes habilitadas para DefaultGroup-1 nos estabelecimentos 10904/11301. Substitui a ausência de contrato/rota registrada em 15/10; não comprova validação da tela no ambiente.
+- HEAD 9d1611d3c4f1549c6da7f4ba3352c1802ad7acbe (16/10/2026): “Completa ações operacionais e histórico da Manutenção de Embalagens”. Git limpo no início da migração.
+- AGENTS/CLAUDE anteriores diferiam só no nome do documento da raiz. AGENTS em brancoperes2026 não encontrado no caminho citado; usar regras atuais e skill sem presumir arquivo existente.
 
-**Aba única** (decisão do usuário): as duas abas da tela antiga foram unificadas. A tela é a **visão ADM**;
-o Widget não checa permissão (quem autoriza é o Dataset) e não há a visão do não-ADM.
-Cabeçalho sem botão **Gerar etiquetas** (decisão do usuário): a geração é interna ao backend (gatilho do RE1001).
-Cabeçalho com botão **Impressora** (`bi-gear`, mesma classe do **Buscar**: `nwm-btn nwm-btn-destaque`; botão de ação novo
-**sempre** com esse visual). Abre o `<dialog>` "Configurar impressora": lista as impressoras do aplicativo local
-`http://localhost:32478` (`GET /impressoras`, `POST /imprimir`, o mesmo da tela antiga); **Salvar** guarda no `localStorage`
-(chave `impressora`, compartilhada com a tela antiga); **Testar** imprime etiqueta de exemplo com o template do GED
-(documento 423); **Atualizar** refaz a busca. Sem o aplicativo, o modal limpa a lista e mostra a orientação.
-A impressão real das etiquetas ainda não está integrada.
+## Verificação e build
+- Migração documental: conferir diff e referências; fontes e configuração permanecem sem alteração no Git.
+- Testes funcionais não executados nesta migração; exigência de antes/depois para alterações JS permanece em AGENTS.
+- Testes registrados: `node testes/testar-apoios-filtros.cjs`, `node testes/testar-consulta-etiquetas.cjs`, `node testes/testar-funcoes-manutencao.cjs`, `node testes/testar-transporte-dataset.cjs`. Alguns leem evidencias/etapa1-20261008/resultado-dataset.json (fora do Git).
+- Geração confirmada em 20/10/2026: WAR ZIP Deflate com src/main/webapp/ na raiz e src/main/resources/ em WEB-INF/classes/. Estrutura idêntica ao WAR anterior; 12 arquivos comparados byte a byte aos fontes, integridade ZIP OK. Saída: target/widget_nw_manutEtiq.war; SHA256 `ee0df6b7afa7749c6d9a58c6846f458995f79f0e084b476a02c5863b5ff4ba0a`. Script histórico pack-widget.ps1 não encontrado nos caminhos conferidos; usado empacotamento Python zipfile equivalente. Publicação no Fluig não executada.
+- Última validação ao vivo registrada: 08/10/2026, NF 9999801–9999805 → 40 etiquetas. Evidências e hashes parciais em HISTORICO.md; não repetida em 20/10.
 
-## Tela
+## Retrato técnico anterior — 15/10/2026
+Preservado do AGENTS anterior para não perder detalhes. **Não é contrato vigente.** Afirmações abaixo sobre cinco diálogos, ações desabilitadas, Histórico sem ação/rota, ausência de contrato de estorno/confirmação e obterDadosImpressao não usada foram superadas pelas descobertas acima. Conferir o JS e o Dataset atuais. Outros detalhes não foram todos revalidados nesta migração.
+
+### Tela registrada
 ### Filtros (todos visíveis, sem bloco colapsável; todos faixa De/Até)
 Estabelecimento (**obrigatório**) · Itens · Depósito · Cód Barras · Lote · Data Validade (`input type=date`)
 · Família · Nota Fiscal (rádio **Intervalo** × **Específicas**). Ação: **Buscar**.
@@ -158,31 +150,8 @@ com `integrity` (SRI sha384) e `crossorigin="anonymous"`; o JS mantém o aviso `
 geral; não converter sem pedido. No Git Bash, `$'\r'`/`awk` não contam CR de forma confiável: conferir com Python
 (`b.count(b'\r\n')`) ou PowerShell lendo bytes.
 
-## Padrão de código (JS) — seguir sempre
-Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o próprio arquivo atual.
-- **Sem comentários.** O nome da função e das variáveis explica o que o código faz.
-- **Nomes descritivos em português**: `filtros`, `parametros`, `etiqueta`, `registro`, `operacao`, `resultado`; nada de
-  `f`, `p`, `d`, `r`, `op`. Objeto jQuery começa com `$` (`$lista`, `$input`).
-- **Funções curtas** (até ~20 linhas), com uma responsabilidade. Passo com nome próprio vira método da instância
-  (ex.: `validarFiltros` → `verificarFiltrosObrigatorios`, `verificarOrdemFaixas`, `recusarFiltros`).
-- **Constantes `NWM_*` no topo** para limites, tempos, mapas campo → parâmetro do Dataset e regex reutilizadas
-  (`NWM_LIMITE_PAGINA`, `NWM_PARAMETROS_ETIQUETAS`, `NWM_CODIGO_POSITIVO`, `NWM_TIPOS_ERRO`, `NWM_ESTADOS_OPERACAO`…).
-  Nada de número mágico no meio do código.
-- **jQuery para DOM, eventos e AJAX**: `$('<tag>', {...})`, `.attr/.prop/.text/.append/.appendTo`, `.on/.off`, `$.each`,
-  `$.grep`, `$.extend`, `$.ajax`, `$.Deferred`. Proibido: `document`, `querySelector`, `addEventListener`, `createElement`,
-  `innerHTML`, `fetch`, `async/await`, `$.trim` (obsoleto; usar `String(valor || '').trim()`). Texto vindo do servidor entra
-  por `text:`, nunca como HTML.
-- Estilo do arquivo: `var`, métodos no formato `nome() {}`, `var self = this` nos callbacks.
-- **Refatorar não muda comportamento**: mensagens, seletores, classes CSS e parâmetros do Dataset ficam idênticos.
-  Mantenha os nomes dos métodos e dos campos de estado já existentes (`operacaoAtual`, `consultaEtiquetas`,
-  `apoiosFiltros`, `consultasDataset`…): os bindings e os testes dependem deles.
-- **Testes**: rodar `node testes/testar-apoios-filtros.cjs`, `testar-consulta-etiquetas.cjs`, `testar-funcoes-manutencao.cjs`
-  e `testar-transporte-dataset.cjs` antes e depois; todos com `FALHAS=0`. Os testes usam um jQuery simulado
-  (`testes/testar-apoios-filtros.cjs`) que casa o **texto exato dos seletores** e só tem parte da API: método jQuery
-  novo (ex.: `.add`, `$.proxy`) em trecho que os testes executam precisa existir no simulador, senão o teste quebra.
-  Alguns testes leem `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
 
-## Dados
+### Dados e contrato registrados
 - **Dataset: ler sempre `../widget_nw_embalagens/datasets/dsNwEmbalagens.js`** (`NW_CONFIG`, `NW_ACOES`, `NW_COLUNAS`). Por
   definição do usuário esse arquivo é **sempre igual ao que está no Fluig**: ele manda sobre este documento. Só existe a
   ação, o parâmetro e a coluna que estiverem lá; o que faltar, perguntar ao usuário (não inventar). Conferir também
@@ -223,29 +192,3 @@ Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o p
 - **Ações aprovadas (DT-093/094):** Transferência e Devolução (compra e empréstimo) em **um modal único** pela natureza.
   **Receber** é pelo ANFE/Datasul (o Fluig não recria a entrada); **Estornar/Descartar** sem contrato.
 - **Autorização:** usuário, grupos e estabelecimentos permitidos vêm do Dataset (sessão Fluig), nunca do Widget.
-
-## Parâmetros de configuração (`edit.ftl`)
-Nenhum.
-
-## Regras de negócio
-- Estabelecimento De/Até obrigatório; Itens **ou** Nota Fiscal obrigatório.
-- As ações por linha dependem de `situacaoApresentada` e `tipoControle` (ver "Ações por linha").
-- "Escolher item + Quantidade" não cadastra nada: só marca embalagens inteiras (ativas, no estabelecimento, sem Bag,
-  saldo = quantidade inicial) até atingir a quantidade pedida.
-
-## Pendências / decisões em aberto
-- Publicar e validar no Fluig as alterações de 09 e 15/10 (cores, paginação, ações por status, Histórico).
-- Ação do botão **Histórico** (sem rota no backend) e do campo **Código de barras**.
-- "Estornar": na tela antiga o botão chamava `botaoDevolver(...)`; confirmar se deve ser a Devolução. Definir ações de
-  `AGUARDANDO_RECEBIMENTO`, `EM_TERCEIRO` e `CANCELADA`.
-- Confirmar os 7 códigos de status ainda não vistos no backend; decidir se `CANCELADA` entra na legenda; validar as cores
-  ao vivo (contraste não medido).
-- Impressão real das etiquetas (modelo/serviço); Receber pelo Datasul; Estornar e Descartar sem contrato.
-- Operações (Transferência/Remessa/Devolução) não testadas no TESTE.
-- Permissão de ADM: grupos definitivos (DT-054). Na tela antiga: `adm_abas_etiquetas` e `adm_etiquetas`.
-- Visão do não-ADM (só Receber, campo C. Barras, sem ação em lote e sem Escolher Item/Quantidade).
-- "Qtde Sel.": hoje é a soma do **saldo** (`qtidadeAtu`) das etiquetas marcadas do item — confirmar se é isso ou a quantidade inicial.
-- Desempenho em volume de produção não medido (TESTE tem ~50 etiquetas, 2,3–2,8 s por chamada).
-- Limpeza opcional: `situacoesApresentadas()` e `textoQuantidadeEtiquetas()` sem uso na legenda (um teste usa o primeiro);
-  modal "Mais ações" sem uso na linha.
-- `testes/` e `evidencias/` fora do git; decidir se entram.

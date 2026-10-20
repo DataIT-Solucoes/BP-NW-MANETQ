@@ -1,16 +1,8 @@
 # Histórico — widget_nw_manutEtiq (Manutenção Embalagens)
 
-> **Para a IA que continuar:** registro contínuo da conversa com o usuário (Humberto). Atualize **a cada interação** com o
-> que foi pedido, decidido, feito e o que ficou pendente: uma entrada curta, com data. O estado atual e as regras ficam no
-> `CLAUDE.md`/`AGENTS.md`; aqui fica só o porquê e o caminho. Não apague histórico útil; corrija dizendo que corrigiu.
-> Consolidado em 15/10/2026 a partir de `RETOMADA_SESSAO.md`, `PLANO_IMPLEMENTACAO_MANUTENCAO_ETIQUETAS.md`,
-> `ORIENTACOES-MOCKUP.md`, `STATUS_SITUACAO_APRESENTADA.md` e `MANUTENCAO_ETIQUETAS_DT120_20261007.md` (excluídos; estão no git).
-
-## Antes de qualquer trabalho
-1. Ler `CLAUDE.md` (Claude Code) ou `AGENTS.md` (Codex) desta pasta e usar a skill `fluig-branco-peres`.
-2. Reler o Dataset vigente `../widget_nw_embalagens/datasets/dsNwEmbalagens.js` (manda sobre qualquer documento; não alterar sem autorização).
-3. `git status`. Commit/push só quando pedido, mostrando antes os arquivos. Nunca incluir `pagina_antiga_manutencao_etiquetas/`,
-   `evidencias/`, `debug.log`, `testes/`.
+> Registro anterior preservado. Em 20/10/2026 o usuário pediu a adoção de PADRAO_CONTEXTO_IA_WIDGETS.md. A continuidade passa a ser feita em AGENTS.md, README.md e contexto-ia/AI_*.md. As entradas abaixo são históricas, não autorizações atuais.
+> A regra automática commit/push/WAR foi reafirmada pelo usuário em 20/10: SEMPRE fazer commit, push e compilar após cada alteração; ver AGENTS e AI_DECISIONS. O retrato funcional de 15/10 foi superado parcialmente pelo commit 9d1611d de 16/10; ver AI_REFERENCES.
+> Consolidado originalmente em 15/10/2026 a partir de RETOMADA_SESSAO.md, PLANO_IMPLEMENTACAO_MANUTENCAO_ETIQUETAS.md, ORIENTACOES-MOCKUP.md, STATUS_SITUACAO_APRESENTADA.md e MANUTENCAO_ETIQUETAS_DT120_20261007.md (excluídos; estão no git).
 
 ## Decisões do usuário (não reabrir)
 - Aba única; a tela é a visão ADM; sem checagem de permissão no Widget; sem C. Barras de bipagem do não-ADM (02/10).
