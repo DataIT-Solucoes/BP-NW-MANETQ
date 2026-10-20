@@ -4,6 +4,7 @@ Somente pedidos e decisões efetivas do usuário. Implementação observada em f
 
 | Data | Decisão | Origem |
 |---|---|---|
+| 2026-10-20 | Mapear as ocorrências do Histórico da embalagem em badges iguais às de Bags, conferindo os códigos nos fontes .p e na página publicada. | Pedido explícito do usuário |
 | 2026-10-20 | Exibir toast Fluig info “Carregando...” junto ao overlay da widget no Histórico e também no Buscar; retirar ao encerrar a carga. | Pedido explícito do usuário |
 | 2026-10-20 | Correção: loading global segue widget_nw_bags e bloqueia somente a widget, com overlay próprio e spinner. Não usar o loading global do Fluig. Substitui a interpretação anterior implementada com FLUIGC.loading(window); Histórico continua abrindo somente após carregar. | Correção explícita do usuário e referência à pasta widget_nw_bags |
 | 2026-10-20 | Botões de ações da grade devem ter a borda verde do padrão de Bags, inclusive em repouso. | Pedido explícito do usuário, referência à página manutencao_e_consulta_de_bags |
