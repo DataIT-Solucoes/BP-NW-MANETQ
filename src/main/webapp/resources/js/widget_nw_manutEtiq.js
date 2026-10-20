@@ -194,12 +194,14 @@ var NWM_LARGURAS_COLUNAS = {
   marcacao: 44,
   codigo: 88,
   descricaoMinima: 154,
+  tipoEmbalagem: 150,
   fazenda: 96,
   etiqueta: 110,
   lote: 90,
   validade: 100,
   quantidadeEmbalagem: 72,
   quantidadeSaldo: 76,
+  unidade: 48,
   status: 136,
   acoes: 160,
 };
@@ -1554,6 +1556,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         widthGrow: NWM_CRESCIMENTO_DESCRICAO,
         minWidth: NWM_LARGURAS_COLUNAS.descricaoMinima,
       }),
+      this.colunaTexto("Tipo de Embalagem", "codTipo", {
+        width: NWM_LARGURAS_COLUNAS.tipoEmbalagem,
+      }),
       this.colunaTexto("Fazenda", "codEstabel", {
         width: NWM_LARGURAS_COLUNAS.fazenda,
       }),
@@ -1574,6 +1579,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         NWM_LARGURAS_COLUNAS.quantidadeSaldo,
         true,
       ),
+      this.colunaTexto("UN", "unidade", {
+        width: NWM_LARGURAS_COLUNAS.unidade,
+      }),
       this.colunaStatus(),
       this.colunaAcoes(),
     ];
@@ -2369,6 +2377,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       itCodigo: registro.item,
       descItem: "—",
       codEstabel: registro.codEstabel,
+      codTipo: registro.codTipo || "",
       etiqueta: registro.codEtiqueta,
       codBarras: registro.codEtiqueta,
       lote: registro.lote || "",

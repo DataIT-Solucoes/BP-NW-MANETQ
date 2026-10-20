@@ -15,6 +15,9 @@ Caminhos de fontes abaixo são relativos à raiz da widget, salvo indicação.
 SHA256 do Dataset consultado: `1fca73eaa71d05e20d18b3098c762058d0a2d7bef432ace9394c7d6eb1a2d7f3`. Relê-lo antes de alterar integrações; não armazenar credenciais.
 
 ## Descobertas confirmadas — 2026-10-20
+- Grade atual: Tipo de Embalagem → codTipo (150px) antes de Fazenda; UN → unidade (48px) depois de Qtde Saldo. codTipo preservado por mapearEtiqueta; unidade já mapeada. Ambos usam formatter plaintext e ordenação textual, sem novas consultas.
+- Verificação local de ordem e mapeamento em 175 registros capturados de consultarEtiquetas: OK (exemplo PL/LT). node --check e git diff --check: OK. Suítes apoios 32, funções 36 e transporte 60 cenários, FALHAS=0 antes/depois. Consulta falha antes/depois por incompatibilidade preexistente do simulador (Node 24, rejeição não tratada; modo warn expõe $.map ausente).
+- JS medido em 20/10: CRLF no disco (4676 antes, 4685 depois); preservado. O registro LF/0 CR de 15/10 é histórico; Git normaliza o conteúdo conforme .gitattributes.
 - application.info: versão 0.1.0; recurso JS índice 1, CSS índice 2; próximo livre 3.
 - view.ftl: sete diálogos, incluindo ação de etiqueta e histórico; CDN declarativo com SRI. O registro anterior de cinco diálogos está superado.
 - JS, NWM_ACOES_POR_STATUS: matriz ampliada com inutilização/perda e status INUTILIZADA/ENCERRADA. A matriz de 15/10 abaixo é histórica.
@@ -30,7 +33,7 @@ SHA256 do Dataset consultado: `1fca73eaa71d05e20d18b3098c762058d0a2d7bef432ace93
 - Migração documental: conferir diff e referências; fontes e configuração permanecem sem alteração no Git.
 - Testes funcionais não executados nesta migração; exigência de antes/depois para alterações JS permanece em AGENTS.
 - Testes registrados: `node testes/testar-apoios-filtros.cjs`, `node testes/testar-consulta-etiquetas.cjs`, `node testes/testar-funcoes-manutencao.cjs`, `node testes/testar-transporte-dataset.cjs`. Alguns leem evidencias/etapa1-20261008/resultado-dataset.json (fora do Git).
-- Geração confirmada em 20/10/2026: WAR ZIP Deflate com src/main/webapp/ na raiz e src/main/resources/ em WEB-INF/classes/. Estrutura idêntica ao WAR anterior; 12 arquivos comparados byte a byte aos fontes, integridade ZIP OK. Saída: target/widget_nw_manutEtiq.war; SHA256 `ee0df6b7afa7749c6d9a58c6846f458995f79f0e084b476a02c5863b5ff4ba0a`. Script histórico pack-widget.ps1 não encontrado nos caminhos conferidos; usado empacotamento Python zipfile equivalente. Publicação no Fluig não executada.
+- WAR atualizado em 20/10/2026 com as novas colunas: target/widget_nw_manutEtiq.war; SHA256 `475191a894ffa6e9d308c1ed1730d3fccaf28e721355f53c31bb6143b976bc9a`. Empacotamento Python zipfile (Deflate): src/main/webapp/ na raiz e src/main/resources/ em WEB-INF/classes/. 12 arquivos comparados byte a byte aos fontes, ZIP íntegro. Script histórico pack-widget.ps1 não encontrado nos caminhos conferidos. Publicação no Fluig não executada.
 - Última validação ao vivo registrada: 08/10/2026, NF 9999801–9999805 → 40 etiquetas. Evidências e hashes parciais em HISTORICO.md; não repetida em 20/10.
 
 ## Retrato técnico anterior — 15/10/2026

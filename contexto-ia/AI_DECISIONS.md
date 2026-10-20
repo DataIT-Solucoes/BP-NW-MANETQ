@@ -4,6 +4,7 @@ Somente pedidos e decisões efetivas do usuário. Implementação observada em f
 
 | Data | Decisão | Origem |
 |---|---|---|
+| 2026-10-20 | Adicionar coluna “Tipo de Embalagem” imediatamente antes de Fazenda e “UN” imediatamente depois de Qtde Saldo na grade. | Pedido explícito do usuário |
 | 2026-10-20 | Adotar PADRAO_CONTEXTO_IA_WIDGETS.md: AGENTS, README e quatro arquivos de contexto; remover CLAUDE local duplicado. Substitui o espelhamento AGENTS/CLAUDE e a atualização contínua do HISTORICO. | Pedido atual e padrão em Documentos |
 | 2026-10-20 | **SEMPRE: commit, push e compilar após cada alteração**, incluindo documentação. Substitui a orientação anterior de pedir autorização individual para commit/push/build. Mostrar o conteúdo antes do commit; publicação no Fluig permanece separada. | Correção explícita do usuário: “SEMPRE: Commit, push e compilar” |
 | 2026-10-15 | Ações da linha por status, como a aba Administrador da tela antiga (09/10); botão Histórico entre Detalhes e Imprimir (15/10). | HISTORICO.md, decisões do usuário |
