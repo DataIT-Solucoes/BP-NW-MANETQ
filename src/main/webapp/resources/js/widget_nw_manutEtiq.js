@@ -1736,7 +1736,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       headerSort: false,
       cssClass: "nwm-coluna-acoes",
       width: NWM_LARGURAS_COLUNAS.acoes,
-      hozAlign: "right",
+      hozAlign: "left",
       vertAlign: "middle",
       formatter: function (cell) {
         return self.montarBotoesAcoes(cell.getRow().getData());

@@ -11,6 +11,7 @@ Pendências não autorizam execução. Conferir o contrato vigente antes de plan
 - Eventual aumento de application.version em próxima publicação para evitar cache; sugestão anterior não autoriza alteração.
 
 ## Confirmar no Fluig
+- Publicar e conferir alinhamento à esquerda na coluna Ações.
 - Publicar largura corrigida de Ações (320px) e conferir Imprimir inteiro como primeiro botão de NAO_IMPRESSA. Ordem já confirmada no JS publicado; corte do botão reproduzido na largura antiga.
 - Publicar e validar fechamento pelo fundo nos sete modais, hover por ação e ausência da mensagem inicial Em lote...
 - Publicar e validar badges de Ocorrência no Histórico da embalagem, com o mapa/cores de Bags. Mapa publicado de Bags e CSS comparados em 20/10; a manutenção ainda não publicada nesta tarefa.

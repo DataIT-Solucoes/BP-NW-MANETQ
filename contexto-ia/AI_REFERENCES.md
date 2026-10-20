@@ -15,6 +15,7 @@ Caminhos de fontes abaixo são relativos à raiz da widget, salvo indicação.
 SHA256 do Dataset consultado: `1fca73eaa71d05e20d18b3098c762058d0a2d7bef432ace9394c7d6eb1a2d7f3`. Relê-lo antes de alterar integrações; não armazenar credenciais.
 
 ## Descobertas confirmadas — 2026-10-20
+- colunaAcoes alterada de hozAlign right para left, conforme pedido. Página publicada ainda configurava right no momento da leitura. Reprodução em Tabulator temporário com 12 status, largura 320px e alinhamento corrigido: todos os primeiros botões a 10px da borda esquerda (padding), todos inteiros, Imprimir primeiro em NAO_IMPRESSA. Tabela temporária removida, sem comandos/dados reais. node --check/git diff --check OK; três suítes antes/depois com FALHAS=0 (32/36/60), consulta conserva falha preexistente HTTP 0.
 - Causa do botão Imprimir ausente confirmada no navegador: mapa publicado já começa por imprimir, mas a coluna Ações com 160px e conteúdo alinhado à direita cortava o primeiro botão. Reproduzido em Tabulator temporário com o JS/CSS da página: botão de 34px iniciava em -36px e terminava em -2px relativos à célula, totalmente invisível.
 - NWM_LARGURAS_COLUNAS.acoes ampliada de 160 para 320px. Novo teste no Tabulator com 12 status: todas as ações inteiras, inclusive até oito botões; NAO_IMPRESSA com imprimir primeiro e todos os cinco botões visíveis. Teste usou dados sintéticos em tabela temporária invisível, destruída ao final, sem consultar/escrever comandos. Layout novo ainda não publicado.
 - Apenas largura alterada; não há mudança no contrato de impressão ou no estado disabled existente enquanto aguarda modelo. Antes/depois: apoios 32, funções 36 e transporte 60 com FALHAS=0; consulta mantém falha preexistente HTTP 0. node --check/git diff --check OK.
@@ -55,7 +56,7 @@ SHA256 do Dataset consultado: `1fca73eaa71d05e20d18b3098c762058d0a2d7bef432ace93
 - Migração documental: conferir diff e referências; fontes e configuração permanecem sem alteração no Git.
 - Testes funcionais não executados nesta migração; exigência de antes/depois para alterações JS permanece em AGENTS.
 - Testes registrados: `node testes/testar-apoios-filtros.cjs`, `node testes/testar-consulta-etiquetas.cjs`, `node testes/testar-funcoes-manutencao.cjs`, `node testes/testar-transporte-dataset.cjs`. Alguns leem evidencias/etapa1-20261008/resultado-dataset.json (fora do Git).
-- WAR atualizado em 20/10/2026 com coluna Ações sem corte: target/widget_nw_manutEtiq.war; SHA256 `e152441a3fdead17b601b5981ad5ebff1968ab369b481885c088dd8f05669b24`. Gerado pelo pack-widget.ps1, 12 arquivos comparados byte a byte, ZIP íntegro. Publicação não executada.
+- WAR atualizado em 20/10/2026 com Ações alinhadas à esquerda: target/widget_nw_manutEtiq.war; SHA256 `0b8e68247390e0703a0ba69ff98f8d0b0e81365879c90ab380f939f2195e5675`. Gerado pelo pack-widget.ps1, 12 arquivos comparados byte a byte, ZIP íntegro. Publicação não executada.
 - Última validação ao vivo registrada: 08/10/2026, NF 9999801–9999805 → 40 etiquetas. Evidências e hashes parciais em HISTORICO.md; não repetida em 20/10.
 
 ## Retrato técnico anterior — 15/10/2026

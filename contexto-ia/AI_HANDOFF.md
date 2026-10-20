@@ -1,17 +1,16 @@
 # AI_HANDOFF — widget_nw_manutEtiq
 
 ## Última atualização
-2026-10-20 — branch: fechamento-controle-embalagens; base anterior à entrega: f4eaf3a.
+2026-10-20 — branch: fechamento-controle-embalagens; base anterior à entrega: 09f8f52.
 
 ## Tarefa atual / última entrega
-- Usuário cobrou o botão Imprimir visível e primeiro em Não impressa.
-- Causa confirmada na página publicada: mapa já reordenado, mas coluna Ações de 160px alinhada à direita cortava o botão inteiro. Reprodução no Tabulator: Imprimir de 34px entre -36 e -2px relativos à célula.
-- Correção: NWM_LARGURAS_COLUNAS.acoes de 160 para 320px, comportando até oito botões; ordem de Não impressa permanece Imprimir, Detalhes, Histórico, Inutilizar, Perda.
-- Teste em Tabulator temporário com JS/CSS da página, 12 status: todos os botões visíveis; Imprimir primeiro em Não impressa. Tabela de teste removida; nenhum comando de backend chamado.
-- Mudança só de largura; disponibilidade da impressão preservada, ainda depende do modelo/fluxo vigente. node --check/git diff --check OK; apoios 32, funções 36 e transporte 60 com FALHAS=0 antes/depois; consulta mantém falha preexistente HTTP 0/rejeição não tratada.
+- Pedido: botões da coluna Ações devem ficar à esquerda.
+- JS: colunaAcoes.hozAlign mudou de right para left. Largura 320px e ordem das ações preservadas; Imprimir primeiro em Não impressa.
+- Página publicada conferida: ainda hozAlign right no momento da leitura. Teste no navegador em Tabulator temporário com 12 status e configuração corrigida: todos os botões visíveis, primeiro a 10px da esquerda (padding), Imprimir primeiro em NAO_IMPRESSA. Tabela temporária removida, sem comandos de backend.
+- node --check/git diff --check OK. Antes/depois: apoios 32, funções 36 e transporte 60 com FALHAS=0; consulta mantém falha preexistente HTTP 0/rejeição não tratada.
 - WAR gerado por pack-widget.ps1, 12 arquivos conferidos byte a byte, ZIP íntegro; SHA256 em AI_REFERENCES. JS UTF-8/CRLF preservado.
-- Conteúdo para commit/push: JS e quatro arquivos de contexto. Publicação da largura corrigida no Fluig não realizada.
-- Git limpo no início; f4eaf3a já enviado ao remoto; ordem correspondente confirmada na página publicada.
+- Conteúdo para commit/push: JS e quatro arquivos de contexto. Publicação do alinhamento corrigido no Fluig não realizada.
+- Git limpo no início; entrega anterior 09f8f52 enviada ao remoto.
 
 ## Para retomar
 - Ler AGENTS e os quatro arquivos AI_*.md; conferir o Git antes de editar.
