@@ -11,6 +11,7 @@ Pendências não autorizam execução. Conferir o contrato vigente antes de plan
 - Eventual aumento de application.version em próxima publicação para evitar cache; sugestão anterior não autoriza alteração.
 
 ## Confirmar no Fluig
+- Publicar e testar confirmação de impressão pelo botão/ação em lote: Não impressa deve receber o status real do backend após CONFIRMAR_IMPRESSAO; não imprime papel nesta etapa. Nenhum comando real executado nesta implementação.
 - Publicar e conferir alinhamento à esquerda na coluna Ações.
 - Publicar largura corrigida de Ações (320px) e conferir Imprimir inteiro como primeiro botão de NAO_IMPRESSA. Ordem já confirmada no JS publicado; corte do botão reproduzido na largura antiga.
 - Publicar e validar fechamento pelo fundo nos sete modais, hover por ação e ausência da mensagem inicial Em lote...

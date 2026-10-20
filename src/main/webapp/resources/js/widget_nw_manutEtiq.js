@@ -384,7 +384,9 @@ var NWM_ACOES_POR_STATUS = {
 
 var NWM_LIMITE_JUSTIFICATIVA = 1000;
 var NWM_CONTROLES_JUSTIFICATIVA = /[\x00-\x08\x0b\x0c\x0e-\x1f]/;
+var NWM_JUSTIFICATIVA_IMPRESSAO_TESTE = "Confirmação de impressão para teste, sem envio à impressora.";
 var NWM_COMANDOS_ETIQUETA = {
+  imprimir: { dataset: "confirmarEtiqueta", acao: "CONFIRMAR_IMPRESSAO" },
   receber: { dataset: "confirmarEtiqueta", acao: "RECEBER_FISICO" },
   estornar: { dataset: "estornarEtiqueta" },
   inutilizar: { dataset: "inutilizarEtiqueta", acao: "INUTILIZAR" },
@@ -1835,7 +1837,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   acaoDisponivel(acao, etiqueta) {
     if (acao === "detalhes" || acao === "historico") return true;
     if (this.escritaEtiquetaBloqueada() || etiqueta.tipoControle !== "EMBALAGEM") return false;
-    if (acao === "imprimir") return false;
+    if (acao === "imprimir") return etiqueta.situacao === "ATIVA" && this.acoesDaEtiqueta(etiqueta).indexOf(acao) >= 0;
     if (this.possuiBag(etiqueta)) return false;
     if (this.acoesDaEtiqueta(etiqueta).indexOf(acao) < 0) return false;
     if (acao === "perda") return etiqueta.situacao === "ATIVA";
@@ -1853,7 +1855,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   textoMotivoIndisponivel(acao, etiqueta) {
-    if (acao === "imprimir") return "Aguardando modelo de impressão";
+    if (acao === "imprimir") return this.escritaEtiquetaBloqueada() ? "Há uma operação em andamento ou sem resultado confirmado" : "Indisponível para a situação atual";
     if (etiqueta && this.possuiBag(etiqueta)) return "Vinculada a Bag: retire pela tela de Bags se aberta; se lacrada, reabra e retire. Bag enviada não permite perda";
     if (this.escritaEtiquetaBloqueada()) return "Há uma operação em andamento ou sem resultado confirmado";
     return "Indisponível para a situação ou posição atual";
@@ -4321,12 +4323,33 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if ($.grep(etiquetas, function (etiqueta) { return !self.acaoDisponivel(acao, etiqueta); }).length)
       return this.avisar("warning", this.textoMotivoIndisponivel(acao, $.grep(etiquetas, function (etiqueta) { return self.possuiBag(etiqueta); })[0]));
     this.acaoEtiquetaAtual = { acao: acao, etiquetas: etiquetas, indice: 0, concluidas: 0, enviando: false, incerta: false };
+    if (acao === "imprimir") return this.iniciarConfirmacaoImpressao();
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-titulo]").text(NWM_ACOES[acao].rotulo);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-resumo]").text(etiquetas.length + " embalagem(ns). " + (acao === "estornar" ? "Informe o saldo final de cada embalagem, não a diferença." : "Informe a justificativa."));
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").val(etiquetas.length === 1 ? etiquetas[0].qtidadeAtu : "").closest(".nwm-campo").prop("hidden", acao !== "estornar");
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-motivo]").val("");
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text("");
     this.abrir(this.$modalAcaoEtiqueta);
+  },
+
+  iniciarConfirmacaoImpressao() {
+    var operacao = this.acaoEtiquetaAtual;
+    operacao.campos = { justificativa: NWM_JUSTIFICATIVA_IMPRESSAO_TESTE };
+    operacao.enviando = true;
+    this.confirmandoImpressao = true;
+    this.bloquearTelaEtiqueta(true);
+    this.atualizarCarregandoGlobal();
+    this.enviarProximaEtiqueta(operacao);
+  },
+
+  finalizarConfirmacaoImpressao(operacao) {
+    if (operacao.acao !== "imprimir") return;
+    this.confirmandoImpressao = false;
+    this.atualizarCarregandoGlobal();
+    if (operacao.incerta) return this.avisar("warning", "Resultado da impressão incerto. Não reenviado. Consulte situação e histórico. Chave: " + operacao.comando.parametros.chaveIdempotente);
+    if (operacao.erro) return this.avisar("danger", operacao.erro.message + " Confirmadas: " + operacao.concluidas + ".");
+    if (operacao.atualizacaoFalhou) return this.avisar("warning", "Impressão confirmada, mas a consulta não foi atualizada. Clique em Buscar.");
+    this.avisar("success", "Confirmação de impressão registrada para " + operacao.concluidas + " embalagem(ns).");
   },
 
   camposAcaoEtiqueta() {
@@ -4394,6 +4417,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   recusarAcaoEtiqueta(operacao, erro) {
     operacao.finalizada = true;
+    operacao.erro = erro;
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text((erro.codigoErro ? erro.codigoErro + ": " : "") + erro.message + " Confirmadas: " + operacao.concluidas + ". Nenhuma repetição automática.");
     this.terminarAtualizacaoEtiqueta(operacao);
   },
@@ -4416,8 +4440,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.atualizarGradeMantendoRecorte().then(function () {
       if (operacao.finalizada && operacao.concluidas === operacao.etiquetas.length) self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text(operacao.concluidas + " embalagem(ns) confirmada(s). Consulta atualizada.");
     }, function () {
+      operacao.atualizacaoFalhou = true;
       self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").append($("<span>", { text: " A atualização da consulta falhou; clique em Buscar. Não repita comandos já confirmados." }));
-    }).always(function () { operacao.enviando = false; self.bloquearTelaEtiqueta(false); if (self.tabela) self.tabela.redraw(true); });
+    }).always(function () { operacao.enviando = false; self.bloquearTelaEtiqueta(false); self.finalizarConfirmacaoImpressao(operacao); if (self.tabela) self.tabela.redraw(true); });
     if (operacao.ultimaEtiqueta) this.consultarDataset("consultarHistoricoEtiqueta", { codEstabel: operacao.ultimaEtiqueta.codEstabel, idEtiqueta: operacao.ultimaEtiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA }, "historico:apos-acao");
   },
 
@@ -4485,7 +4510,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   atualizarCarregandoGlobal() {
-    var carregando = !!(this.carregandoTela || this.preparandoHistorico);
+    var carregando = !!(this.carregandoTela || this.preparandoHistorico || this.confirmandoImpressao);
     if (!this.$carregandoGlobal) {
       this.$carregandoGlobal = $("<div>", {
         class: "nwm-carregando-global",

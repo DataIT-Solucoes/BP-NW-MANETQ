@@ -22,7 +22,7 @@ Ambiente registrado: jQuery 3.6.3, Bootstrap 3.4.1 e Style Guide 2.5.0 fornecido
 
 Integração via dsNwEmbalagens, pelo endpoint Fluig /api/public/ecm/dataset/search. Contrato vigente em ../widget_nw_embalagens/datasets/dsNwEmbalagens.js; autenticação e autorização no servidor. Serviço Datasul: DATASUL_REST_HOMOLOG.
 
-Impressora configurada pelo aplicativo local http://localhost:32478 e chave impressora no localStorage. Template de teste registrado: documento GED 423. Fluxo completo de impressão real não confirmado.
+Impressora configurada pelo aplicativo local http://localhost:32478 e chave impressora no localStorage. Template de teste registrado: documento GED 423. No teste atual, o botão Imprimir registra CONFIRMAR_IMPRESSAO no backend e recarrega o status da grade, sem enviar etiqueta à impressora. O fluxo completo de impressão física ainda não está integrado.
 
 ## Verificação e publicação
 Testes Node locais em testes/, fora do Git. Comandos e dependências em [AI_REFERENCES](contexto-ia/AI_REFERENCES.md). A adoção documental confere o diff, sem testes funcionais, build ou publicação.

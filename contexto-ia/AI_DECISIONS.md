@@ -4,6 +4,7 @@ Somente pedidos e decisões efetivas do usuário. Implementação observada em f
 
 | Data | Decisão | Origem |
 |---|---|---|
+| 2026-10-20 | Habilitar Imprimir quando a situação permitir e, ao clicar, registrar a confirmação para atualizar o status, mesmo sem impressão física, para teste do usuário. Substitui a desabilitação anterior por falta de modelo de impressão. | Pedido explícito do usuário |
 | 2026-10-20 | Botões da coluna Ações alinhados à esquerda. | Correção explícita do usuário após conferir a página de manutenção |
 | 2026-10-20 | Imprimir precisa estar visível como PRIMEIRO botão em Não impressa; apenas reordenar o mapa não atende se a coluna cortar o botão. | Correção explícita do usuário |
 | 2026-10-20 | Em NAO_IMPRESSA, Imprimir deve ser o primeiro botão: Imprimir, Detalhes, Histórico, Inutilizar e Perda. Substitui para esse status a posição anterior do Histórico antes da impressão; demais status preservados. | Pedido explícito do usuário |

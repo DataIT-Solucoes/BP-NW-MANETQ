@@ -1,18 +1,19 @@
 # AI_HANDOFF — widget_nw_manutEtiq
 
 ## Última atualização
-2026-10-20 — branch: fechamento-controle-embalagens; base anterior à entrega: 09f8f52.
+2026-10-20 — branch: fechamento-controle-embalagens; base anterior à entrega: 17e4474.
 
 ## Tarefa atual / última entrega
-- Pedido: botões da coluna Ações devem ficar à esquerda.
-- JS: colunaAcoes.hozAlign mudou de right para left. Largura 320px e ordem das ações preservadas; Imprimir primeiro em Não impressa.
-- Página publicada conferida: ainda hozAlign right no momento da leitura. Teste no navegador em Tabulator temporário com 12 status e configuração corrigida: todos os botões visíveis, primeiro a 10px da esquerda (padding), Imprimir primeiro em NAO_IMPRESSA. Tabela temporária removida, sem comandos de backend.
-- node --check/git diff --check OK. Antes/depois: apoios 32, funções 36 e transporte 60 com FALHAS=0; consulta mantém falha preexistente HTTP 0/rejeição não tratada.
+- Pedido: habilitar Imprimir quando permitido e registrar a confirmação ao clicar para testar mudança de status, sem impressão física nesta etapa.
+- JS: Imprimir disponível para EMBALAGEM ATIVA incluída no mapa, com guarda de operação/resultado incerto. Segue primeiro em Não impressa. Clique e ação em lote usam confirmarEtiqueta/CONFIRMAR_IMPRESSAO, sem abrir modal, com justificativa de teste sem envio à impressora.
+- Reutiliza consulta de situação/versão, chave idempotente e persistência de resultado incerto. Resultado vem do backend: grade recarregada mantendo página e histórico consultado. Não muda status localmente e não chama impressora. Overlay/toast Carregando... seguem até a recarga.
+- Recusa/versão não geram falso sucesso; resultado incerto bloqueia reenvio; falha de recarga pede Buscar. Backend e Dataset consultados e preservados; .p oficial só lido em CP850.
+- Teste local de impressão, fora do Git: 11 cenários com FALHAS=0, sem comandos reais ou impressão física. Apoios 32, funções 36 e transporte 60 passaram antes/depois; consulta mantém falha preexistente HTTP 0/rejeição não tratada. node --check/git diff --check OK.
 - WAR gerado por pack-widget.ps1, 12 arquivos conferidos byte a byte, ZIP íntegro; SHA256 em AI_REFERENCES. JS UTF-8/CRLF preservado.
-- Conteúdo para commit/push: JS e quatro arquivos de contexto. Publicação do alinhamento corrigido no Fluig não realizada.
-- Git limpo no início; entrega anterior 09f8f52 enviada ao remoto.
+- Conteúdo para commit/push: JS, README e quatro arquivos de contexto. Publicação e teste real ficam pendentes para o usuário; nenhum status real foi alterado por esta sessão.
+- Git limpo no início; entrega anterior 17e4474 enviada ao remoto.
 
 ## Para retomar
 - Ler AGENTS e os quatro arquivos AI_*.md; conferir o Git antes de editar.
-- Próxima tarefa depende de novo pedido; pendências não autorizam execução.
-- Sempre commit, push e gerar WAR pelo pack-widget.ps1; publicação no Fluig exige autorização própria.
+- Não confundir este modo de confirmação para teste com impressão física integrada; pendência permanece em AI_TODO.
+- Próxima tarefa depende de novo pedido. Sempre commit, push e gerar WAR pelo pack-widget.ps1; publicação no Fluig exige autorização própria.
