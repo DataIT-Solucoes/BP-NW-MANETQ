@@ -4,6 +4,9 @@ Somente pedidos e decisões efetivas do usuário. Implementação observada em f
 
 | Data | Decisão | Origem |
 |---|---|---|
+| 2026-10-20 | Remover a mensagem inicial “Em lote, cada embalagem...” dos modais; manter campo para andamento/resultado. | Pedido explícito do usuário durante esta tarefa |
+| 2026-10-20 | Aplicar aos botões de ações o padrão de hover da tela de Bags: fundo/borda coloridos e ícone contrastante por ação. | Pedido explícito do usuário, mesma página de referência |
+| 2026-10-20 | Permitir fechar os modais clicando no fundo escuro externo. | Pedido explícito do usuário |
 | 2026-10-20 | Mapear as ocorrências do Histórico da embalagem em badges iguais às de Bags, conferindo os códigos nos fontes .p e na página publicada. | Pedido explícito do usuário |
 | 2026-10-20 | Exibir toast Fluig info “Carregando...” junto ao overlay da widget no Histórico e também no Buscar; retirar ao encerrar a carga. | Pedido explícito do usuário |
 | 2026-10-20 | Correção: loading global segue widget_nw_bags e bloqueia somente a widget, com overlay próprio e spinner. Não usar o loading global do Fluig. Substitui a interpretação anterior implementada com FLUIGC.loading(window); Histórico continua abrindo somente após carregar. | Correção explícita do usuário e referência à pasta widget_nw_bags |

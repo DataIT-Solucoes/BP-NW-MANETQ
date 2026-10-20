@@ -1,19 +1,19 @@
 # AI_HANDOFF — widget_nw_manutEtiq
 
 ## Última atualização
-2026-10-20 — branch: fechamento-controle-embalagens; base anterior à entrega: f7c988e.
+2026-10-20 — branch: fechamento-controle-embalagens; base anterior à entrega: 87c2488.
 
 ## Tarefa atual / última entrega
-- Pedido: conferir .p e badges publicadas de Bags e aplicar o mapeamento no Histórico da embalagem.
-- JS: 22 códigos exatos de embalagem e oito regras de Bag copiados do mapa publicado; renderização de Ocorrência em badge com rótulo e cor. Prioridade do código exato; desconhecido neutro; ausente travessão. Sem código técnico em title e sem inserir HTML externo.
-- CSS: sete cores de badge, formato e ponto iguais a Bags, sob .fluig-style-guide.nwm. Comparação no navegador entre Bags publicada e CSS local confirmou texto/fundo/borda/raio/ponto idênticos. Demais colunas, data, toast, loading e paginação preservados.
-- Fontes .p oficiais consultados via gh api em DataIT-Solucoes/BP-NW-Embalagens, branch fechamento-controle-embalagens; leitura CP850, nenhuma alteração. Origem de ocorrencia e tipos de confirmação/movimento conferidos; referências/linhas/hashes em AI_REFERENCES. Dataset vigente lido, não alterado.
-- 34 cenários específicos passaram. Antes/depois: apoios 32, funções 36 e transporte 60 com FALHAS=0. Consulta mantém falha preexistente HTTP 0/rejeição não tratada. node --check/git diff --check OK.
-- WAR gerado pelo pack-widget.ps1 localizado na referência de Bags (caminho em AI_REFERENCES), 12 arquivos conferidos byte a byte e ZIP íntegro; SHA256 em AI_REFERENCES.
-- Conteúdo para commit/push: JS, CSS e quatro arquivos de contexto. Publicação e validação na widget de manutenção no Fluig não realizadas; Bags conferida ao vivo, CSS de manutenção em página isolada.
-- Git limpo no início; entrega anterior f7c988e enviada ao remoto.
+- Pedidos recebidos durante a mesma tarefa: fechar modal ao clicar no fundo escuro; aplicar hover de Bags às ações; remover mensagem inicial Em lote... dos modais.
+- JS: mapa de fechamento dos sete diálogos, detecção por alvo e limites geométricos; clicar no conteúdo/área interna vazia não fecha. Rotas de Fechar preservadas, incluindo bloqueio durante envio e cancelamento de consulta do histórico. Mensagem inicial removida; estado permanece para progresso/resultado.
+- CSS: hover preenchido por ação, cores de Bags e ícone branco (carvão sobre amarelo); disabled não recebe hover ativo. Detalhes azul, Histórico roxo, Imprimir cinza, Receber verde, Estornar amarelo, Transferir petróleo, Devolver laranja, ações destrutivas vermelhas.
+- Verificação: 23 cenários simulados de fechamento/roteamento, três de bloqueio de operação, 21 verificações de sete dialogs nativos no navegador e hover real das dez ações em página isolada. Todos passaram. Texto removido conferido no JS; node --check/git diff --check OK.
+- Apoios 32, funções 36 e transporte 60 com FALHAS=0 antes/depois; simulador local atualizado para off/offset/outerWidth, fora do Git. Consulta mantém falha preexistente HTTP 0/rejeição não tratada.
+- WAR gerado por pack-widget.ps1 e conferido byte a byte aos 12 fontes; ZIP íntegro, SHA256 em AI_REFERENCES. Encoding/quebras dos fontes preservados.
+- Conteúdo para commit/push: JS, CSS e quatro arquivos de contexto. Publicação/validação da widget de manutenção no Fluig não realizadas; referência de hover Bags lida ao vivo e testes visuais em página isolada/diálogos temporários.
+- Git limpo no início; entrega anterior 87c2488 enviada ao remoto.
 
 ## Para retomar
 - Ler AGENTS e os quatro arquivos AI_*.md; conferir o Git antes de editar.
 - Próxima tarefa depende de novo pedido; pendências não autorizam execução.
-- Sempre commit, push e gerar WAR após alterações. Usar o pack-widget.ps1 agora localizado; publicação no Fluig exige autorização própria.
+- Sempre commit, push e gerar WAR pelo pack-widget.ps1; publicação no Fluig exige autorização própria.

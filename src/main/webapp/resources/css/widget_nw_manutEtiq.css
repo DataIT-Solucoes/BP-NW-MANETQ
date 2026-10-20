@@ -1319,10 +1319,60 @@
     box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
 }
 
-.fluig-style-guide.nwm .nwm-acao:hover {
+.fluig-style-guide.nwm .nwm-acao:hover:not(:disabled) {
     border-color: var(--nwm-verde);
     background-color: #fff;
+    color: var(--nwm-verde);
+}
+
+.fluig-style-guide.nwm .nwm-acao[data-acao="detalhes"]:hover:not(:disabled) {
+    border-color: #1F6FB5;
+    background-color: #1F6FB5;
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-acao[data-acao="historico"]:hover:not(:disabled) {
+    border-color: #6B4FA0;
+    background-color: #6B4FA0;
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-acao[data-acao="imprimir"]:hover:not(:disabled) {
+    border-color: #475569;
+    background-color: #475569;
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-acao[data-acao="receber"]:hover:not(:disabled) {
+    border-color: var(--nwm-verde);
+    background-color: var(--nwm-verde);
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-acao[data-acao="estornar"]:hover:not(:disabled) {
+    border-color: var(--nwm-amarelo);
+    background-color: var(--nwm-amarelo);
     color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-acao[data-acao="transferir"]:hover:not(:disabled) {
+    border-color: #0F766E;
+    background-color: #0F766E;
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-acao[data-acao="devolver"]:hover:not(:disabled) {
+    border-color: #C2410C;
+    background-color: #C2410C;
+    color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-acao[data-acao="inutilizar"]:hover:not(:disabled),
+.fluig-style-guide.nwm .nwm-acao[data-acao="perda"]:hover:not(:disabled),
+.fluig-style-guide.nwm .nwm-acao[data-acao="descartar"]:hover:not(:disabled) {
+    border-color: var(--nwm-vermelho);
+    background-color: var(--nwm-vermelho);
+    color: #fff;
 }
 
 .fluig-style-guide.nwm .nwm-mais-acoes {
@@ -1385,13 +1435,6 @@
 
 .fluig-style-guide.nwm .nwm-mais-acoes-motivo:empty {
     display: none;
-}
-
-/* descartar é destrutivo: hover vermelho, como o excluir das outras telas */
-.fluig-style-guide.nwm .nwm-acao-descartar:hover {
-    border-color: rgba(237, 28, 36, 0.35);
-    background-color: rgba(237, 28, 36, 0.08);
-    color: var(--nwm-vermelho-escuro);
 }
 
 /* linha recém-alterada brilha em amarelo solar */

@@ -1,3 +1,12 @@
+var NWM_FECHAMENTO_MODAIS = {
+  "[data-modal-detalhes]": "fecharDetalhes",
+  "[data-modal-legenda]": "fecharLegenda",
+  "[data-modal-impressora]": "fecharImpressora",
+  "[data-modal-mais-acoes]": "fecharMaisAcoes",
+  "[data-modal-operacao]": "fecharOperacao",
+  "[data-modal-acao-etiqueta]": "fecharAcaoEtiqueta",
+  "[data-modal-historico]": "fecharHistorico",
+};
 var NWM_EVENTOS_HISTORICO = {
   NASCIMENTO_RECEBIMENTO: { rotulo: "Recebimento", cor: "verde" },
   RECEBIMENTO_FISICO: { rotulo: "Recebimento físico", cor: "verde" },
@@ -3009,19 +3018,19 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   ligarFechamentoPeloFundo() {
     var self = this;
-    $.each(
-      [
-        this.$modalDetalhes,
-        this.$modalLegenda,
-        this.$modalImpressora,
-        this.$modalMaisAcoes,
-      ],
-      function (indice, $modal) {
-        $modal.on("click", function (event) {
-          if ($(event.target).is($modal)) self.fechar($modal);
-        });
-      },
-    );
+    $.each(NWM_FECHAMENTO_MODAIS, function (seletor, metodo) {
+      var $modal = $(seletor, self.DOM);
+      $modal.off("click.nwm-fundo").on("click.nwm-fundo", function (evento) {
+        if (self.cliqueForaModal($modal, evento)) self[metodo]();
+      });
+    });
+  },
+
+  cliqueForaModal($modal, evento) {
+    if (evento.target !== $modal[0]) return false;
+    var posicao = $modal.offset();
+    return evento.pageX < posicao.left || evento.pageX > posicao.left + $modal.outerWidth() ||
+      evento.pageY < posicao.top || evento.pageY > posicao.top + $modal.outerHeight();
   },
 
   abrir($modal) {
@@ -4300,7 +4309,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.$modalAcaoEtiqueta.find("form").on("submit", function (evento) { evento.preventDefault(); self.enviarAcaoEtiqueta(); });
     this.$modalAcaoEtiqueta.on("cancel", function (evento) { if (self.acaoEtiquetaAtual && self.acaoEtiquetaAtual.enviando) evento.preventDefault(); });
     $("[data-fechar-acao-etiqueta]", this.DOM).on("click", function () { self.fecharAcaoEtiqueta(); });
-    $("[data-fechar-historico]", this.DOM).on("click", function () { self.fechar(self.$modalHistorico); self.cancelarConsultaDataset("historico"); });
+    $("[data-fechar-historico]", this.DOM).on("click", function () { self.fecharHistorico(); });
     $("[data-historico-proximo]", this.DOM).on("click", function () { self.proximaPaginaHistorico(); });
     $("[data-historico-anterior]", this.DOM).on("click", function () { self.paginaAnteriorHistorico(); });
     this.restaurarEtiquetaIncerta();
@@ -4316,7 +4325,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-resumo]").text(etiquetas.length + " embalagem(ns). " + (acao === "estornar" ? "Informe o saldo final de cada embalagem, não a diferença." : "Informe a justificativa."));
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").val(etiquetas.length === 1 ? etiquetas[0].qtidadeAtu : "").closest(".nwm-campo").prop("hidden", acao !== "estornar");
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-motivo]").val("");
-    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text("Em lote, cada embalagem é confirmada individualmente; a execução para na primeira recusa.");
+    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text("");
     this.abrir(this.$modalAcaoEtiqueta);
   },
 
@@ -4450,6 +4459,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return this.carregarEtiquetas(parametros).then(function () {
       return self.tabela.setPage(Math.min(pagina, self.tabela.getPageMax() || 1));
     });
+  },
+
+  fecharHistorico() {
+    this.fechar(this.$modalHistorico);
+    this.cancelarConsultaDataset("historico");
   },
 
   abrirHistorico(etiqueta) {
