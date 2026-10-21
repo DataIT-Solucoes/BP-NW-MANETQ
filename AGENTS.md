@@ -1,41 +1,61 @@
 # widget_nw_manutEtiq
 
-## Leitura inicial
-- Ler este arquivo e os quatro arquivos `contexto-ia/AI_*.md` no início da sessão.
-- Visão geral para desenvolvedores: `README.md`.
-- Ao concluir uma tarefa, atualizar o contexto afetado e manter o README coerente.
-- `HISTORICO.md` preserva o registro anterior; a continuidade passa a ser feita em `contexto-ia/`.
-- Não há CLAUDE.md local duplicado. Ferramentas que não carreguem AGENTS automaticamente devem ser orientadas a ler este arquivo e os quatro arquivos de contexto.
+> Regras gerais (versões, SuperWidget, Style Guide, padrão `nw`): `CLAUDE.md` da raiz do repositório. Aqui fica só o que é deste widget.
+> Preencher só com o que o usuário informou ou o que está nos fontes. O que não se sabe fica "a definir".
+> O `CLAUDE.md` desta pasta só importa este arquivo (`@AGENTS.md`). Skill local: `.claude/skills/fluig-branco-peres/`
+> (cópia igual nos 4 widgets).
 
-## Objetivo e identificação
-Tela **Manutenção Embalagens**, substituindo a tela legada Manutenção Itens/Etiquetas. Padrão visual de `widget_nw_embalagens` e `widget_nw_itensComCtrllDeEmb`; prefixo **nwm**.
-- `application.code` e `application.title`: `widget_nw_manutEtiq`; título exibido: Manutenção Embalagens.
-- Versão `0.1.0`, categoria SYSTEM, uiwidget=true, mobileapp=false; context-root `/widget_nw_manutEtiq`.
-- TESTE: http://fluig-web-teste.brancoperes.com.br:8190/portal/p/1/ManutencaoDeEmbNew
-- Git próprio; destino registrado do remoto: https://github.com/DataIT-Solucoes/BP-NW-MANETQ.git. Alterar origin só com autorização.
+## Onde está cada coisa (ler só o do assunto)
+| Arquivo | Conteúdo |
+|---|---|
+| `docs/decisoes.md` | Decisões e correções do usuário (dados, textos, tela, forma de trabalho). **Ler antes de mudar comportamento ou texto.** |
+| `docs/pendencias.md` | Perguntas em aberto, propostas não aprovadas e o que falta confirmar no Fluig de TESTE |
+| `docs/referencias-backend.md` | Contrato do Dataset (ações, parâmetros, campos), fontes da verdade, `.p` lidos, erros, build e testes |
+| `docs/tela-e-codigo.md` | Tela (filtros, tabela, ações por status, modais), arquitetura do JS e **mapa das funções do JS** (~4.900 linhas: não ler inteiro, achar pelo mapa + Grep). O fonte manda |
+| `HISTORICO.md` | Registro anterior (até 15/10), não é mais atualizado |
+| `README.md` | Visão geral para pessoas (GitHub). **Não precisa ler para trabalhar** |
 
-## Arquitetura e integrações
-- `src/main/resources/view.ftl`: tela e diálogos; `edit.ftl`: identificação, sem parâmetros.
-- `src/main/webapp/resources/js/widget_nw_manutEtiq.js`: SuperWidget, filtros, Tabulator, seleção, operações, histórico e impressora.
-- CSS em `src/main/webapp/resources/css/widget_nw_manutEtiq.css`, sob `.fluig-style-guide.nwm`; DOM escopado por instância.
-- **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando somente a widget. Não usar FLUIGC.loading(window) nem bloquear a página.** Referência: widget_nw_bags, $carregandoGlobal e .nwb-carregando-global. Histórico e Buscar devem exibir também toast Fluig info “Carregando...”, único por instância e removido ao concluir/falhar/cancelar.
-- Usar a skill `fluig-branco-peres`. Ambiente registrado: jQuery 3.6.3, Bootstrap 3.4.1 e Style Guide 2.5.0 fornecidos pelo Fluig; não duplicar essas bibliotecas.
-- **Ler sempre `../widget_nw_embalagens/datasets/dsNwEmbalagens.js`**: NW_CONFIG, NW_ACOES, NW_COLUNAS, regras e escritasHabilitadas. Por definição do usuário é igual ao publicado no Fluig e manda sobre os documentos. Só existe o contrato presente no fonte; se faltar, perguntar ao usuário. Não editar o Dataset sem pedido.
-- `chamarEmbalagens(acao, parametros)` usa $.ajax para `/api/public/ecm/dataset/search`; identidade, autorização e credenciais são resolvidas no servidor.
-- Referências técnicas detalhadas e retratos datados estão em AI_REFERENCES; conferir fontes antes de alterar integrações.
+Histórico e estado do trabalho: `git log`.
 
-## Regras de trabalho
-- Português do Brasil, direto e objetivo. O usuário define o escopo; pendência registrada não autoriza execução.
-- Documentar somente informação do usuário ou sustentada pelos fontes; desconhecido é “a definir”, resultado não validado é “não confirmado”.
-- **SEMPRE: após cada alteração, fazer commit, push e compilar (gerar o WAR).** Autorização permanente do usuário em 20/10/2026; substitui a exigência de pedido individual. Antes do commit, mostrar o que vai entrar.
-- Gerar o WAR faz parte do encerramento de cada alteração. Publicação no Fluig exige autorização própria; push e geração do WAR não equivalem à publicação.
-- Nunca incluir pastas de referência/servidor/homologação nos commits: srv/, em_homologacao/, pagina_antiga_manutencao_etiquetas/. Manter também evidencias/, debug.log e testes/ fora dos commits até decisão do usuário.
-- Cópias de servidor/homologação são somente leitura; nunca ler compilados .r.
-- Não fazer varreduras amplas fora do projeto; se faltar arquivo, pedir ao usuário que copie do servidor.
-- Preferir evidência (hash, contagem, diff) e distinguir verificação local de validação no Fluig.
-- Progress (.w/.p/.i/.cls): usar skill progress-datasul e ler references/manutencao-e-contexto.md antes de editar; CP850 + CRLF; nunca Write/Edit nesses fontes.
-- Medir e preservar encoding e quebras de linha dos fontes. JS registrado em LF, 0 CR em 15/10; não converter sem pedido. Conferir bytes por Python/PowerShell, não por awk ou contagem de CR no Git Bash.
-- Regras duradouras da tela aprovadas pelo usuário estão em AI_DECISIONS.
+## Objetivo
+Tela **Manutenção Embalagens**, substituindo a tela legada Manutenção Itens/Etiquetas: consultar, selecionar e movimentar etiquetas de
+embalagem (visão ADM, aba única).
+
+## Identificação
+- `application.code` e `application.title`: `widget_nw_manutEtiq`; título exibido: Manutenção Embalagens
+- Prefixo de classe CSS: `nwm` (container `.fluig-style-guide.nwm`)
+- Padrão visual: o de `widget_nw_embalagens` e `widget_nw_itensComCtrllDeEmb`; loading global e badges/hover/borda das ações: os de `widget_nw_bags`
+- Onde é usado: `http://fluig-web-teste.brancoperes.com.br:8190/portal/p/1/ManutencaoDeEmbNew`
+- Repositório: `origin` = `https://github.com/HumbertoAlcantaraArruda/BP-NW-MANETQ.git` (destino registrado: `DataIT-Solucoes/BP-NW-MANETQ`;
+  alterar `origin` só com autorização). Trabalho no branch **`fechamento-controle-embalagens`**.
+
+## Recursos declarados no `application.info`
+| Índice | Tipo | Valor |
+|---|---|---|
+| 1 | js | `/resources/js/widget_nw_manutEtiq.js` |
+| 2 | css | `/resources/css/widget_nw_manutEtiq.css` |
+
+Próximo índice livre: 3. CDN no `view.ftl` (com SRI): Bootstrap Icons 1.11.3, Mulish, Tabulator 6.4.0, Select2 4.0.13 (pt-BR).
+
+## Parâmetros de configuração (`edit.ftl`)
+Nenhum (só identificação).
+
+## Dados (essencial; detalhes em `docs/referencias-backend.md`)
+- Dataset `dsNwEmbalagens`, chamado por `chamarEmbalagens` (`$.ajax` em `/api/public/ecm/dataset/search`). O publicado no Fluig é sempre
+  o `dsNwEmbalagens.js` do GitHub **`DataIT-Solucoes/BP-NW-DATASET`**: ler esse arquivo (`NW_CONFIG`, `NW_ACOES`, `NW_COLUNAS`, `regras`,
+  `escritasHabilitadas`) antes de usar ação, parâmetro ou campo. Só existe o que está lá; se faltar, perguntar. Não editar o Dataset sem pedido.
+  (Até 20/10 este widget usava a cópia `../widget_nw_embalagens/datasets/dsNwEmbalagens.js`.)
+- APIs REST (Progress, só leitura, CP850): `DataIT-Solucoes/BP-NW-Embalagens`, branch `fechamento-controle-embalagens`,
+  `APIs-Controle-Embalagens/fontes/progress/`.
+- Identidade, autorização e credenciais são resolvidas no servidor.
+
+## Regras de negócio e de tela (ativas)
+- Status = `situacaoApresentada`/`descricaoSituacao`; `situacao` é o estado técnico. Ações por status em `NWM_ACOES_POR_STATUS`.
+- Imprimir hoje registra `CONFIRMAR_IMPRESSAO` (teste do usuário, sem impressão física) e recarrega a grade; a tela nunca muda status ou saldo localmente.
+- Resultado incerto (operação ou ação de etiqueta) bloqueia novas escritas; não reenviar automaticamente nem gerar chave nova para a mesma intenção.
+- **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando só a widget. Não usar `FLUIGC.loading(window)` nem
+  bloquear a página.** Referência: `widget_nw_bags`, `$carregandoGlobal` e `.nwb-carregando-global`. Histórico e Buscar mostram também
+  o toast info "Carregando...", único por instância e removido ao concluir/falhar/cancelar.
 
 ## Padrão de código (JS) — seguir sempre
 Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o próprio arquivo atual.
@@ -56,14 +76,26 @@ Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o p
   Mantenha os nomes dos métodos e dos campos de estado já existentes (`operacaoAtual`, `consultaEtiquetas`,
   `apoiosFiltros`, `consultasDataset`…): os bindings e os testes dependem deles.
 - **Testes**: rodar `node testes/testar-apoios-filtros.cjs`, `testar-consulta-etiquetas.cjs`, `testar-funcoes-manutencao.cjs`
-  e `testar-transporte-dataset.cjs` antes e depois; todos com `FALHAS=0`. Os testes usam um jQuery simulado
-  (`testes/testar-apoios-filtros.cjs`) que casa o **texto exato dos seletores** e só tem parte da API: método jQuery
-  novo (ex.: `.add`, `$.proxy`) em trecho que os testes executam precisa existir no simulador, senão o teste quebra.
-  Alguns testes leem `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
+  e `testar-transporte-dataset.cjs` antes e depois; todos com `FALHAS=0` (`testar-consulta-etiquetas.cjs` tem falha preexistente:
+  ver `docs/pendencias.md`). Os testes usam um jQuery simulado (`testes/testar-apoios-filtros.cjs`) que casa o **texto exato dos
+  seletores** e só tem parte da API: método jQuery novo (ex.: `.add`, `$.proxy`) em trecho que os testes executam precisa existir no
+  simulador, senão o teste quebra. Alguns testes leem `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
+- Encoding: JS em CRLF (`.gitattributes` com `eol=crlf`); medir antes e manter.
 
+## Forma de trabalho (pedidos do usuário)
+Depois de **qualquer** ajuste, inclusive só em `.md`, **uma chamada só** (se o JS mudou, rodar antes os testes acima):
+```
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/entregar.ps1 -Mensagem "FIX: Texto" <arquivos...>
+```
+- Confere BOM e quebra de linha misturada nos fontes de `src/`; se algum arquivo estiver em `src/`, roda `node --check` e gera
+  `target/widget_nw_manutEtiq.war` (`pack-widget.ps1`; Ctrl+F7 no VSCode faz o mesmo). Só `.md`: pula os dois.
+- Commit **só dos arquivos informados** (nunca `target/`; apagado/renomeado: passar o caminho antigo também), em português,
+  **sem coautor** e **sempre com prefixo**: `DOCS: Texto` (`.md`, `AGENTS.md`, `docs/`), `FIX: Texto` (código em `src/`),
+  `CHORE: Texto` (manutenção, build, renomear sem mudar conteúdo).
+- Nunca no commit: `evidencias/`, `debug.log`, `testes/*.cjs`, `pagina_antiga_manutencao_etiquetas/`, `.playwright-mcp/`, `srv/`, `em_homologacao/`.
+- Push no branch atual e conferência do remoto (`git ls-remote`). `-Simular` faz tudo menos commit e push.
+- Importar no Fluig (Painel de Controle → Desenvolvimento → Widgets): feito pelo usuário.
 
-## Continuidade
-- Estado e retomada: `contexto-ia/AI_HANDOFF.md`.
-- Decisões aprovadas: `contexto-ia/AI_DECISIONS.md`.
-- Pendências: `contexto-ia/AI_TODO.md`.
-- Referências: `contexto-ia/AI_REFERENCES.md`.
+Ao fim da tarefa, atualizar **só** o arquivo de `docs/` afetado: decisão nova → `decisoes.md`; pergunta ou proposta → `pendencias.md`
+(resolvida: tirar de lá); levantamento no backend → `referencias-backend.md`; mudança de comportamento da tela → `tela-e-codigo.md`.
+O `README.md` só muda quando a visão geral mudar.
