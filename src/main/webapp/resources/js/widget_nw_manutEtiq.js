@@ -3589,6 +3589,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       "disabled",
       travada || semClassificacao,
     );
+    $("[data-operacao-serie]", this.DOM).prop("hidden", semClassificacao);
     $("[data-classificar-natureza]", this.DOM).prop(
       "disabled",
       travada || operacao.estado === NWM_ESTADOS_OPERACAO.CLASSIFICANDO,

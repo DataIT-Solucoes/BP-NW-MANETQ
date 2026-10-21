@@ -26,6 +26,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 21/10 | Série de saída só **aparece** depois de validar a natureza (some de novo se a natureza mudar ou na reabertura de operação pendente) | Pedido do usuário |
 | 21/10 | Série de saída vira Select2 com uma opção fixa `1` (provisório; depois virá de API). Continua desabilitada até validar a natureza | Pedido do usuário |
 | 21/10 | Estabelecimento de destino do modal de operação é autocomplete de estabelecimento (`apoiarEstabelecimentos`), com selo "código - descrição"; só vale o escolhido na lista | Pedido do usuário |
 | 21/10 | Modal de operação sem "Valor aplicado a cada item do documento" (o backend vai obter o valor; a tela não envia `valorItem`). Série de saída fica no lugar dele, na linha de destino, visível também na Devolução | Pedido do usuário |

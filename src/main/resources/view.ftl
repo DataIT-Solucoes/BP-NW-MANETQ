@@ -229,7 +229,7 @@
                     <label class="nwm-campo-rotulo" for="nwm-emitente-destino-${instanceId}">Emitente de destino (se externo)</label>
                     <input id="nwm-emitente-destino-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="emitenteDestino">
                 </div>
-                <div class="nwm-campo">
+                <div class="nwm-campo" data-operacao-serie hidden>
                     <label class="nwm-campo-rotulo" for="nwm-serie-${instanceId}">Série de saída</label>
                     <div class="nwm-campo-caixa nwm-campo-caixa-select">
                         <select id="nwm-serie-${instanceId}" class="nwm-campo-input nwm-campo-select" data-operacao-campo="serie" disabled>
