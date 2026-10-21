@@ -445,7 +445,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       "nf-modo": ["change_trocarModoNf"],
       "aplicar-lote": ["click_aplicarLote"],
       "executar-qtde": ["click_executarQuantidade"],
-      "caixa-item-qtde": ["click_avisarItemQuantidadeVazio"],
       "fechar-detalhes": ["click_fecharDetalhes"],
       "fechar-legenda": ["click_fecharLegenda"],
       "abrir-impressora": ["click_abrirImpressora"],
@@ -2921,11 +2920,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.redesenharChecks();
     this.atualizarSelecao();
     this.avisarResultadoQuantidade(escolha, pedido);
-  },
-
-  avisarItemQuantidadeVazio(htmlElement, event) {
-    if (Object.keys(this.itensElegiveisQuantidade()).length) return;
-    this.avisar("warning", "É necessário ter ao menos um item selecionado.");
   },
 
   quantidadePedidaValida(texto) {

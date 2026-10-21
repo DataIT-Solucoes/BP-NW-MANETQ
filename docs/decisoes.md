@@ -25,6 +25,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 21/10 | "Escolher item" (Select2) sem itens: não mostrar toast ao clicar; o campo só fica desabilitado | Pedido do usuário |
 | 21/10 | Ao buscar, campo obrigatório vazio não fica em vermelho; só o toast de aviso | Pedido do usuário |
 | 21/10 | Campo de filtro com autocomplete só conta como preenchido quando o valor é escolhido na lista (selo); texto digitado sem escolher vale como campo vazio | Pedido do usuário |
 | 20/10 | Imprimir habilitado quando a situação permitir; ao clicar, registra a confirmação (`CONFIRMAR_IMPRESSAO`) para atualizar o status, mesmo sem impressão física, para teste do usuário. Substitui o Imprimir desabilitado por falta de modelo | Pedido do usuário |
