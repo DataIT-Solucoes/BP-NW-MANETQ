@@ -2676,10 +2676,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }
     this.limparMarcacaoInvalidos();
     var obrigatorios = this.verificarFiltrosObrigatorios(filtros);
-    if (obrigatorios.mensagens.length)
-      return this.recusarFiltros(obrigatorios, false);
+    if (obrigatorios.mensagens.length) {
+      this.avisar("warning", obrigatorios.mensagens.join(" "));
+      return false;
+    }
     var conteudo = this.verificarConteudoFiltros(filtros);
-    if (conteudo.mensagens.length) return this.recusarFiltros(conteudo, true);
+    if (conteudo.mensagens.length) return this.recusarFiltros(conteudo);
     return true;
   },
 
@@ -2696,8 +2698,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       .removeAttr("aria-invalid");
   },
 
-  recusarFiltros(verificacao, preenchidos) {
-    this.marcarInvalidos(verificacao.campos, preenchidos);
+  recusarFiltros(verificacao) {
+    this.marcarInvalidos(verificacao.campos);
     this.avisar("warning", verificacao.mensagens.join(" "));
     return false;
   },
@@ -2784,12 +2786,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     );
   },
 
-  marcarInvalidos(campos, preenchidos) {
+  marcarInvalidos(campos) {
     var self = this;
     var $primeiro = $();
     $.each(campos, function (indice, campo) {
       var $input = $('[data-filtro="' + campo + '"]', self.DOM);
-      if (!preenchidos && String($input.val() || "").trim()) return;
       $input.addClass("is-invalido").attr("aria-invalid", "true");
       if (!$primeiro.length) $primeiro = $input;
     });

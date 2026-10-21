@@ -12,7 +12,7 @@
     preenche só o código. Texto digitado sem escolher na lista conta como campo vazio (`valorFiltroInformado`). Nota Fiscal De/Até usa `apoiarDocumentosEntrada` (exige Estabelecimento De e Até) e grava o número da nota.
   - Item e Depósito só filtram por estabelecimento quando Estabelecimento De = Até; Lote recebe as faixas de estabelecimento, item e depósito.
   - Validação (`validarFiltros`): Estabelecimento De **e** Até; Itens **ou** Nota Fiscal; De ≤ Até (texto); até 100 caracteres, sem
-    caractere de controle; data válida. Aviso em toast `warning` e campo marcado.
+    caractere de controle; data válida. Aviso em toast `warning`; só os erros de conteúdo marcam o campo em vermelho (obrigatório vazio não marca).
 - **Barra de seleção**: tabela "Itens selecionados" (Código | Descrição | Qtde Sel.) · Escolher item + Quantidade + **Executar** (marca
   embalagens inteiras do item — ativas, no estabelecimento, sem Bag, saldo = quantidade inicial — até a quantidade pedida) ·
   **Ação em lote** (Imprimir, Receber, Estornar, Transferir, Devolução, Inutilizar, Registrar perda/extravio) + Aplicar ·
