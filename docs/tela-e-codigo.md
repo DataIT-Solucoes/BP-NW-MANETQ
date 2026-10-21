@@ -9,7 +9,7 @@
   (`type=date`) · Família · Nota Fiscal (rádio **Intervalo** × **Específicas**, 1 a 20 documentos removíveis). Ação: **Buscar**.
   - Autocomplete próprio (2+ caracteres, debounce 350 ms, 20 por página com "Carregar mais resultados") em Estabelecimento, Itens,
     Depósito, Lote, Família e Nota Fiscal; escolher vira **selo** "código - descrição" com × (exceto Específicas). Nos campos de faixa
-    preenche só o código. Nota Fiscal De/Até usa `apoiarDocumentosEntrada` (exige Estabelecimento De e Até) e grava o número da nota.
+    preenche só o código. Texto digitado sem escolher na lista conta como campo vazio (`valorFiltroInformado`). Nota Fiscal De/Até usa `apoiarDocumentosEntrada` (exige Estabelecimento De e Até) e grava o número da nota.
   - Item e Depósito só filtram por estabelecimento quando Estabelecimento De = Até; Lote recebe as faixas de estabelecimento, item e depósito.
   - Validação (`validarFiltros`): Estabelecimento De **e** Até; Itens **ou** Nota Fiscal; De ≤ Até (texto); até 100 caracteres, sem
     caractere de controle; data válida. Aviso em toast `warning` e campo marcado.
@@ -86,7 +86,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Tabela (1515–1870) | `montarTabela`, `opcoesTabela`, `montarColunasTabela`, `coluna*`, `montarChipStatus`, `montarBotoesAcoes`, `acoesDaEtiqueta`, `acaoDisponivel`, `textoMotivoIndisponivel` |
 | Seleção (1871–2069) | `montarCheckTodos`, `marcarLinha`, `marcarTodos`, `limparSelecao`, `atualizarSelecao`, `renderizarItensSelecionados`, `linhasSelecionadas` |
 | Busca e carga (2070–2650) | `buscar`, `montarParametrosEtiquetas`, `carregarEtiquetas`, `consultarPaginaEtiquetas`, `descreverItensCarga`, `descreverEstabelecimentosCarga`, `concluirCargaEtiquetas`, `mapearEtiqueta`, `registroEtiquetaValido` |
-| Validação dos filtros (2649–2796) | `lerFiltros`, `validarFiltros`, `verificarFiltrosObrigatorios`, `verificarOrdemFaixas`, `verificarTextoFiltros`, `marcarInvalidos` |
+| Validação dos filtros (2649–2796) | `lerFiltros`, `valorFiltroInformado`, `validarFiltros`, `verificarFiltrosObrigatorios`, `verificarOrdemFaixas`, `verificarTextoFiltros`, `marcarInvalidos` |
 | Ações da linha, lote e quantidade (2797–2950) | `acaoNaLinha`, `aplicarLote`, `executarQuantidade`, `escolherEmbalagensDoItem` |
 | Modais, Detalhes e Mais ações (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `abrirMaisAcoes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |

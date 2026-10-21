@@ -2647,12 +2647,20 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   lerFiltros() {
+    var self = this;
     var filtros = {};
     $("[data-filtro]", this.DOM).each(function () {
-      filtros[$(this).data("filtro")] = String($(this).val() || "").trim();
+      var campo = $(this).data("filtro");
+      filtros[campo] = self.valorFiltroInformado(campo, $(this));
     });
     filtros.modoNf = $("[data-nf-modo]:checked", this.DOM).val() || "intervalo";
     return filtros;
+  },
+
+  valorFiltroInformado(campo, $input) {
+    var apoio = (this.apoiosFiltros || {})[campo];
+    if (apoio && apoio.$selecionado && !apoio.selecionado) return "";
+    return String($input.val() || "").trim();
   },
 
   validarFiltros(filtros) {
