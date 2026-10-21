@@ -14,6 +14,8 @@
 - Status `CANCELADA` na legenda: reavaliar a legenda atual antes de decidir.
 
 ## Confirmar no Fluig de TESTE (nada visto ainda)
+- Sem `valorItem` na tela (21/10): hoje o Dataset tem `valorItem` em `obrigatorios` de `criarTransferencia`/`criarRemessa`
+  e a API recusa sem ele (`VALOR_INVALIDO`). Transferência/Remessa só passam depois do ajuste no backend/Dataset (a cargo do backend).
 - Atualização só da linha após ação de etiqueta: rolagem/página mantidas; backend devolve a embalagem ao filtrar por
   `codEstabel` + `codEtiqueta` junto com os filtros da busca (lido em `contr-emb-manutencao-consulta.i:194`, não visto ao vivo).
 - Transferir/Remessa/Devolução e lote > 10 ainda recarregam a grade inteira (podem voltar ao topo): proposta de recarga com `replaceData`

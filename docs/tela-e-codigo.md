@@ -55,7 +55,7 @@
 - **Busca** (`buscar` → `carregarEtiquetas`): pagina por cursor, valida ordem dos ids e cada registro (`registroEtiquetaValido`), mapeia
   (`mapearEtiqueta`), descreve itens (`apoiarItens`) e estabelecimentos (Fazenda) e só então exibe (`concluirCargaEtiquetas`).
 - **Operação** (Transferir/Devolver, modal Movimentar; título por ação em `NWM_TITULOS_OPERACAO`, ex.: "Transferir embalagens"): `classificarNatureza` define o fluxo (`NWM_ROTULOS_FLUXO`): Transferência e
-  Remessa (destino, série, valor) → `criarTransferencia`/`criarRemessa`; Devolução de compra e Retorno para terceiros (documento de
+  Remessa (destino, série; sem valor por item desde 21/10) → `criarTransferencia`/`criarRemessa`; Devolução de compra e Retorno para terceiros (documento de
   origem, `consultarEmbalagensOrigem`, sem passar do saldo) → `criarDevolucao`. 1 a 100 embalagens; chave idempotente por tentativa
   no `sessionStorage` (`guardarOperacaoPendente`/`restaurarOperacaoPendente`); resultado por `consultarResultadoOperacao`.
   Estados em `NWM_ESTADOS_OPERACAO`. A tela nunca muda status ou saldo localmente.

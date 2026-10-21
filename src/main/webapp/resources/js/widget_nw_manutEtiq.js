@@ -4075,7 +4075,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   montarSaidaDireta(operacao, classificacao, parametros) {
     var self = this;
     this.definirDestinoSaida(classificacao, parametros);
-    parametros.valorItem = this.valorItemOperacao();
     $.each(operacao.dados, function (indice, etiqueta) {
       if (!self.embalagemPodeSair(etiqueta, parametros.codEstabel))
         throw new Error(
@@ -4128,15 +4127,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       this.textoOperacaoValido(parametros.codEstabelDestino) &&
       parametros.codEstabelDestino !== parametros.codEstabel
     );
-  },
-
-  valorItemOperacao() {
-    var valor = this.campoOperacao("valorItem");
-    if (!NWM_DECIMAL_ATE_QUATRO_CASAS.test(valor) || !isFinite(Number(valor)))
-      throw new Error(
-        "Informe o valor por item, não negativo, com até quatro casas decimais.",
-      );
-    return Number(valor);
   },
 
   embalagemPodeSair(etiqueta, codEstabel) {

@@ -219,23 +219,19 @@
                         <button type="button" class="nwm-btn nwm-btn-contorno" data-classificar-natureza>Validar natureza</button>
                     </div>
                 </div>
-                <div class="nwm-campo">
-                    <label class="nwm-campo-rotulo" for="nwm-serie-${instanceId}">Série de saída</label>
-                    <input id="nwm-serie-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="serie" disabled>
-                </div>
             </div>
-            <div class="nwm-operacao-campos" data-operacao-direta hidden>
-                <div class="nwm-campo">
+            <div class="nwm-operacao-campos">
+                <div class="nwm-campo" data-operacao-direta hidden>
                     <label class="nwm-campo-rotulo" for="nwm-destino-${instanceId}">Estabelecimento de destino</label>
                     <input id="nwm-destino-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="codEstabelDestino">
                 </div>
-                <div class="nwm-campo">
+                <div class="nwm-campo" data-operacao-direta hidden>
                     <label class="nwm-campo-rotulo" for="nwm-emitente-destino-${instanceId}">Emitente de destino (se externo)</label>
                     <input id="nwm-emitente-destino-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="emitenteDestino">
                 </div>
                 <div class="nwm-campo">
-                    <label class="nwm-campo-rotulo" for="nwm-valor-item-${instanceId}">Valor aplicado a cada item do documento</label>
-                    <input id="nwm-valor-item-${instanceId}" type="number" min="0" step="0.0001" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="valorItem">
+                    <label class="nwm-campo-rotulo" for="nwm-serie-${instanceId}">Série de saída</label>
+                    <input id="nwm-serie-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="serie" disabled>
                 </div>
             </div>
             <div data-operacao-origem hidden>
