@@ -1818,13 +1818,22 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     })[0];
   },
 
+  situacaoFacilitada(situacao) {
+    var status = $.grep(NWM_LEGENDA_STATUS, function (item) {
+      return item.codigo === situacao;
+    })[0];
+    if (status) return status.rotulo;
+    var texto = String(situacao || "").replace(/_/g, " ").toLowerCase();
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+  },
+
   montarChipStatus(codigo, descricao) {
     return $("<span>", {
       class: "nwm-chip nwm-chip-" + codigo,
       title: descricao,
     })
       .append($("<span>", { class: "nwm-chip-ponto", "aria-hidden": "true" }))
-      .append($("<span>", { text: codigo }))[0];
+      .append($("<span>", { text: this.situacaoFacilitada(codigo) }))[0];
   },
 
   montarTituloStatus() {

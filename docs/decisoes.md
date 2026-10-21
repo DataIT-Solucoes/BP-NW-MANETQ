@@ -26,6 +26,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 21/10 | Texto do badge de Status vem do código `situacaoApresentada` traduzido por `situacaoFacilitada` (rótulo da legenda, ex.: "Impressa"), não do `descricaoSituacao` do backend (que fica no `title`) | Pedido do usuário |
 | 21/10 | Ação clicada na linha da tabela (Imprimir, Histórico) **não** mostra o loading global nem o toast "Carregando...": desabilita os botões daquela linha e mostra carregamento na linha (fundo névoa, barra de progresso na base, spinner no botão clicado). A recarga da grade após o Imprimir da linha é silenciosa. Ação em lote e Buscar continuam com o loading global. Substitui, para a linha, as decisões de 20/10 sobre loading/toast do Histórico | Pedido do usuário |
 | 21/10 | Select2 desabilitado (ex.: "Escolher item" sem itens) não reage ao clique nem fica com borda verde de foco | Correção do usuário |
 | 21/10 | Ícone de código de barras (`bi-upc-scan`) antes do rótulo "Código de barras" da área de seleção | Pedido do usuário |
