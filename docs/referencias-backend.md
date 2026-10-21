@@ -60,6 +60,13 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
 `localizacao`, `codTipo`, `situacao`, `situacaoApresentada`, `descricaoSituacao`, `impressaoConfirmada`, `recebimentoFisicoConfirmado`,
 `tipoLocal`, `tipoControle`, `idBag`. `descItem` vem de `apoiarItens`; `fazenda` = `codEstabel + " - " + descrição` de `apoiarEstabelecimentos`.
 - `situacao` (`NWM_STATUS`: ATIVA, ENCERRADA, CANCELADA, DESCARTADA) = estado técnico; `situacaoApresentada`/`descricaoSituacao` = status.
+- Status por embalagem (lido em 21/10, commit `b26b5f5`): `esp/api/v1/controle-embalagens.p:1295-1296` grava `situacaoApresentada` =
+  `fEmResumo(id-etiqueta)` e `descricaoSituacao` = `fEmDescricao(...)`, ambas em `includes/contr-emb-confirmacao-comum.i:114/141`.
+  Ordem de `fEmResumo` (tabela `contr_emb_etiqueta`): `PRE_SALDO`→`SEM_CONTROLE_INDIVIDUAL`; `CANCELADA`; `DESCARTADA`; `id-bag`→`EM_BAG`;
+  ATIVA+ESTAB com inutilização vigente→`INUTILIZADA`; ATIVA+CAMPO→`EM_CAMPO`; `ENCERRADA`; `qtidade-atu = 0`→`ZERADA`; por `tipo-local`:
+  CAMPO→`EM_CAMPO`, TRANSITO→`AGUARDANDO_RECEBIMENTO`, TERCEIRO→`EM_TERCEIRO`, ESTAB→`NAO_IMPRESSA` (sem confirmação de impressão),
+  `IMPRESSA` (sem recebimento físico no contexto atual) ou `EM_ESTOQUE`; senão `DESCONHECIDA`. Confirmações (`fEmConfirmada`) vêm da
+  auditoria `contr_emb_audit` + evento `MANUT_ETIQUETA` CONCLUIDO; o texto de `IMPRESSA` no backend é "Impressa - aguardando recebimento fisico".
 - `impressaoConfirmada`/`recebimentoFisicoConfirmado` booleanos; sem os campos (backend antigo) a tela mostra "—"; tipo errado é recusado.
 - Posição (`tipoLocal`, `NWM_POSICOES`): `ESTAB`, `CAMPO`, `TERCEIRO`, `TRANSITO`.
 - Família com `codigo: ""` (`LS ACESSORIOS CABINA`) é dado da base.

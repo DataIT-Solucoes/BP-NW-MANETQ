@@ -2238,6 +2238,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (!this.cargaEtiquetasAtual(carga)) return;
     carga.estado = "erro";
     carga.erro = erro;
+    this.registrarResultadoBusca(carga);
     if (carga.conclusao) carga.conclusao.reject(erro);
     this.definirCarregamentoConsulta(false);
     this.mostrarErroConsulta(erro);
@@ -2545,8 +2546,20 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     );
   },
 
+  registrarResultadoBusca(carga) {
+    if (!window.console || !console.log) return;
+    console.log("[widget_nw_manutEtiq] Resultado da busca:", {
+      estado: carga.estado,
+      parametros: carga.parametros,
+      total: carga.dados.length,
+      etiquetas: carga.dados,
+      erro: carga.erro || null,
+    });
+  },
+
   exibirCargaConcluida(carga) {
     carga.estado = carga.dados.length ? "sucesso" : "vazio";
+    this.registrarResultadoBusca(carga);
     if (carga.conclusao) carga.conclusao.resolve(carga);
     this.definirCarregamentoConsulta(false);
     this.atualizarSelecao();
