@@ -1830,7 +1830,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   montarChipStatus(codigo, descricao) {
     return $("<span>", {
       class: "nwm-chip nwm-chip-" + codigo,
-      title: descricao,
+      title: this.situacaoFacilitada(codigo),
     })
       .append($("<span>", { class: "nwm-chip-ponto", "aria-hidden": "true" }))
       .append($("<span>", { text: this.situacaoFacilitada(codigo) }))[0];
