@@ -3375,9 +3375,25 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   aplicarAcao(acao, linhas, linhaOrigem) {
     if (this.escritaEtiquetaBloqueada()) return this.avisar("warning", "Há uma operação em andamento ou sem resultado confirmado.");
+    if (acao === "transferir" && this.recusarEtiquetasIndisponiveis(acao, this.etiquetasDasLinhas(linhas))) return;
     if (this.acaoAbreOperacao(acao)) return this.abrirOperacao(linhas, acao);
     if (NWM_COMANDOS_ETIQUETA[acao]) return this.abrirAcaoEtiqueta(acao, linhas, linhaOrigem);
-    return this.avisar("info", "Selecione uma ação disponível. A impressão física permanece indisponível.");
+    return this.avisar("info", "Selecione uma ação disponível.");
+  },
+
+  etiquetasDasLinhas(linhas) {
+    return $.map(linhas || [], function (linha) { return linha.getData(); });
+  },
+
+  recusarEtiquetasIndisponiveis(acao, etiquetas) {
+    var self = this;
+    if (!etiquetas.length || etiquetas.length > NWM_LIMITE_EMBALAGENS_OPERACAO) {
+      this.avisar("warning", "Selecione de 1 a 100 embalagens.");
+      return true;
+    }
+    if (!$.grep(etiquetas, function (etiqueta) { return !self.acaoDisponivel(acao, etiqueta); }).length) return false;
+    this.avisar("warning", this.textoMotivoIndisponivel(acao, $.grep(etiquetas, function (etiqueta) { return self.possuiBag(etiqueta); })[0]));
+    return true;
   },
 
   operacaoTravada(operacao) {
@@ -4476,10 +4492,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   abrirAcaoEtiqueta(acao, linhas, linhaOrigem) {
-    var self = this, etiquetas = $.map(linhas, function (linha) { return linha.getData(); });
-    if (!etiquetas.length || etiquetas.length > NWM_LIMITE_EMBALAGENS_OPERACAO) return this.avisar("warning", "Selecione de 1 a 100 embalagens.");
-    if ($.grep(etiquetas, function (etiqueta) { return !self.acaoDisponivel(acao, etiqueta); }).length)
-      return this.avisar("warning", this.textoMotivoIndisponivel(acao, $.grep(etiquetas, function (etiqueta) { return self.possuiBag(etiqueta); })[0]));
+    var etiquetas = this.etiquetasDasLinhas(linhas);
+    if (this.recusarEtiquetasIndisponiveis(acao, etiquetas)) return;
     this.acaoEtiquetaAtual = { acao: acao, etiquetas: etiquetas, indice: 0, concluidas: 0, enviando: false, incerta: false };
     if (acao === "imprimir") return this.iniciarConfirmacaoImpressao(linhaOrigem);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-titulo]").text(NWM_ACOES[acao].rotulo);

@@ -26,6 +26,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 21/10 | Ação em lote: Transferir confere antes de abrir o modal (1 a 100 marcadas, mesma regra da linha, inclusive impressão confirmada); Devolução continua abrindo sem marcadas (usa a origem); Aplicar sem ação avisa só "Selecione uma ação disponível." | Pedido do usuário |
 | 21/10 | Botão de ação não permitido pela regra da embalagem (ex.: Perda em Bag, Imprimir em Encerrada/Descartada) é **removido** da linha, não desabilitado. Bloqueio temporário (operação em andamento/incerta, linha carregando) continua desabilitando | Pedido do usuário |
 | 21/10 | Caixa de mensagem dos modais (ação de etiqueta, operação, impressora) escondida enquanto vazia (`:empty`) | Pedido do usuário |
 | 21/10 | Modal Estornar: quantidade aceita só números, `,` e `.` (filtro ao digitar/colar); Justificativa (textarea) com altura própria, sem os 44px fixos dos inputs | Pedido do usuário |
