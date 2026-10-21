@@ -53,7 +53,7 @@
   erros classificados em `NWM_TIPOS_ERRO` (técnico, funcional, autorização, cancelamento). Tempo limite 90 s.
 - **Busca** (`buscar` → `carregarEtiquetas`): pagina por cursor, valida ordem dos ids e cada registro (`registroEtiquetaValido`), mapeia
   (`mapearEtiqueta`), descreve itens (`apoiarItens`) e estabelecimentos (Fazenda) e só então exibe (`concluirCargaEtiquetas`).
-- **Operação** (Transferir/Devolver, modal Movimentar): `classificarNatureza` define o fluxo (`NWM_ROTULOS_FLUXO`): Transferência e
+- **Operação** (Transferir/Devolver, modal Movimentar; título por ação em `NWM_TITULOS_OPERACAO`, ex.: "Transferir embalagens"): `classificarNatureza` define o fluxo (`NWM_ROTULOS_FLUXO`): Transferência e
   Remessa (destino, série, valor) → `criarTransferencia`/`criarRemessa`; Devolução de compra e Retorno para terceiros (documento de
   origem, `consultarEmbalagensOrigem`, sem passar do saldo) → `criarDevolucao`. 1 a 100 embalagens; chave idempotente por tentativa
   no `sessionStorage` (`guardarOperacaoPendente`/`restaurarOperacaoPendente`); resultado por `consultarResultadoOperacao`.

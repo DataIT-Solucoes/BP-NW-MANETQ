@@ -172,6 +172,10 @@ var NWM_ROTULOS_FLUXO = {
   DEVOLUCAO_COMPRA: "Devolução de compra",
   RETORNO_TERCEIROS: "Retorno para terceiros",
 };
+var NWM_TITULO_OPERACAO_PADRAO = "Movimentar embalagens";
+var NWM_TITULOS_OPERACAO = {
+  transferir: "Transferir embalagens",
+};
 var NWM_RAMOS_DEVOLUCAO = {
   DEVOLUCAO_COMPRA: "FT4011",
   RETORNO_TERCEIROS: "FT4012",
@@ -3220,7 +3224,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   camposSituacaoDetalhes(etiqueta) {
     var status = NWM_STATUS[etiqueta.situacao];
     return [
-      { rotulo: "Status", valor: etiqueta.descricaoSituacao },
+      { rotulo: "Status", valor: this.situacaoFacilitada(etiqueta.situacaoApresentada) },
       {
         rotulo: "Situação técnica",
         valor: status ? status.rotulo : etiqueta.situacao,
@@ -3364,7 +3368,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   aplicarAcao(acao, linhas, linhaOrigem) {
     if (this.escritaEtiquetaBloqueada()) return this.avisar("warning", "Há uma operação em andamento ou sem resultado confirmado.");
-    if (this.acaoAbreOperacao(acao)) return this.abrirOperacao(linhas);
+    if (this.acaoAbreOperacao(acao)) return this.abrirOperacao(linhas, acao);
     if (NWM_COMANDOS_ETIQUETA[acao]) return this.abrirAcaoEtiqueta(acao, linhas, linhaOrigem);
     return this.avisar("info", "Selecione uma ação disponível. A impressão física permanece indisponível.");
   },
@@ -3418,7 +3422,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     );
   },
 
-  abrirOperacao(linhas) {
+  abrirOperacao(linhas, acao) {
     if (this.acaoEtiquetaAtual && (this.acaoEtiquetaAtual.enviando || this.acaoEtiquetaAtual.incerta)) return this.avisar("warning", "Há uma ação de etiqueta em andamento ou sem resultado confirmado.");
     if (this.operacaoAguardandoResultado(this.operacaoAtual)) {
       this.abrir(this.$modalOperacao);
@@ -3447,7 +3451,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       selecaoOrigem: Object.create(null),
       comando: null,
     };
-    this.prepararFormularioOperacao(estabelecimento, selecao.dados.length);
+    this.prepararFormularioOperacao(estabelecimento);
+    $("[data-operacao-titulo]", this.DOM).text(
+      NWM_TITULOS_OPERACAO[acao] || NWM_TITULO_OPERACAO_PADRAO,
+    );
     this.mostrarEstadoOperacao(
       "A preparação cria o documento de trabalho. A efetivação da nota ocorre no Datasul.",
     );
@@ -3474,13 +3481,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return filtros.estDe === filtros.estAte ? filtros.estDe : "";
   },
 
-  prepararFormularioOperacao(estabelecimento, quantidade) {
+  prepararFormularioOperacao(estabelecimento) {
     $("[data-operacao-campo]", this.DOM).val("").prop("disabled", false);
     $("[data-operacao-estabelecimento]", this.DOM).text(estabelecimento);
-    $("[data-operacao-selecao]", this.DOM).text(
-      quantidade +
-        " embalagem(ns) da grade. Para devolução, selecione as embalagens da origem abaixo.",
-    );
     $("[data-origem-corpo]", this.DOM).empty();
     this.esconderRamosOperacao();
     $("[data-operacao-classificacao]", this.DOM).text(
@@ -3521,6 +3524,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var travada = this.operacaoTravada(operacao);
     var semClassificacao = !operacao.classificacao;
     $("[data-operacao-campo]", this.DOM).prop("disabled", travada);
+    $('[data-operacao-campo="serie"]', this.DOM).prop(
+      "disabled",
+      travada || semClassificacao,
+    );
     $("[data-classificar-natureza]", this.DOM).prop(
       "disabled",
       travada || operacao.estado === NWM_ESTADOS_OPERACAO.CLASSIFICANDO,
@@ -4430,9 +4437,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       conflitoIdempotente: salvo.conflitoIdempotente === true,
     };
     $("[data-operacao-estabelecimento]", this.DOM).text(salvo.codEstabel);
-    $("[data-operacao-selecao]", this.DOM).text(
-      parametros.selecao.length + " embalagem(ns) na solicitação preservada.",
-    );
     $("[data-operacao-classificacao]", this.DOM).text(
       "Natureza " + parametros.natureza + " · série " + parametros.serie,
     );

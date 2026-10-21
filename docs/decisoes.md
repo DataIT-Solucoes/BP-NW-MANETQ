@@ -26,6 +26,9 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 21/10 | Série de saída volta ao modal (a API exige `serie`), **desabilitada até a natureza ser validada**; volta a desabilitar se a natureza mudar. Substitui a remoção "por enquanto" do mesmo dia | Pedido do usuário |
+| 21/10 | Modal de operação sem a linha "N embalagem(ns) da grade. Para devolução, selecione as embalagens da origem abaixo." (nem a versão "na solicitação preservada" da reabertura) | Pedido do usuário |
+| 21/10 | Modal de operação aberto por **Transferir** (linha ou lote) tem o título "Transferir embalagens"; Devolver e reabertura continuam "Movimentar embalagens" | Pedido do usuário |
 | 21/10 | Depois de ação de etiqueta (Imprimir, Receber, Estornar, Inutilizar, Perda), não recriar a tabela: reconsultar no backend só as embalagens envolvidas e atualizar a linha, mantendo rolagem, página e ordenação (antes voltava ao topo). Transferir/Remessa/Devolução e lote com mais de 10 continuam com recarga completa | Pedido do usuário |
 | 21/10 | Texto do badge de Status vem do código `situacaoApresentada` traduzido por `situacaoFacilitada` (rótulo da legenda, ex.: "Impressa"), não do `descricaoSituacao` do backend (que fica no `title`) | Pedido do usuário |
 | 21/10 | Ação clicada na linha da tabela (Imprimir, Histórico) **não** mostra o loading global nem o toast "Carregando...": desabilita os botões daquela linha e mostra carregamento na linha (fundo névoa, barra de progresso na base, spinner no botão clicado). A recarga da grade após o Imprimir da linha é silenciosa. Ação em lote e Buscar continuam com o loading global. Substitui, para a linha, as decisões de 20/10 sobre loading/toast do Histórico | Pedido do usuário |

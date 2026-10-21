@@ -205,13 +205,12 @@
     <dialog class="nwm-modal nwm-modal-operacao" aria-labelledby="nwm-operacao-titulo-${instanceId}" data-modal-operacao>
         <div class="nwm-modal-cabecalho">
             <div>
-                <h3 class="nwm-modal-titulo" id="nwm-operacao-titulo-${instanceId}">Movimentar embalagens</h3>
+                <h3 class="nwm-modal-titulo" id="nwm-operacao-titulo-${instanceId}" data-operacao-titulo>Movimentar embalagens</h3>
                 <p class="nwm-modal-subtitulo">Estabelecimento <strong data-operacao-estabelecimento></strong> · <span data-operacao-classificacao></span></p>
             </div>
             <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-operacao><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
         <div class="nwm-modal-corpo">
-            <p class="nwm-modal-subtitulo" data-operacao-selecao></p>
             <div class="nwm-operacao-campos">
                 <div class="nwm-campo">
                     <label class="nwm-campo-rotulo" for="nwm-natureza-${instanceId}">Natureza de saída</label>
@@ -222,7 +221,7 @@
                 </div>
                 <div class="nwm-campo">
                     <label class="nwm-campo-rotulo" for="nwm-serie-${instanceId}">Série de saída</label>
-                    <input id="nwm-serie-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="serie">
+                    <input id="nwm-serie-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="serie" disabled>
                 </div>
             </div>
             <div class="nwm-operacao-campos" data-operacao-direta hidden>

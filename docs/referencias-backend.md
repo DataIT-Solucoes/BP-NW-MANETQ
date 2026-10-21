@@ -78,6 +78,14 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
   que não estão nos `.p`); `NWM_RAIZES_EVENTOS_HISTORICO` = as 8 raízes de evento de Bag. Conferido contra a página publicada de Bags em 20/10.
 - Data: `dataEvento` (fallback `dataRegistro`).
 
+### Operações: campos exigidos (lido em 21/10, commit `b26b5f5`)
+`includes/contr-emb-api-operacoes.i:88-170` e `includes/contr-emb-operacao-rest.i:153-170`. `usuario`/`estabelecimentosPermitidos` o Dataset
+acrescenta; `chaveIdempotente` a tela gera. Todos: `codEstabel`, `natureza`, **`serie` (vazio → `PARAMETRO_INVALIDO`)**,
+`chaveIdempotente`, `selecao` (1–100 `{idEtiqueta, versao, quantidade}`, sem repetir, quantidade > 0 com até 4 casas).
+- Transferência/Remessa: `valorItem` (número ≥ 0, obrigatório). Transferência exige `codEstabelDestino` (≠ origem, mesma empresa);
+  Remessa aceita destino **ou** `emitenteDestino`; com destino, o emitente vem dele (informar outro → `EMITENTE_DESTINO_DIVERGENTE`).
+- Devolução: `emitenteOrigem`, `serieOrigem`, `numeroOrigem`, `naturezaOrigem` (sem eles → `ORIGEM_INVALIDA`).
+
 ### Erros
 - Funcionais: `SEM_PERMISSAO`, `FILTRO_INVALIDO`, `FILTRO_CURTO`, `LIMITE_INVALIDO`, `DOCUMENTO_INDISPONIVEL`, `BANCO_NAO_CONECTADO`,
   `CONSULTA_AMPLA` (acima de 5.000 documentos ou 50.000 embalagens candidatas, sem página parcial), `HISTORICO_INCONSISTENTE`.
