@@ -192,6 +192,7 @@ var NWM_TEMPO_MARCACAO_INVALIDO_MS = 2000;
 var NWM_DURACAO_AVISO_CARREGANDO_MS = 600000;
 var NWM_ATRASO_REMOVER_AVISO_MS = 100;
 var NWM_DURACAO_SAIDA_AVISO_MS = 200;
+var NWM_DURACAO_AVISO_CONCLUSAO_MS = 8000;
 var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
 var NWM_ESCALA_QUANTIDADE = 10000;
 var NWM_ALTURA_MAXIMA_TABELA = 560;
@@ -4302,7 +4303,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   concluirEnvioOperacao(operacao, resultado) {
     operacao.estado = NWM_ESTADOS_OPERACAO.CONCLUIDA;
     this.guardarOperacaoPendente(null);
-    this.mostrarEstadoOperacao(
+    this.encerrarOperacaoConcluida(
       "Documento de trabalho " +
         resultado.wt +
         " · operação " +
@@ -4311,6 +4312,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         " A efetivação da nota ocorre no Datasul.",
     );
     this.atualizarGradeMantendoRecorte();
+  },
+
+  encerrarOperacaoConcluida(mensagem) {
+    this.fecharOperacao();
+    this.avisar("success", mensagem, NWM_DURACAO_AVISO_CONCLUSAO_MS);
   },
 
   marcarOperacaoIncerta(operacao, erro) {
@@ -4402,10 +4408,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   concluirOperacaoLocalizada(operacao) {
     operacao.estado = NWM_ESTADOS_OPERACAO.CONCLUIDA;
-    this.mostrarEstadoOperacao(
+    this.guardarOperacaoPendente(null);
+    this.encerrarOperacaoConcluida(
       "Operação localizada para esta solicitação. Confira o documento de trabalho no Datasul.",
     );
-    this.guardarOperacaoPendente(null);
     this.atualizarGradeMantendoRecorte();
   },
 
@@ -4656,7 +4662,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }, function () {
       operacao.atualizacaoFalhou = true;
       self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").append($("<span>", { text: " A atualização da consulta falhou; clique em Buscar. Não repita comandos já confirmados." }));
-    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.finalizarConfirmacaoImpressao(operacao); self.reformatarLinhasExibidas(); });
+    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.finalizarConfirmacaoImpressao(operacao); self.reformatarLinhasExibidas(); self.encerrarAcaoEtiquetaConcluida(operacao); });
     if (operacao.ultimaEtiqueta) this.consultarDataset("consultarHistoricoEtiqueta", { codEstabel: operacao.ultimaEtiqueta.codEstabel, idEtiqueta: operacao.ultimaEtiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA }, "historico:apos-acao");
   },
 
@@ -4730,6 +4736,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     });
     else $.each(this.controlesEtiqueta || [], function (indice, estado) { $(estado.elemento).prop("disabled", estado.disabled); });
     this.$modalAcaoEtiqueta.attr("aria-busy", ocupada ? "true" : "false");
+  },
+
+  encerrarAcaoEtiquetaConcluida(operacao) {
+    if (operacao.acao === "imprimir" || operacao.incerta || operacao.erro || operacao.concluidas !== operacao.etiquetas.length) return;
+    this.fecharAcaoEtiqueta();
+    if (operacao.atualizacaoFalhou) return this.avisar("warning", "Ação confirmada, mas a consulta não foi atualizada. Clique em Buscar.");
+    this.avisar("success", NWM_ACOES[operacao.acao].rotulo + ": " + operacao.concluidas + " embalagem(ns) confirmada(s).");
   },
 
   fecharAcaoEtiqueta() {
