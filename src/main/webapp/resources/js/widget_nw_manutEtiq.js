@@ -289,6 +289,7 @@ var NWM_CODIGO_POSITIVO = /^[1-9][0-9]*$/;
 var NWM_SOMENTE_DIGITOS = /^[0-9]+$/;
 var NWM_CARACTERE_CONTROLE = /[\x00-\x1f]/;
 var NWM_DECIMAL_ATE_QUATRO_CASAS = /^[0-9]+(?:\.[0-9]{1,4})?$/;
+var NWM_FORA_DE_QUANTIDADE = /[^0-9.,]/g;
 
 var NWM_APLICATIVO_IMPRESSAO = "http://localhost:32478";
 var NWM_URL_TEMPLATE_ETIQUETA =
@@ -4461,6 +4462,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.$modalAcaoEtiqueta.find("form").on("submit", function (evento) { evento.preventDefault(); self.enviarAcaoEtiqueta(); });
     this.$modalAcaoEtiqueta.on("cancel", function (evento) { if (self.acaoEtiquetaAtual && self.acaoEtiquetaAtual.enviando) evento.preventDefault(); });
     $("[data-fechar-acao-etiqueta]", this.DOM).on("click", function () { self.fecharAcaoEtiqueta(); });
+    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").on("input", function () { self.filtrarQuantidadeDigitada($(this)); });
     $("[data-fechar-historico]", this.DOM).on("click", function () { self.fecharHistorico(); });
     $("[data-historico-proximo]", this.DOM).on("click", function () { self.proximaPaginaHistorico(); });
     $("[data-historico-anterior]", this.DOM).on("click", function () { self.paginaAnteriorHistorico(); });
@@ -4507,6 +4509,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (operacao.erro) return this.avisar("danger", operacao.erro.message + " Confirmadas: " + operacao.concluidas + ".");
     if (operacao.atualizacaoFalhou) return this.avisar("warning", "Impressão confirmada, mas a consulta não foi atualizada. Clique em Buscar.");
     this.avisar("success", "Confirmação de impressão registrada para " + operacao.concluidas + " embalagem(ns).");
+  },
+
+  filtrarQuantidadeDigitada($input) {
+    var valor = String($input.val() || "");
+    var filtrado = valor.replace(NWM_FORA_DE_QUANTIDADE, "");
+    if (filtrado !== valor) $input.val(filtrado);
   },
 
   camposAcaoEtiqueta() {

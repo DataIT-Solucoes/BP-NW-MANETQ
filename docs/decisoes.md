@@ -26,6 +26,8 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 21/10 | Caixa de mensagem dos modais (ação de etiqueta, operação, impressora) escondida enquanto vazia (`:empty`) | Pedido do usuário |
+| 21/10 | Modal Estornar: quantidade aceita só números, `,` e `.` (filtro ao digitar/colar); Justificativa (textarea) com altura própria, sem os 44px fixos dos inputs | Pedido do usuário |
 | 21/10 | Série de saída volta ao modal (a API exige `serie`), **desabilitada até a natureza ser validada**; volta a desabilitar se a natureza mudar. Substitui a remoção "por enquanto" do mesmo dia | Pedido do usuário |
 | 21/10 | Modal de operação sem a linha "N embalagem(ns) da grade. Para devolução, selecione as embalagens da origem abaixo." (nem a versão "na solicitação preservada" da reabertura) | Pedido do usuário |
 | 21/10 | Modal de operação aberto por **Transferir** (linha ou lote) tem o título "Transferir embalagens"; Devolver e reabertura continuam "Movimentar embalagens" | Pedido do usuário |

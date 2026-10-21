@@ -188,6 +188,15 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* textarea: altura livre e espaçamento interno (a altura fixa de 44px dos inputs cortava o texto) */
+.fluig-style-guide.nwm textarea.nwm-campo-input {
+    height: auto;
+    min-height: 96px;
+    padding: 10px 14px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
 .fluig-style-guide.nwm .nwm-campo-input::placeholder {
     color: #8E8C84;
     opacity: 1;
@@ -1881,6 +1890,12 @@
     background: #f0f5f3;
     border-radius: 8px;
     white-space: pre-wrap;
+}
+
+/* caixa de mensagem só aparece quando tem texto */
+.fluig-style-guide.nwm .nwm-operacao-mensagem:empty,
+.fluig-style-guide.nwm .nwm-impressora-mensagem:empty {
+    display: none;
 }
 
 .fluig-style-guide.nwm .nwm-operacao-chave {
