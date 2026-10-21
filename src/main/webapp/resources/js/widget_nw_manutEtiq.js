@@ -762,7 +762,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (this.faltaEstabelecimentoParaDocumentos(apoio)) {
       apoio.erro = this.erroDataset(
         "CONTEXTO_OBRIGATORIO",
-        "Informe o estabelecimento De e Até para buscar documentos.",
+        "Preencha o estabelecimento antes de buscar Notas Fiscais",
         NWM_TIPOS_ERRO.FUNCIONAL,
       );
       this.renderizarApoioFiltro(apoio);
@@ -2662,7 +2662,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     ) {
       this.avisar(
         "warning",
-        "Selecione de 1 a 20 documentos nas sugestões de notas específicas.",
+        "Selecione ao menos uma Nota Fiscal",
       );
       return false;
     }
@@ -2703,14 +2703,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var temItem = !!(filtros.itemDe || filtros.itemAte);
     if (!filtros.estDe || !filtros.estAte) {
       verificacao.campos = verificacao.campos.concat(["estDe", "estAte"]);
-      verificacao.mensagens.push("Informe o estabelecimento De e Até.");
+      verificacao.mensagens.push("Informe o estabelecimento <br>");
     }
     if (!temItem && !temNotaFiscal) {
       verificacao.campos = verificacao.campos.concat(
         ["itemDe", "itemAte"],
         especificas ? ["nfEspecificas"] : ["nfDe", "nfAte"],
       );
-      verificacao.mensagens.push("Informe os itens ou a nota fiscal.");
+      verificacao.mensagens.push("Informe os itens ou a Nota Fiscal");
     }
     return verificacao;
   },
