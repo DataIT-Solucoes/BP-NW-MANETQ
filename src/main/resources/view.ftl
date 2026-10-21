@@ -177,7 +177,7 @@
             </div>
             <div class="nwm-selecao-coluna">
                 <div class="nwm-campo">
-                    <label class="nwm-campo-rotulo" for="nwm-cod-barras-${instanceId}">Código de barras</label>
+                    <label class="nwm-campo-rotulo" for="nwm-cod-barras-${instanceId}"><i class="bi bi-upc-scan nwm-rotulo-icone" aria-hidden="true"></i>Código de barras</label>
                     <input type="text" id="nwm-cod-barras-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Leia ou digite o código de barras" autocomplete="off" data-leitor-cod-barras>
                 </div>
             </div>

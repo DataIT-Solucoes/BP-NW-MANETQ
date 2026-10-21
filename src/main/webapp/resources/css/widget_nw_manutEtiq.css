@@ -131,6 +131,10 @@
     color: var(--nwm-tinta);
 }
 
+.fluig-style-guide.nwm .nwm-rotulo-icone {
+    margin-right: 6px;
+}
+
 .fluig-style-guide.nwm .nwm-obrigatorio {
     border: 0;
     text-decoration: none;
