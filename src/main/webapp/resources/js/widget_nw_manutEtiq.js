@@ -192,6 +192,9 @@ var NWM_ESCALA_QUANTIDADE = 10000;
 var NWM_ALTURA_MAXIMA_TABELA = 560;
 var NWM_TAMANHO_PAGINA = 20;
 
+var NWM_GRUPOS_ADMINISTRADORES = ["DefaultGroup-1"];
+var NWM_NIVEIS_ACESSO = { ADMIN: "admin", COMUM: "comum" };
+
 var NWM_LEGENDA_STATUS = [
   {
     codigo: "NAO_IMPRESSA",
@@ -418,6 +421,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   linhaMaisAcoes: null,
 
+  nivelAcesso: null,
+
   init() {
     this.selecionados = {};
     this.consultasDataset = Object.create(null);
@@ -437,6 +442,67 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.restaurarOperacaoPendente();
     this.montarLegenda();
     this.atualizarSelecao();
+    this.identificarNivelAcesso();
+  },
+
+  identificarNivelAcesso() {
+    var self = this;
+    var usuario = this.codigoUsuarioLogado();
+    if (!usuario) {
+      this.definirNivelAcesso(usuario, []);
+      return;
+    }
+    this.consultarGruposUsuario(usuario).then(
+      function (grupos) {
+        self.definirNivelAcesso(usuario, grupos);
+      },
+      function () {
+        self.definirNivelAcesso(usuario, []);
+      },
+    );
+  },
+
+  codigoUsuarioLogado() {
+    if (!window.WCMAPI || !WCMAPI.getUserCode) return "";
+    return String(WCMAPI.getUserCode() || "").trim();
+  },
+
+  consultarGruposUsuario(usuario) {
+    return $.ajax({
+      url: "/api/public/ecm/dataset/search",
+      type: "POST",
+      contentType: "application/json",
+      dataType: "json",
+      timeout: NWM_TEMPO_LIMITE_CONSULTA_MS,
+      data: JSON.stringify({
+        datasetId: "colleagueGroup",
+        filterFields: ["colleagueGroupPK.colleagueId", usuario],
+      }),
+    }).then(function (resposta) {
+      return $.map((resposta && resposta.content) || [], function (registro) {
+        return registro["colleagueGroupPK.groupId"] || registro.groupId || null;
+      });
+    });
+  },
+
+  definirNivelAcesso(usuario, grupos) {
+    var gruposAdministradores = $.grep(grupos, function (grupo) {
+      return $.inArray(grupo, NWM_GRUPOS_ADMINISTRADORES) >= 0;
+    });
+    this.nivelAcesso = gruposAdministradores.length
+      ? NWM_NIVEIS_ACESSO.ADMIN
+      : NWM_NIVEIS_ACESSO.COMUM;
+    console.log(
+      "[widget_nw_manutEtiq] Usuário " +
+        (usuario || "não identificado") +
+        " é do grupo " +
+        (gruposAdministradores.length
+          ? gruposAdministradores.join(", ")
+          : "comum") +
+        ": nível de acesso " +
+        this.nivelAcesso +
+        ".",
+    );
   },
 
   bindings: {

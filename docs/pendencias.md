@@ -4,6 +4,7 @@
 > Pendência registrada não autoriza execução. Conferir o contrato vigente antes de planejar integração.
 
 ## Esperando decisão do usuário
+- Níveis de acesso (`admin`/`comum`, `nivelAcesso`): o que muda na tela para o `comum` (hoje só aparece no console).
 - Comportamento do campo Código de barras (`data-leitor-cod-barras`): hoje só visual.
 - Qtde Sel.: soma do saldo (`qtidadeAtu`) ou da quantidade inicial.
 - Visão não-ADM: a decisão vigente mantém a tela ADM de aba única.
@@ -13,6 +14,8 @@
 - Status `CANCELADA` na legenda: reavaliar a legenda atual antes de decidir.
 
 ## Confirmar no Fluig de TESTE (nada visto ainda)
+- Nível de acesso no console: usuário do `DefaultGroup-1` → `admin`, outro → `comum`. Confirmar que usuário comum consegue ler o
+  dataset `colleagueGroup` pela API REST (se não conseguir, cai em `comum` por falha da consulta).
 - Confirmação de impressão pelo botão e pela ação em lote: Não impressa recebe o status real do backend após `CONFIRMAR_IMPRESSAO`
   (não imprime papel). Nenhum comando real executado na implementação.
 - Coluna Ações: alinhamento à esquerda, largura 320px e Imprimir inteiro como primeiro botão de `NAO_IMPRESSA`.

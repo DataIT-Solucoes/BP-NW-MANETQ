@@ -44,6 +44,8 @@
   (operação) · Legenda dos status · Mais ações (no código, sem botão na linha) · Impressora · Ação de etiqueta · Histórico da embalagem.
 
 ## Arquitetura do JS
+- **Nível de acesso** (`identificarNivelAcesso`, no `init`): `WCMAPI.getUserCode()` + dataset `colleagueGroup` (`consultarGruposUsuario`);
+  grupo em `NWM_GRUPOS_ADMINISTRADORES` (hoje só `DefaultGroup-1`; outro grupo admin = acrescentar na lista) → `nivelAcesso = admin`, senão `comum` (também em falha ou sem usuário). Só `console.log`.
 - Arquivo único: constantes `NWM_*` no topo e o SuperWidget `widget_nw_manutEtiq` (padrão de código no `AGENTS.md`).
 - **Transporte** (`chamarEmbalagens`, `consultarDataset`): `$.ajax` ao Dataset; valida envelope (`extrairEnvelopeDataset`,
   `envelopeComandoValido`, `envelopePaginadoValido`…); consultas por canal (`consultasDataset`), resposta antiga é descartada;
