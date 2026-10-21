@@ -14,6 +14,8 @@
 - Status `CANCELADA` na legenda: reavaliar a legenda atual antes de decidir.
 
 ## Confirmar no Fluig de TESTE (nada visto ainda)
+- Carregamento na linha (Imprimir e Histórico clicados na tabela): sem overlay/toast, botões da linha desabilitados, barra na base
+  da linha e spinner no botão; após o Imprimir, a grade recarrega sem piscar e a linha volta ao normal.
 - Nível de acesso no console: usuário do `DefaultGroup-1` → `admin`, outro → `comum`. Confirmar que usuário comum consegue ler o
   dataset `colleagueGroup` pela API REST (se não conseguir, cai em `comum` por falha da consulta).
 - Confirmação de impressão pelo botão e pela ação em lote: Não impressa recebe o status real do backend após `CONFIRMAR_IMPRESSAO`

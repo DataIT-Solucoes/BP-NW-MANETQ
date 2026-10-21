@@ -1014,6 +1014,46 @@
     box-shadow: inset 3px 0 0 var(--nwm-verde);
 }
 
+/* linha com ação em andamento: fundo névoa, botões desabilitados e barra de progresso na base */
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-carregando {
+    background-color: var(--nwm-nevoa);
+    cursor: progress;
+}
+
+.fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-carregando::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background:
+        linear-gradient(90deg, transparent, var(--nwm-verde), transparent) no-repeat,
+        rgba(0, 107, 53, 0.12);
+    background-size: 35% 100%, auto;
+    animation: nwm-linha-progresso 1.2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes nwm-linha-progresso {
+    from { background-position: -55% 0, 0 0; }
+    to { background-position: 155% 0, 0 0; }
+}
+
+.fluig-style-guide.nwm .nwm-acao.is-carregando:disabled {
+    opacity: 1;
+    cursor: progress;
+}
+
+.fluig-style-guide.nwm .nwm-acao-carregando {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 107, 53, 0.2);
+    border-top-color: var(--nwm-verde);
+    border-radius: 50%;
+    animation: nwm-carregador-girar 0.8s linear infinite;
+}
+
 .fluig-style-guide.nwm .nwm-codigo {
     font-weight: 700;
 }
@@ -1768,6 +1808,11 @@
     .fluig-style-guide.nwm .nwm-modal[open]::backdrop,
     .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-nova {
         animation: none;
+    }
+
+    .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-carregando::after {
+        animation: none;
+        background: var(--nwm-verde);
     }
 }
 .fluig-style-guide.nwm .nwm-documentos-caixa {

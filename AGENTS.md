@@ -54,8 +54,10 @@ Nenhum (só identificação).
 - Imprimir hoje registra `CONFIRMAR_IMPRESSAO` (teste do usuário, sem impressão física) e recarrega a grade; a tela nunca muda status ou saldo localmente.
 - Resultado incerto (operação ou ação de etiqueta) bloqueia novas escritas; não reenviar automaticamente nem gerar chave nova para a mesma intenção.
 - **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando só a widget. Não usar `FLUIGC.loading(window)` nem
-  bloquear a página.** Referência: `widget_nw_bags`, `$carregandoGlobal` e `.nwb-carregando-global`. Histórico e Buscar mostram também
+  bloquear a página.** Referência: `widget_nw_bags`, `$carregandoGlobal` e `.nwb-carregando-global`. Buscar mostra também
   o toast info "Carregando...", único por instância e removido ao concluir/falhar/cancelar.
+- **Ação clicada na linha da tabela não usa o loading global**: desabilita os botões daquela linha e mostra o carregamento na própria
+  linha (`linhaCarregando`, `.nwm-linha-carregando`). Ação em lote continua com o loading global.
 
 ## Padrão de código (JS) — seguir sempre
 Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o próprio arquivo atual.

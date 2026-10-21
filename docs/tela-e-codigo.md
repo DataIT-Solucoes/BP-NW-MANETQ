@@ -61,10 +61,15 @@
   situação/versão antes (`consultarEstadoEtiqueta`), para na primeira recusa; resultado incerto vai para o `sessionStorage` e bloqueia
   escritas (`escritaEtiquetaBloqueada`). Imprimir não abre modal: envia `CONFIRMAR_IMPRESSAO` com `NWM_JUSTIFICATIVA_IMPRESSAO_TESTE` e
   recarrega a grade mantendo página/recorte (`atualizarGradeMantendoRecorte`).
-- **Loading global** (padrão Bags): `definirCarregandoGlobal`/`atualizarCarregandoGlobal` põem o overlay `.nwm-carregando-global`
-  dentro de `this.DOM` (bloqueia só a widget, `aria-busy`) enquanto há busca (`carregandoTela`), abertura de Histórico
-  (`preparandoHistorico`) ou confirmação de impressão (`confirmandoImpressao`). Junto, toast info "Carregando..." único por instância (`atualizarAvisoCarregando`, sai 100 ms após o fim).
-- **Histórico**: `abrirHistorico` carrega com o loading global e só abre o modal após sucesso; paginação por `aposRegistro`;
+- **Loading global** (padrão Bags): `atualizarCarregandoGlobal` põe o overlay `.nwm-carregando-global`
+  dentro de `this.DOM` (bloqueia só a widget, `aria-busy`) enquanto há busca (`carregandoTela`) ou confirmação de impressão em lote
+  (`confirmandoImpressao`). Junto, toast info "Carregando..." único por instância (`atualizarAvisoCarregando`, sai 100 ms após o fim).
+- **Carregamento na linha** (ação clicada na tabela): `marcarLinhaCarregando`/`desmarcarLinhaCarregando` guardam `linhaCarregando`
+  (`{ id, acao }`); `rowFormatter` → `pintarLinhaCarregando` põe `.nwm-linha-carregando` + `aria-busy`, os botões da linha ficam
+  desabilitados e o clicado mostra spinner (`iconeBotaoAcao`). Enquanto houver, `aguardarAcaoDaLinha` recusa nova ação na tabela e Buscar.
+  Imprimir da linha não bloqueia a tela e recarrega a grade sem limpar nem overlay (`atualizarGradeMantendoRecorte(true)` →
+  `carregarEtiquetas(parametros, true)`); a linha sai do carregamento só depois da recarga.
+- **Histórico**: `abrirHistorico(linha)` carrega com o carregamento na linha e só abre o modal após sucesso; paginação por `aposRegistro`;
   badge por código exato (`NWM_EVENTOS_HISTORICO`) ou raiz (`NWM_RAIZES_EVENTOS_HISTORICO`); sem correspondência, o código em badge
   neutra. Data por `formatarDataHoraHistorico` (sem conversão de fuso).
 - **Impressora**: modal com lista do aplicativo local (`NWM_APLICATIVO_IMPRESSAO`), salvar no `localStorage`, imprimir teste
@@ -93,7 +98,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Modais, Detalhes e Mais ações (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `abrirMaisAcoes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |
 | Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarConfirmacaoImpressao`, `enviarAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarGradeMantendoRecorte` |
-| Histórico e loading (4489–4614) | `abrirHistorico`, `definirCarregandoGlobal`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `montarBadgeEventoHistorico`, `renderizarHistoricoEtiqueta` |
+| Histórico e loading (4489–4614) | `abrirHistorico`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `montarBadgeEventoHistorico`, `renderizarHistoricoEtiqueta` |
 | Impressão, Select2 e legenda (4615–4690) | `obterDadosImpressaoEtiqueta`, `validarRespostaIndividual`, `prepararSelect2`, `montarLegenda`, `abrirLegenda` |
 | Impressora (4692–4882) | `abrirImpressora`, `carregarImpressoras`, `chamarAplicativoImpressao`, `salvarImpressora`, `testarImpressora`, `obterTemplateEtiqueta` |
 | Utilidades (4883–fim) | `avisar`, `formatarDataHoraHistorico`, `formatarData`, `formatarQuantidade` |

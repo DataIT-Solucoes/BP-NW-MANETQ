@@ -423,6 +423,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   nivelAcesso: null,
 
+  linhaCarregando: null,
+
   init() {
     this.selecionados = {};
     this.consultasDataset = Object.create(null);
@@ -1607,6 +1609,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         { column: "etiqueta", dir: "asc" },
       ],
       placeholder: "Nenhuma etiqueta encontrada.",
+      rowFormatter: function (linha) {
+        self.pintarLinhaCarregando(linha);
+      },
       footerElement:
         '<span class="nwm-tabela-contador" data-contador-tabela></span>',
       columns: this.montarColunasTabela(),
@@ -1870,10 +1875,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   montarBotaoAcao(acao, configuracao, etiqueta) {
     var disponivel = this.acaoDisponivel(acao, etiqueta);
+    var carregando = this.linhaEstaCarregando(etiqueta);
+    var executando = carregando && this.linhaCarregando.acao === acao;
 
     return $("<button>", {
       type: "button",
-      class: "nwm-acao nwm-acao-" + acao,
+      class: "nwm-acao nwm-acao-" + acao + (executando ? " is-carregando" : ""),
       "data-acao": acao,
       title:
         configuracao.rotulo + this.motivoAcaoIndisponivel(acao, disponivel, etiqueta),
@@ -1883,10 +1890,48 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         etiqueta.etiqueta +
         " do item " +
         etiqueta.itCodigo,
-      disabled: !disponivel,
-    }).append(
-      $("<i>", { class: "bi " + configuracao.icone, "aria-hidden": "true" }),
-    );
+      disabled: !disponivel || carregando,
+    }).append(this.iconeBotaoAcao(configuracao, executando));
+  },
+
+  iconeBotaoAcao(configuracao, executando) {
+    if (executando)
+      return $("<span>", { class: "nwm-acao-carregando", "aria-hidden": "true" });
+    return $("<i>", { class: "bi " + configuracao.icone, "aria-hidden": "true" });
+  },
+
+  linhaEstaCarregando(etiqueta) {
+    return !!this.linhaCarregando && this.linhaCarregando.id === etiqueta.id;
+  },
+
+  pintarLinhaCarregando(linha) {
+    var carregando = this.linhaEstaCarregando(linha.getData());
+    $(linha.getElement())
+      .toggleClass("nwm-linha-carregando", carregando)
+      .attr("aria-busy", String(carregando));
+  },
+
+  marcarLinhaCarregando(linha, acao) {
+    this.linhaCarregando = { id: linha.getData().id, acao: acao };
+    this.redesenharLinhaCarregando(this.linhaCarregando.id);
+  },
+
+  desmarcarLinhaCarregando() {
+    var linhaCarregando = this.linhaCarregando;
+    if (!linhaCarregando) return;
+    this.linhaCarregando = null;
+    this.redesenharLinhaCarregando(linhaCarregando.id);
+  },
+
+  redesenharLinhaCarregando(id) {
+    var linha = this.tabela && this.tabela.getRow(id);
+    if (linha) linha.reformat();
+  },
+
+  aguardarAcaoDaLinha() {
+    if (!this.linhaCarregando) return false;
+    this.avisar("warning", "Aguarde a ação em andamento na tabela terminar.");
+    return true;
   },
 
   acaoDisponivel(acao, etiqueta) {
@@ -2131,6 +2176,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   buscar(htmlElement, event) {
+    if (this.aguardarAcaoDaLinha()) return;
     this.invalidarConsultasDataset();
     var filtros = this.lerFiltros();
     if (!this.validarFiltros(filtros)) return;
@@ -2163,7 +2209,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return codigos;
   },
 
-  carregarEtiquetas(parametros) {
+  carregarEtiquetas(parametros, silenciosa) {
     var carga = {
       estado: "carregando",
       parametros: $.extend({}, parametros),
@@ -2175,8 +2221,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       conclusao: $.Deferred(),
     };
     this.consultaEtiquetas = carga;
-    this.tabela.clearData();
-    this.definirCarregamentoConsulta(true);
+    if (!silenciosa) {
+      this.tabela.clearData();
+      this.definirCarregamentoConsulta(true);
+    }
     this.atualizarContadorTabela();
     this.consultarPaginaEtiquetas(carga);
     return carga.conclusao.promise();
@@ -2882,7 +2930,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       this.abrirMaisAcoes(linha);
       return;
     }
-    if (acao === "historico") return this.abrirHistorico(linha.getData());
+    if (this.aguardarAcaoDaLinha()) return;
+    if (acao === "historico") return this.abrirHistorico(linha);
     if (!this.podeSelecionarEtiqueta(linha.getData())) {
       this.avisar(
         "warning",
@@ -2890,7 +2939,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       );
       return;
     }
-    this.aplicarAcao(acao, [linha]);
+    this.aplicarAcao(acao, [linha], linha);
   },
 
   aplicarLote() {
@@ -3290,10 +3339,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.linhaMaisAcoes = null;
   },
 
-  aplicarAcao(acao, linhas) {
+  aplicarAcao(acao, linhas, linhaOrigem) {
     if (this.escritaEtiquetaBloqueada()) return this.avisar("warning", "Há uma operação em andamento ou sem resultado confirmado.");
     if (this.acaoAbreOperacao(acao)) return this.abrirOperacao(linhas);
-    if (NWM_COMANDOS_ETIQUETA[acao]) return this.abrirAcaoEtiqueta(acao, linhas);
+    if (NWM_COMANDOS_ETIQUETA[acao]) return this.abrirAcaoEtiqueta(acao, linhas, linhaOrigem);
     return this.avisar("info", "Selecione uma ação disponível. A impressão física permanece indisponível.");
   },
 
@@ -4391,13 +4440,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.restaurarEtiquetaIncerta();
   },
 
-  abrirAcaoEtiqueta(acao, linhas) {
+  abrirAcaoEtiqueta(acao, linhas, linhaOrigem) {
     var self = this, etiquetas = $.map(linhas, function (linha) { return linha.getData(); });
     if (!etiquetas.length || etiquetas.length > NWM_LIMITE_EMBALAGENS_OPERACAO) return this.avisar("warning", "Selecione de 1 a 100 embalagens.");
     if ($.grep(etiquetas, function (etiqueta) { return !self.acaoDisponivel(acao, etiqueta); }).length)
       return this.avisar("warning", this.textoMotivoIndisponivel(acao, $.grep(etiquetas, function (etiqueta) { return self.possuiBag(etiqueta); })[0]));
     this.acaoEtiquetaAtual = { acao: acao, etiquetas: etiquetas, indice: 0, concluidas: 0, enviando: false, incerta: false };
-    if (acao === "imprimir") return this.iniciarConfirmacaoImpressao();
+    if (acao === "imprimir") return this.iniciarConfirmacaoImpressao(linhaOrigem);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-titulo]").text(NWM_ACOES[acao].rotulo);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-resumo]").text(etiquetas.length + " embalagem(ns). " + (acao === "estornar" ? "Informe o saldo final de cada embalagem, não a diferença." : "Informe a justificativa."));
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").val(etiquetas.length === 1 ? etiquetas[0].qtidadeAtu : "").closest(".nwm-campo").prop("hidden", acao !== "estornar");
@@ -4406,19 +4455,26 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.abrir(this.$modalAcaoEtiqueta);
   },
 
-  iniciarConfirmacaoImpressao() {
+  iniciarConfirmacaoImpressao(linhaOrigem) {
     var operacao = this.acaoEtiquetaAtual;
     operacao.campos = { justificativa: NWM_JUSTIFICATIVA_IMPRESSAO_TESTE };
     operacao.enviando = true;
+    operacao.daLinha = !!linhaOrigem;
+    if (linhaOrigem) this.marcarLinhaCarregando(linhaOrigem, "imprimir");
+    else this.bloquearTelaImpressao();
+    this.enviarProximaEtiqueta(operacao);
+  },
+
+  bloquearTelaImpressao() {
     this.confirmandoImpressao = true;
     this.bloquearTelaEtiqueta(true);
     this.atualizarCarregandoGlobal();
-    this.enviarProximaEtiqueta(operacao);
   },
 
   finalizarConfirmacaoImpressao(operacao) {
     if (operacao.acao !== "imprimir") return;
     this.confirmandoImpressao = false;
+    this.desmarcarLinhaCarregando();
     this.atualizarCarregandoGlobal();
     if (operacao.incerta) return this.avisar("warning", "Resultado da impressão incerto. Não reenviado. Consulte situação e histórico. Chave: " + operacao.comando.parametros.chaveIdempotente);
     if (operacao.erro) return this.avisar("danger", operacao.erro.message + " Confirmadas: " + operacao.concluidas + ".");
@@ -4511,12 +4567,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   terminarAtualizacaoEtiqueta(operacao) {
     var self = this;
-    this.atualizarGradeMantendoRecorte().then(function () {
+    this.atualizarGradeMantendoRecorte(operacao.daLinha).then(function () {
       if (operacao.finalizada && operacao.concluidas === operacao.etiquetas.length) self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text(operacao.concluidas + " embalagem(ns) confirmada(s). Consulta atualizada.");
     }, function () {
       operacao.atualizacaoFalhou = true;
       self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").append($("<span>", { text: " A atualização da consulta falhou; clique em Buscar. Não repita comandos já confirmados." }));
-    }).always(function () { operacao.enviando = false; self.bloquearTelaEtiqueta(false); self.finalizarConfirmacaoImpressao(operacao); if (self.tabela) self.tabela.redraw(true); });
+    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.finalizarConfirmacaoImpressao(operacao); if (self.tabela) self.tabela.redraw(true); });
     if (operacao.ultimaEtiqueta) this.consultarDataset("consultarHistoricoEtiqueta", { codEstabel: operacao.ultimaEtiqueta.codEstabel, idEtiqueta: operacao.ultimaEtiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA }, "historico:apos-acao");
   },
 
@@ -4550,12 +4606,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     } catch (erro) { return; }
   },
 
-  atualizarGradeMantendoRecorte() {
+  atualizarGradeMantendoRecorte(silenciosa) {
     var self = this, carga = this.consultaEtiquetas;
     if (!carga || !carga.parametros) return $.Deferred().resolve().promise();
     var pagina = this.tabela.getPage() || 1, parametros = $.extend({}, carga.parametros);
     this.invalidarConsultasDataset(); this.limparSelecao();
-    return this.carregarEtiquetas(parametros).then(function () {
+    return this.carregarEtiquetas(parametros, silenciosa).then(function () {
       return self.tabela.setPage(Math.min(pagina, self.tabela.getPageMax() || 1));
     });
   },
@@ -4565,26 +4621,21 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.cancelarConsultaDataset("historico");
   },
 
-  abrirHistorico(etiqueta) {
+  abrirHistorico(linha) {
     if (this.historicoAtual && this.historicoAtual.carregando) return;
     var self = this;
-    this.historicoAtual = { etiqueta: etiqueta, cursor: "", anteriores: [], proximo: "", carregando: false };
+    this.historicoAtual = { etiqueta: linha.getData(), cursor: "", anteriores: [], proximo: "", carregando: false };
     var historico = this.historicoAtual;
-    this.definirCarregandoGlobal(true);
+    this.marcarLinhaCarregando(linha, "historico");
     return this.carregarHistoricoEtiqueta().always(function () {
-      self.definirCarregandoGlobal(false);
+      self.desmarcarLinhaCarregando();
     }).then(function () {
       self.concluirAberturaHistorico(historico);
     });
   },
 
-  definirCarregandoGlobal(carregando) {
-    this.preparandoHistorico = carregando;
-    this.atualizarCarregandoGlobal();
-  },
-
   atualizarCarregandoGlobal() {
-    var carregando = !!(this.carregandoTela || this.preparandoHistorico || this.confirmandoImpressao);
+    var carregando = !!(this.carregandoTela || this.confirmandoImpressao);
     if (!this.$carregandoGlobal) {
       this.$carregandoGlobal = $("<div>", {
         class: "nwm-carregando-global",
