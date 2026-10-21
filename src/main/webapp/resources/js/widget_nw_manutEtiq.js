@@ -1824,7 +1824,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       title: descricao,
     })
       .append($("<span>", { class: "nwm-chip-ponto", "aria-hidden": "true" }))
-      .append($("<span>", { text: descricao }))[0];
+      .append($("<span>", { text: codigo }))[0];
   },
 
   montarTituloStatus() {
