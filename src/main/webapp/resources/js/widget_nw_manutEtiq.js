@@ -449,15 +449,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var self = this;
     var usuario = this.codigoUsuarioLogado();
     if (!usuario) {
-      this.definirNivelAcesso(usuario, []);
+      this.definirNivelAcesso([]);
       return;
     }
     this.consultarGruposUsuario(usuario).then(
       function (grupos) {
-        self.definirNivelAcesso(usuario, grupos);
+        self.definirNivelAcesso(grupos);
       },
       function () {
-        self.definirNivelAcesso(usuario, []);
+        self.definirNivelAcesso([]);
       },
     );
   },
@@ -485,24 +485,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     });
   },
 
-  definirNivelAcesso(usuario, grupos) {
-    var gruposAdministradores = $.grep(grupos, function (grupo) {
+  definirNivelAcesso(grupos) {
+    var administrador = $.grep(grupos, function (grupo) {
       return $.inArray(grupo, NWM_GRUPOS_ADMINISTRADORES) >= 0;
-    });
-    this.nivelAcesso = gruposAdministradores.length
+    }).length > 0;
+    this.nivelAcesso = administrador
       ? NWM_NIVEIS_ACESSO.ADMIN
       : NWM_NIVEIS_ACESSO.COMUM;
-    console.log(
-      "[widget_nw_manutEtiq] Usuário " +
-        (usuario || "não identificado") +
-        " é do grupo " +
-        (gruposAdministradores.length
-          ? gruposAdministradores.join(", ")
-          : "comum") +
-        ": nível de acesso " +
-        this.nivelAcesso +
-        ".",
-    );
+    console.log("Nível de acesso: " + this.nivelAcesso);
   },
 
   bindings: {
