@@ -198,7 +198,7 @@ var NWM_TAMANHO_PAGINA = 20;
 var NWM_LIMITE_ATUALIZACAO_LINHAS = 10;
 
 var NWM_GRUPOS_ADMINISTRADORES = ["DefaultGroup-1"];
-var NWM_NIVEIS_ACESSO = { ADMIN: "admin", COMUM: "comum" };
+var NWM_NIVEIS_ACESSO = { ADMIN: "admin", COMUM: "comum" }; // ADMIN -> pode fazer tudo // COMUM -> não pode transferir, devolver e realizar qlqr acao fiscal
 
 var NWM_LEGENDA_STATUS = [
   {
@@ -1861,6 +1861,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var self = this;
     var $acoes = $("<div>", { class: "nwm-acoes" });
     $.each(this.acoesDaEtiqueta(etiqueta), function (indice, acao) {
+      if (!self.acaoPermitidaNaEtiqueta(acao, etiqueta)) return;
       $acoes.append(self.montarBotaoAcao(acao, NWM_ACOES[acao], etiqueta));
     });
     return $acoes[0];
@@ -1950,8 +1951,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   acaoDisponivel(acao, etiqueta) {
+    if (!this.acaoPermitidaNaEtiqueta(acao, etiqueta)) return false;
+    return acao === "detalhes" || acao === "historico" || !this.escritaEtiquetaBloqueada();
+  },
+
+  acaoPermitidaNaEtiqueta(acao, etiqueta) {
     if (acao === "detalhes" || acao === "historico") return true;
-    if (this.escritaEtiquetaBloqueada() || etiqueta.tipoControle !== "EMBALAGEM") return false;
+    if (etiqueta.tipoControle !== "EMBALAGEM") return false;
     if (acao === "imprimir") return etiqueta.situacao === "ATIVA" && this.acoesDaEtiqueta(etiqueta).indexOf(acao) >= 0;
     if (this.possuiBag(etiqueta)) return false;
     if (this.acoesDaEtiqueta(etiqueta).indexOf(acao) < 0) return false;

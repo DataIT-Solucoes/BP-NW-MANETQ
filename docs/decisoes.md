@@ -26,6 +26,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 21/10 | Botão de ação não permitido pela regra da embalagem (ex.: Perda em Bag, Imprimir em Encerrada/Descartada) é **removido** da linha, não desabilitado. Bloqueio temporário (operação em andamento/incerta, linha carregando) continua desabilitando | Pedido do usuário |
 | 21/10 | Caixa de mensagem dos modais (ação de etiqueta, operação, impressora) escondida enquanto vazia (`:empty`) | Pedido do usuário |
 | 21/10 | Modal Estornar: quantidade aceita só números, `,` e `.` (filtro ao digitar/colar); Justificativa (textarea) com altura própria, sem os 44px fixos dos inputs | Pedido do usuário |
 | 21/10 | Série de saída volta ao modal (a API exige `serie`), **desabilitada até a natureza ser validada**; volta a desabilitar se a natureza mudar. Substitui a remoção "por enquanto" do mesmo dia | Pedido do usuário |

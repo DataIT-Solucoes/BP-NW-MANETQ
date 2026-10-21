@@ -39,8 +39,9 @@
 | `CANCELADA`, desconhecido | detalhes, historico (`NWM_ACOES_PADRAO`) |
 
   Disponibilidade (`acaoDisponivel`): Detalhes/Histórico sempre; demais só para `tipoControle = EMBALAGEM` e sem escrita bloqueada;
-  Imprimir exige `situacao` ATIVA; com Bag, só Imprimir; Receber/Transferir exigem `ESTAB`, impressão confirmada e saldo. Indisponível
-  aparece desabilitado com o motivo no `title` (`textoMotivoIndisponivel`).
+  Imprimir exige `situacao` ATIVA; com Bag, só Imprimir; Receber/Transferir exigem `ESTAB`, impressão confirmada e saldo. Ação não permitida
+  pela regra da embalagem (`acaoPermitidaNaEtiqueta`: status, Bag, local, saldo) **não aparece**; bloqueio temporário (escrita em
+  andamento/incerta, linha carregando) deixa o botão desabilitado com o motivo no `title` (`textoMotivoIndisponivel`).
 - **Modais** (sete `<dialog>`, fecham pelo fundo — `NWM_FECHAMENTO_MODAIS`/`cliqueForaModal`): Detalhes · Movimentar embalagens
   (operação) · Legenda dos status · Mais ações (no código, sem botão na linha) · Impressora · Ação de etiqueta · Histórico da embalagem.
 
