@@ -2670,7 +2670,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     ) {
       this.avisar(
         "warning",
-        "Selecione ao menos uma Nota Fiscal",
+        "Preencha o campo Estabelecimento<br>Selecione ao menos uma Nota Fiscal",
       );
       return false;
     }

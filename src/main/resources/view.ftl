@@ -58,7 +58,7 @@
                     <input type="text" maxlength="100" id="nwm-nf-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Nota fiscal até" autocomplete="off" data-filtro="nfAte">
                 </div>
                 <div class="nwm-documentos-caixa" data-nf-especificas hidden>
-                    <input type="text" maxlength="100" id="nwm-nf-lista-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Buscar documento (2+ caracteres)" aria-label="Buscar notas fiscais específicas" autocomplete="off" data-filtro="nfEspecificas">
+                    <input type="text" maxlength="100" id="nwm-nf-lista-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Buscar documento" aria-label="Buscar notas fiscais específicas" autocomplete="off" data-filtro="nfEspecificas">
                     <ul class="nwm-documentos" aria-label="Documentos selecionados" data-documentos-selecionados></ul>
                     <span class="nwm-documentos-contador" role="status" data-documentos-contador>0 de 20 documentos selecionados</span>
                 </div>
