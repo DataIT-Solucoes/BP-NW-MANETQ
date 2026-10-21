@@ -401,6 +401,14 @@
     padding: 0 6px;
 }
 
+/* autocomplete fora da faixa De/Até (destino do modal de operação): o selo ganha a moldura do campo */
+.fluig-style-guide.nwm .nwm-modal-operacao .nwm-selecionado {
+    height: 44px;
+    border: 1px solid var(--nwm-borda-campo);
+    border-radius: 10px;
+    background-color: #fff;
+}
+
 .fluig-style-guide.nwm .nwm-selecionado[hidden] {
     display: none;
 }

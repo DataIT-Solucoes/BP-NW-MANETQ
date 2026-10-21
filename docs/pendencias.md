@@ -4,6 +4,7 @@
 > Pendência registrada não autoriza execução. Conferir o contrato vigente antes de planejar integração.
 
 ## Esperando decisão do usuário
+- Série de saída: hoje Select2 com opção fixa `1` (21/10). Definir a API que lista as séries válidas.
 - Níveis de acesso (`admin`/`comum`, `nivelAcesso`): o que muda na tela para o `comum` (hoje só aparece no console).
 - Comportamento do campo Código de barras (`data-leitor-cod-barras`): hoje só visual.
 - Qtde Sel.: soma do saldo (`qtidadeAtu`) ou da quantidade inicial.

@@ -95,6 +95,7 @@ var NWM_APOIOS_FILTROS = {
 };
 
 var NWM_APOIO_DOCUMENTOS = "apoiarDocumentosEntrada";
+var NWM_CAMPO_DESTINO_OPERACAO = "codEstabelDestino";
 
 var NWM_RESTRICOES_APOIO = {
   apoiarItens: { tipoControleEstoque: "3" },
@@ -562,6 +563,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     $.each(["nfDe", "nfAte", "nfEspecificas"], function (indice, campo) {
       self.prepararApoioFiltro(campo, NWM_APOIO_DOCUMENTOS);
     });
+    this.prepararApoioFiltro(
+      NWM_CAMPO_DESTINO_OPERACAO,
+      NWM_APOIOS_FILTROS.est,
+      this.campoDestinoOperacao(),
+    );
     $("[data-documentos-selecionados]", this.DOM).on(
       "click.nwm",
       "[data-remover-documento]",
@@ -572,8 +578,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.renderizarDocumentosSelecionados();
   },
 
-  prepararApoioFiltro(campo, acao) {
-    var $input = $('[data-filtro="' + campo + '"]', this.DOM);
+  prepararApoioFiltro(campo, acao, $campo) {
+    var $input = $campo || $('[data-filtro="' + campo + '"]', this.DOM);
+    if (!$input.length) return;
     var idLista = "nwm-apoio-" + campo + "-" + this.instanceId;
     var $lista = this.criarListaSugestoes($input, idLista);
     var apoio = this.criarEstadoApoio(campo, acao, $input, $lista);
@@ -3146,6 +3153,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.$modalOperacao.on("input.nwm", "[data-operacao-campo]", function () {
       self.reagirAlteracaoCampoOperacao($(this).attr("data-operacao-campo"));
     });
+    this.$modalOperacao.on("change.nwm", "select[data-operacao-campo]", function () {
+      self.reagirAlteracaoCampoOperacao($(this).attr("data-operacao-campo"));
+    });
   },
 
   ligarBotaoOperacao(seletor, acao) {
@@ -3506,12 +3516,39 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   prepararFormularioOperacao(estabelecimento) {
     $("[data-operacao-campo]", this.DOM).val("").prop("disabled", false);
+    $("select[data-operacao-campo]", this.DOM).trigger("change.select2");
+    this.limparDestinoOperacao();
     $("[data-operacao-estabelecimento]", this.DOM).text(estabelecimento);
     $("[data-origem-corpo]", this.DOM).empty();
     this.esconderRamosOperacao();
     $("[data-operacao-classificacao]", this.DOM).text(
       "Informe a natureza e clique em Validar natureza.",
     );
+  },
+
+  campoDestinoOperacao() {
+    return $('[data-operacao-campo="' + NWM_CAMPO_DESTINO_OPERACAO + '"]', this.DOM);
+  },
+
+  apoioDestinoOperacao() {
+    return (this.apoiosFiltros || {})[NWM_CAMPO_DESTINO_OPERACAO];
+  },
+
+  limparDestinoOperacao() {
+    var apoio = this.apoioDestinoOperacao();
+    if (!apoio) return;
+    this.cancelarApoioFiltro(apoio);
+    apoio.$input.removeData("registro");
+    this.esconderSelecionado(apoio);
+  },
+
+  destinoOperacaoInformado() {
+    return this.valorFiltroInformado(NWM_CAMPO_DESTINO_OPERACAO, this.campoDestinoOperacao());
+  },
+
+  travarDestinoOperacao(travada) {
+    var apoio = this.apoioDestinoOperacao();
+    if (apoio && apoio.$selecionadoRemover) apoio.$selecionadoRemover.prop("disabled", travada);
   },
 
   esconderRamosOperacao() {
@@ -3547,6 +3584,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var travada = this.operacaoTravada(operacao);
     var semClassificacao = !operacao.classificacao;
     $("[data-operacao-campo]", this.DOM).prop("disabled", travada);
+    this.travarDestinoOperacao(travada);
     $('[data-operacao-campo="serie"]', this.DOM).prop(
       "disabled",
       travada || semClassificacao,
@@ -4092,7 +4130,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   definirDestinoSaida(classificacao, parametros) {
-    parametros.codEstabelDestino = this.campoOperacao("codEstabelDestino");
+    parametros.codEstabelDestino = this.destinoOperacaoInformado();
     var emitente = this.campoOperacao("emitenteDestino");
     if (emitente) {
       if (
@@ -4871,7 +4909,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     };
     $("[data-acao-lote]", this.DOM).select2(configuracao);
     $("[data-item-qtde]", this.DOM).select2(configuracao);
-    $("[data-acao-lote], [data-item-qtde]", this.DOM)
+    $('[data-operacao-campo="serie"]', this.DOM).select2(
+      $.extend({}, configuracao, {
+        dropdownParent: $("[data-modal-operacao]", this.DOM),
+      }),
+    );
+    $('[data-acao-lote], [data-item-qtde], [data-operacao-campo="serie"]', this.DOM)
       .closest(".nwm-campo-caixa-select")
       .addClass("is-select2");
   },

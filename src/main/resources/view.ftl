@@ -231,7 +231,12 @@
                 </div>
                 <div class="nwm-campo">
                     <label class="nwm-campo-rotulo" for="nwm-serie-${instanceId}">Série de saída</label>
-                    <input id="nwm-serie-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="serie" disabled>
+                    <div class="nwm-campo-caixa nwm-campo-caixa-select">
+                        <select id="nwm-serie-${instanceId}" class="nwm-campo-input nwm-campo-select" data-operacao-campo="serie" disabled>
+                            <option value="">Selecione</option>
+                            <option value="1">1</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div data-operacao-origem hidden>
