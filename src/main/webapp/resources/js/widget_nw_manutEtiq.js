@@ -191,6 +191,7 @@ var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
 var NWM_ESCALA_QUANTIDADE = 10000;
 var NWM_ALTURA_MAXIMA_TABELA = 560;
 var NWM_TAMANHO_PAGINA = 20;
+var NWM_LIMITE_ATUALIZACAO_LINHAS = 10;
 
 var NWM_GRUPOS_ADMINISTRADORES = ["DefaultGroup-1"];
 var NWM_NIVEIS_ACESSO = { ADMIN: "admin", COMUM: "comum" };
@@ -4589,13 +4590,77 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   terminarAtualizacaoEtiqueta(operacao) {
     var self = this;
-    this.atualizarGradeMantendoRecorte(operacao.daLinha).then(function () {
+    this.atualizarAposAcaoEtiqueta(operacao).then(function () {
       if (operacao.finalizada && operacao.concluidas === operacao.etiquetas.length) self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text(operacao.concluidas + " embalagem(ns) confirmada(s). Consulta atualizada.");
     }, function () {
       operacao.atualizacaoFalhou = true;
       self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").append($("<span>", { text: " A atualização da consulta falhou; clique em Buscar. Não repita comandos já confirmados." }));
-    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.finalizarConfirmacaoImpressao(operacao); if (self.tabela) self.tabela.redraw(true); });
+    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.finalizarConfirmacaoImpressao(operacao); self.reformatarLinhasExibidas(); });
     if (operacao.ultimaEtiqueta) this.consultarDataset("consultarHistoricoEtiqueta", { codEstabel: operacao.ultimaEtiqueta.codEstabel, idEtiqueta: operacao.ultimaEtiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA }, "historico:apos-acao");
+  },
+
+  atualizarAposAcaoEtiqueta(operacao) {
+    var self = this;
+    var etiquetas = this.etiquetasEnvolvidas(operacao);
+    this.limparSelecao();
+    if (etiquetas.length > NWM_LIMITE_ATUALIZACAO_LINHAS)
+      return this.atualizarGradeMantendoRecorte(operacao.daLinha);
+    return $.when.apply($, $.map(etiquetas, function (etiqueta) {
+      return self.atualizarLinhaEtiqueta(etiqueta);
+    })).then(function () {
+      self.atualizarItensQuantidade();
+      self.atualizarContadorTabela();
+    });
+  },
+
+  etiquetasEnvolvidas(operacao) {
+    var quantidade = Math.min(operacao.indice + 1, operacao.etiquetas.length);
+    return operacao.etiquetas.slice(0, quantidade);
+  },
+
+  atualizarLinhaEtiqueta(etiqueta) {
+    var self = this, carga = this.consultaEtiquetas;
+    if (!carga || !carga.parametros) return $.Deferred().resolve().promise();
+    var parametros = $.extend({}, carga.parametros, { codEstabel: etiqueta.codEstabel, codEtiqueta: etiqueta.etiqueta });
+    return this.chamarEmbalagens("consultarEtiquetas", parametros).then(function (resultado) {
+      if (!resultado.sucesso) throw self.erroRecusaDataset(resultado);
+      self.aplicarEtiquetaAtualizada(carga, etiqueta, resultado);
+    });
+  },
+
+  aplicarEtiquetaAtualizada(carga, anterior, resultado) {
+    var registro = $.grep(resultado.dados || [], function (item) {
+      return item && item.idEtiqueta === anterior.idEtiqueta;
+    })[0];
+    if (!registro && resultado.temMais)
+      throw this.erroDataset("RESPOSTA_INVALIDA", "Não foi possível localizar a embalagem atualizada.", NWM_TIPOS_ERRO.TECNICO);
+    if (!registro) return this.removerEtiquetaDaCarga(carga, anterior.id);
+    var atualizada = $.extend(this.mapearEtiqueta(registro), { descItem: anterior.descItem, fazenda: anterior.fazenda });
+    this.substituirEtiquetaNaCarga(carga, atualizada);
+    var linha = this.tabela.getRow(anterior.id);
+    if (linha) linha.update(atualizada);
+  },
+
+  substituirEtiquetaNaCarga(carga, atualizada) {
+    carga.dados = $.map(carga.dados, function (etiqueta) {
+      return etiqueta.id === atualizada.id ? atualizada : etiqueta;
+    });
+  },
+
+  removerEtiquetaDaCarga(carga, id) {
+    carga.dados = $.grep(carga.dados, function (etiqueta) {
+      return etiqueta.id !== id;
+    });
+    delete carga.ids[id];
+    var linha = this.tabela.getRow(id);
+    if (linha) linha.delete();
+  },
+
+  reformatarLinhasExibidas() {
+    if (!this.tabela) return;
+    $.each(this.tabela.getRows("display"), function (indice, linha) {
+      linha.reformat();
+    });
   },
 
   bloquearTelaEtiqueta(ocupada) {

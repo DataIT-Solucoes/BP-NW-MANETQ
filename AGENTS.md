@@ -51,7 +51,8 @@ Nenhum (só identificação).
 
 ## Regras de negócio e de tela (ativas)
 - Status = `situacaoApresentada`/`descricaoSituacao`; `situacao` é o estado técnico. Ações por status em `NWM_ACOES_POR_STATUS`.
-- Imprimir hoje registra `CONFIRMAR_IMPRESSAO` (teste do usuário, sem impressão física) e recarrega a grade; a tela nunca muda status ou saldo localmente.
+- Imprimir hoje registra `CONFIRMAR_IMPRESSAO` (teste do usuário, sem impressão física). Depois de ação de etiqueta, só as linhas envolvidas são reconsultadas no backend e
+  atualizadas (`row.update`), sem recriar a tabela; a tela nunca muda status ou saldo localmente.
 - Resultado incerto (operação ou ação de etiqueta) bloqueia novas escritas; não reenviar automaticamente nem gerar chave nova para a mesma intenção.
 - **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando só a widget. Não usar `FLUIGC.loading(window)` nem
   bloquear a página.** Referência: `widget_nw_bags`, `$carregandoGlobal` e `.nwb-carregando-global`. Buscar mostra também

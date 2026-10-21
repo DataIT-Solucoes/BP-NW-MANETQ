@@ -61,15 +61,19 @@
 - **Ação de etiqueta** (imprimir, receber, estornar, inutilizar, perda; `NWM_COMANDOS_ETIQUETA`): uma etiqueta por vez; consulta
   situação/versão antes (`consultarEstadoEtiqueta`), para na primeira recusa; resultado incerto vai para o `sessionStorage` e bloqueia
   escritas (`escritaEtiquetaBloqueada`). Imprimir não abre modal: envia `CONFIRMAR_IMPRESSAO` com `NWM_JUSTIFICATIVA_IMPRESSAO_TESTE` e
-  recarrega a grade mantendo página/recorte (`atualizarGradeMantendoRecorte`).
+  atualiza as linhas. **Após ação de etiqueta** (`terminarAtualizacaoEtiqueta` → `atualizarAposAcaoEtiqueta`): limpa a seleção e
+  reconsulta cada embalagem envolvida (`etiquetasEnvolvidas`: até a que falhou) com os filtros da busca + `codEstabel`/`codEtiqueta`
+  (`atualizarLinhaEtiqueta`); `aplicarEtiquetaAtualizada` faz `row.update` (mantém `descItem`/`fazenda`) e atualiza `carga.dados`, ou
+  remove a linha se ela saiu do recorte (sem `temMais`). Acima de `NWM_LIMITE_ATUALIZACAO_LINHAS` (10), recarrega a grade
+  (`atualizarGradeMantendoRecorte`). No fim, `reformatarLinhasExibidas` (sem `redraw`), para não perder rolagem nem página.
 - **Loading global** (padrão Bags): `atualizarCarregandoGlobal` põe o overlay `.nwm-carregando-global`
   dentro de `this.DOM` (bloqueia só a widget, `aria-busy`) enquanto há busca (`carregandoTela`) ou confirmação de impressão em lote
   (`confirmandoImpressao`). Junto, toast info "Carregando..." único por instância (`atualizarAvisoCarregando`, sai 100 ms após o fim).
 - **Carregamento na linha** (ação clicada na tabela): `marcarLinhaCarregando`/`desmarcarLinhaCarregando` guardam `linhaCarregando`
   (`{ id, acao }`); `rowFormatter` → `pintarLinhaCarregando` põe `.nwm-linha-carregando` + `aria-busy`, os botões da linha ficam
   desabilitados e o clicado mostra spinner (`iconeBotaoAcao`). Enquanto houver, `aguardarAcaoDaLinha` recusa nova ação na tabela e Buscar.
-  Imprimir da linha não bloqueia a tela e recarrega a grade sem limpar nem overlay (`atualizarGradeMantendoRecorte(true)` →
-  `carregarEtiquetas(parametros, true)`); a linha sai do carregamento só depois da recarga.
+  Imprimir da linha não bloqueia a tela; a linha sai do carregamento só depois de atualizada. Se cair na recarga completa (lote
+  grande), ela é silenciosa (`atualizarGradeMantendoRecorte(true)` → `carregarEtiquetas(parametros, true)`).
 - **Histórico**: `abrirHistorico(linha)` carrega com o carregamento na linha e só abre o modal após sucesso; paginação por `aposRegistro`;
   badge por código exato (`NWM_EVENTOS_HISTORICO`) ou raiz (`NWM_RAIZES_EVENTOS_HISTORICO`); sem correspondência, o código em badge
   neutra. Data por `formatarDataHoraHistorico` (sem conversão de fuso).
@@ -98,7 +102,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Ações da linha, lote e quantidade (2797–2950) | `acaoNaLinha`, `aplicarLote`, `executarQuantidade`, `escolherEmbalagensDoItem` |
 | Modais, Detalhes e Mais ações (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `abrirMaisAcoes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |
-| Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarConfirmacaoImpressao`, `enviarAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarGradeMantendoRecorte` |
+| Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarConfirmacaoImpressao`, `enviarAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
 | Histórico e loading (4489–4614) | `abrirHistorico`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `montarBadgeEventoHistorico`, `renderizarHistoricoEtiqueta` |
 | Impressão, Select2 e legenda (4615–4690) | `obterDadosImpressaoEtiqueta`, `validarRespostaIndividual`, `prepararSelect2`, `montarLegenda`, `abrirLegenda` |
 | Impressora (4692–4882) | `abrirImpressora`, `carregarImpressoras`, `chamarAplicativoImpressao`, `salvarImpressora`, `testarImpressora`, `obterTemplateEtiqueta` |

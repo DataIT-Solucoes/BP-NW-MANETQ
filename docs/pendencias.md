@@ -14,6 +14,10 @@
 - Status `CANCELADA` na legenda: reavaliar a legenda atual antes de decidir.
 
 ## Confirmar no Fluig de TESTE (nada visto ainda)
+- Atualização só da linha após ação de etiqueta: rolagem/página mantidas; backend devolve a embalagem ao filtrar por
+  `codEstabel` + `codEtiqueta` junto com os filtros da busca (lido em `contr-emb-manutencao-consulta.i:194`, não visto ao vivo).
+- Transferir/Remessa/Devolução e lote > 10 ainda recarregam a grade inteira (podem voltar ao topo): proposta de recarga com `replaceData`
+  não aprovada.
 - Carregamento na linha (Imprimir e Histórico clicados na tabela): sem overlay/toast, botões da linha desabilitados, barra na base
   da linha e spinner no botão; após o Imprimir, a grade recarrega sem piscar e a linha volta ao normal.
 - Nível de acesso no console: usuário do `DefaultGroup-1` → `admin`, outro → `comum`. Confirmar que usuário comum consegue ler o
