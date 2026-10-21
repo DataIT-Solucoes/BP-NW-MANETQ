@@ -2664,16 +2664,31 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   validarFiltros(filtros) {
-    if (
-      filtros.modoNf === "especificas" &&
-      !this.quantidadeDocumentosValida()
-    ) {
+    
+    let mensagem = "";
+
+    if(filtros.modoNf === "especificas" && (!filtros.estDe || !filtros.estAte))
+    {
+      mensagem = "Informe o estabelecimento";
+    }
+
+    if (filtros.modoNf === "especificas" && !this.quantidadeDocumentosValida())
+    {
+      if(!mensagem)
+        mensagem = "Selecione ao menos uma Nota Fiscal";
+      else
+        mensagem += "<br>Selecione ao menos uma Nota Fiscal";
+    }
+
+    if (mensagem) 
+    {
       this.avisar(
         "warning",
-        "Preencha o campo Estabelecimento<br>Selecione ao menos uma Nota Fiscal",
+        mensagem,
       );
       return false;
     }
+
     this.limparMarcacaoInvalidos();
     var obrigatorios = this.verificarFiltrosObrigatorios(filtros);
     if (obrigatorios.mensagens.length) {

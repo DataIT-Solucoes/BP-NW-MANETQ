@@ -49,8 +49,9 @@
 ## Forma de trabalho
 | Data | Decisão | Origem |
 |---|---|---|
+| 21/10 | **Sem entrega automática**: commit, push e `.war` só quando o usuário pedir, pelo comando `/entregar "texto"`. Substitui a regra de 20/10 "SEMPRE commit + push + compilar" | Usuário |
 | 21/10 | Mesma organização do `widget_nw_bags`: regras no `AGENTS.md` (o `CLAUDE.md` só importa `@AGENTS.md`); `contexto-ia/` vira `docs/` (decisoes, pendencias, referencias-backend, tela-e-codigo); `AI_HANDOFF` removido (histórico = `git log`); atualizar só o arquivo afetado | Usuário |
 | 21/10 | Skill `fluig-branco-peres` local em `.claude/skills/` (cópia igual nos 4 widgets, sem cópia global); `.claude/` inteira no git | Usuário |
 | 21/10 | Entrega por `scripts/entregar.ps1`; **mensagem de commit sempre com prefixo** `DOCS: Texto`, `FIX: Texto`, `CHORE: Texto`; commit sem coautor | Usuário (padrão do `widget_nw_bags`) |
-| 20/10 | **SEMPRE commit + push + compilar (.war) após cada alteração**, inclusive documentação. Publicação no Fluig é separada (feita pelo usuário) | Correção do usuário: "SEMPRE: Commit, push e compilar" |
+| 20/10 | ~~SEMPRE commit + push + compilar (.war) após cada alteração~~ (superada em 21/10: só com `/entregar`), inclusive documentação. Publicação no Fluig é separada (feita pelo usuário) | Correção do usuário: "SEMPRE: Commit, push e compilar" |
 | 20/10 | `HISTORICO.md` deixa de ser atualizado; fica como registro anterior | Usuário |

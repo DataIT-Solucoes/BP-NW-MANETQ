@@ -83,7 +83,9 @@ Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o p
 - Encoding: JS em CRLF (`.gitattributes` com `eol=crlf`); medir antes e manter.
 
 ## Forma de trabalho (pedidos do usuário)
-Depois de **qualquer** ajuste, inclusive só em `.md`, **uma chamada só** (se o JS mudou, rodar antes os testes acima):
+**Não** fazer commit, push nem gerar o `.war` automaticamente depois de um ajuste. Entrega só quando o usuário pedir, pelo
+comando **`/entregar "texto"`** (`.claude/commands/entregar.md`), que escolhe o prefixo, roda os testes se o JS mudou e chama
+o script numa chamada só:
 ```
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/entregar.ps1 -Mensagem "FIX: Texto" <arquivos...>
 ```
