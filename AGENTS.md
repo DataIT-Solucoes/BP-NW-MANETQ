@@ -79,8 +79,7 @@ Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o p
   Mantenha os nomes dos métodos e dos campos de estado já existentes (`operacaoAtual`, `consultaEtiquetas`,
   `apoiosFiltros`, `consultasDataset`…): os bindings e os testes dependem deles.
 - **Testes**: rodar `node testes/testar-apoios-filtros.cjs`, `testar-consulta-etiquetas.cjs`, `testar-funcoes-manutencao.cjs`
-  e `testar-transporte-dataset.cjs` antes e depois; todos com `FALHAS=0` (`testar-consulta-etiquetas.cjs` tem falha preexistente:
-  ver `docs/pendencias.md`). Os testes usam um jQuery simulado (`testes/testar-apoios-filtros.cjs`) que casa o **texto exato dos
+  e `testar-transporte-dataset.cjs` antes e depois; todos com `FALHAS=0`. Os testes usam um jQuery simulado (`testes/testar-apoios-filtros.cjs`) que casa o **texto exato dos
   seletores** e só tem parte da API: método jQuery novo (ex.: `.add`, `$.proxy`) em trecho que os testes executam precisa existir no
   simulador, senão o teste quebra. Alguns testes leem `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
 - Encoding: JS em CRLF (`.gitattributes` com `eol=crlf`); medir antes e manter.

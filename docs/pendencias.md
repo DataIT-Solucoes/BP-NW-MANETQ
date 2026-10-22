@@ -14,33 +14,35 @@
 - Subir `application.version` a cada publicação para evitar cache do JS (`?v=0.1.0`): sugestão, não autorizada.
 - Status `CANCELADA` na legenda: reavaliar a legenda atual antes de decidir.
 
-## Confirmar no Fluig de TESTE (nada visto ainda)
-- Sem `valorItem` na tela (21/10): hoje o Dataset tem `valorItem` em `obrigatorios` de `criarTransferencia`/`criarRemessa`
-  e a API recusa sem ele (`VALOR_INVALIDO`). Transferência/Remessa só passam depois do ajuste no backend/Dataset (a cargo do backend).
-- Atualização só da linha após ação de etiqueta: rolagem/página mantidas; backend devolve a embalagem ao filtrar por
-  `codEstabel` + `codEtiqueta` junto com os filtros da busca (lido em `contr-emb-manutencao-consulta.i:194`, não visto ao vivo).
-- Transferir/Remessa/Devolução e lote > 10 ainda recarregam a grade inteira (podem voltar ao topo): proposta de recarga com `replaceData`
-  não aprovada.
-- Carregamento na linha (Imprimir e Histórico clicados na tabela): sem overlay/toast, botões da linha desabilitados, barra na base
-  da linha e spinner no botão; após o Imprimir, a grade recarrega sem piscar e a linha volta ao normal.
-- Nível de acesso no console: usuário do `DefaultGroup-1` → `admin`, outro → `comum`. Confirmar que usuário comum consegue ler o
-  dataset `colleagueGroup` pela API REST (se não conseguir, cai em `comum` por falha da consulta).
-- Confirmação de impressão pelo botão e pela ação em lote: Não impressa recebe o status real do backend após `CONFIRMAR_IMPRESSAO`
-  (não imprime papel). Nenhum comando real executado na implementação.
-- Coluna Ações: alinhamento à esquerda, largura 320px e Imprimir inteiro como primeiro botão de `NAO_IMPRESSA`.
-- Fechamento pelo fundo nos sete modais, hover por ação, borda verde permanente dos botões e ausência da mensagem "Em lote...".
-- Badges de Ocorrência no Histórico da embalagem com o mapa/cores de Bags; Data em `DD/MM/AAAA - HH:MM`.
-- Overlay da widget + toast "Carregando..." no Buscar e no Histórico, retirados ao terminar/falhar/cancelar; Histórico abre só após sucesso.
-- Fazenda `código - descrição` (nome do cadastro, 260px); colunas Tipo de Embalagem (`codTipo`) e UN (`unidade`), largura/rolagem.
-- Alterações de 09 e 15/10 e ações operacionais/histórico do commit `9d1611d` (16/10).
-- Transferência, Remessa e Devolução: não testadas (geram documentos reais no Datasul).
-- Receber, Estornar, Inutilizar, Perda/Extravio e Histórico: presentes nos fontes, sem validação ao vivo.
-- Status e cores: só `NAO_IMPRESSA`, `EM_ESTOQUE` e `CANCELADA` vistos no backend; demais códigos e contraste não confirmados.
-- Desempenho em produção não medido (TESTE anterior: ~50 etiquetas, 2,3–2,8 s por chamada).
+## Achados no Fluig de TESTE (21/10, estab 10904, item REGLONE; lote 20102026-2 intocado)
+Aprovado ao vivo (JS publicado = fonte): validação sem campo vermelho; autocomplete (teclado e clique); overlay só na widget + toast
+"Carregando..."; ações por status/regra da embalagem nas 73 etiquetas fora do lote protegido; legenda; Detalhes; Histórico (carregamento
+na linha, abre após sucesso, data e badges); Imprimir da linha (linha atualizada, página/rolagem mantidas); Receber; Estornar (filtro
+`a9,5x-` → `9,5`, decimal gravado); Inutilizar e estorno da inutilização; Perda e estorno da Encerrada; recusa do backend mantém o modal;
+Imprimir em lote; Executar quantidade; Aplicar sem ação / Transferir e Imprimir sem marcadas; modal Transferir (título, série escondida até
+validar, natureza vazia/inexistente); fechamento pelo fundo e Esc; nível `admin` para totvsrp.
+- **Busca ampla lenta**: sem filtro de lote, 3.083 etiquetas em ~2 min (31 chamadas de 100), tela bloqueada o tempo todo.
+- **Coluna Ações fora da tela em 1366px** (Status também); em 1600px aparece cortada; só cabe em 1920px. Fazenda truncada.
+- **Marcar todos marca todas as páginas** (73 com 20 visíveis), inclusive Cancelada/Descartada; a doc diz "só o visível". Confirmar a regra.
+- Histórico: modal estreito, colunas Atual e Justificativa só com rolagem horizontal.
+- Recusa do backend com mensagem técnica genérica (`ETIQUETA_INDISPONIVEL: Confira contexto, versao...`) ao estornar acima da capacidade;
+  a tela não valida saldo final > capacidade antes de enviar.
+- Detalhes mostra Fazenda só com o código (`10904`); a grade mostra `código - descrição`.
+- Modal de ação de etiqueta não mostra qual etiqueta (só "1 embalagem(ns)").
+- Texto `widget_nw_manutEtiq.js:3728` ainda cita "valor por item" (campo removido em 21/10).
+- Legenda: sem `CANCELADA` (há etiquetas canceladas no lote GER-01); subtítulo fala em "desta consulta" mas a lista é fixa.
+- Sugestões de Lote repetem o código como descrição (`01102025-2 01102025-2`); opção do autocomplete sem separador no nome acessível.
+- `versao` da linha não muda após confirmar impressão (a tela reconsulta a versão antes de cada ação, sem efeito prático).
+- Dados: etiquetas 241, 243, 264, 265 com código sem zeros (ordenação por Etiqueta fica fora de ordem); lote 20102026-1 com 1009 por embalagem.
 
-## Testes locais
-- `testar-consulta-etiquetas.cjs` falha antes e depois das entregas de 20/10 no Node 24 (rejeição não tratada `FALHA_TRANSPORTE`/HTTP 0;
-  em modo warn, o simulador não tem `$.map`). Adequar a suíte: fora do escopo até pedido.
+## Confirmar no Fluig de TESTE (pendente)
+- Transferência, Remessa e Devolução: falta uma natureza de saída válida no 10904 (e documento de origem para Devolução). Hoje o Dataset
+  tem `valorItem` em `obrigatorios` de `criarTransferencia`/`criarRemessa` e a API recusa sem ele (`VALOR_INVALIDO`); ajuste a cargo do backend.
+- Transferir/Remessa/Devolução e lote > 10 recarregam a grade inteira (podem voltar ao topo): proposta de recarga com `replaceData` não aprovada.
+- Nível de acesso de usuário comum (leitura do `colleagueGroup` pela API REST).
+- Impressora: teste real depende do aplicativo local (`localhost:32478`), ausente na máquina do teste.
+- Hover por ação, contraste das cores dos status e caixa de mensagem vazia escondida (`:empty`): conferência visual.
+- Desempenho em produção não medido.
 
 ## Fora do widget
 - Grupos definitivos de autorização (DT-054), responsável a definir. Dataset mantém `DefaultGroup-1` e estabelecimentos 10904/11301.
