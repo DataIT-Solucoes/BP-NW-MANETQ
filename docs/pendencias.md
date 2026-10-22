@@ -17,8 +17,10 @@ validar, natureza vazia/inexistente); fechamento pelo fundo e Esc; nível `admin
 Aprovado ao vivo em 22/10 (JS `?v=0.1.2`, lotes GER-01 e 20102026-1; lote 20102026-2 do Cheli intocado): código de barras (marca, vai à página 2, avisa se não achar), legenda com 12 status e sem
 subtítulo, Detalhes com Fazenda `código - descrição`, Histórico, `nivelAcesso` admin. Não testado ao vivo: Estornar acima da capacidade (nenhuma etiqueta EM_ESTOQUE fora do lote protegido) e hover do vermelho.
 
+- Legenda sem o status `RESERVADA` ("Reservada para operacao fiscal", visto na etiqueta 135 após a Remessa; chip aparece como "Reservada"). Falta o texto da legenda, a definir com o usuário.
+
 ## Fora do widget
-- Transferência, Remessa e Devolução: testadas pelo usuário (22/10); o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa.
+- Transferência, Remessa e Devolução: o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa. Remessa testada ao vivo em 22/10 (natureza 5949im, destino 11301, emitente 112267, etiqueta 135): aceita, documento de trabalho 493080, operação 211. Destino 10913 recusado ("Estabelecimento nao autorizado para esta acao"): o Dataset só autoriza 10904 e 11301; ajuste do Dataset fica com o usuário/Cheli. Devolução não testada.
 - Série de saída: hoje Select2 com opção fixa `1` (21/10). Aguardando o Cheli (dev Progress) criar a API que lista as séries válidas (22/10); sem contrato ainda, não ligar a tela.
 - Grupos definitivos de autorização (DT-054): por enquanto vale só `DefaultGroup-1` (decisão de 22/10); grupos definitivos e responsável a definir. Dataset mantém `DefaultGroup-1` e estabelecimentos 10904/11301.
 - Modelo/serviço e fluxo completo de impressão real: ainda não definido pelo usuário (22/10); o teste real da impressora não está configurado (depende do aplicativo local em `localhost:32478`, ausente na máquina do teste). Até lá, Imprimir só registra `CONFIRMAR_IMPRESSAO`.
