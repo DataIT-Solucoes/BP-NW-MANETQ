@@ -104,7 +104,9 @@ acrescenta; `chaveIdempotente` a tela gera. Todos: `codEstabel`, `natureza`, **`
 - Template 423 (`etiqueta.txt`, EPL2, 370 bytes, cópia em `evidencias/impressao/`): marcadores `##PRODUTO## ##CODIGO## ##LOTE## ##DATAVAL##
   ##CBARRA## ##QTD## ##UN##`. Aplicativo local: `GET /` (status), `GET /impressoras` (`impressoras`, `impressorapadrao`),
   `POST /imprimir` (`impressora`, `template`, `dados`) → `message`. A tela antiga (`pagina_antiga_manutencao_etiquetas/`) usa esse fluxo.
-  Conclusão: impressão real não exige API nova; falta só ligar no front (dados → `POST /imprimir` → `CONFIRMAR_IMPRESSAO`).
+  Conclusão: impressão real não exige API nova. Implementado em 22/10 **sem** o aplicativo local: `obterDadosImpressao` → etiqueta HTML
+  (mesmos campos do modelo 423) → `print()` do navegador → pergunta → `CONFIRMAR_IMPRESSAO`. Envelope real de `obterDadosImpressao`
+  conferido no TESTE em 22/10 (etiqueta 139: `sucesso`, `total` 1, `temMais` false, `campoCursor` `proximoId`).
 
 ### Decisões de projeto (DT)
 - DT-093/094: Transferência e Devolução (compra e empréstimo) em **um modal único** pela natureza. Receber é pelo ANFE/Datasul
@@ -113,7 +115,7 @@ acrescenta; `chaveIdempotente` a tela gera. Todos: `codEstabel`, `natureza`, **`
 ## Build e testes
 - `.war`: `scripts/entregar.ps1` (usa `pack-widget.ps1`). Último registrado antes da reorganização (20/10): SHA256
   `0e9345bfb61718b4fe4be0ac323ccf533cb7b84bf6da96f83e3a73bfb8f70ffd`, 12 arquivos comparados byte a byte.
-- Testes (fora do git): `node testes/rodar-testes.cjs` roda as 5 suítes; em 22/10: `testar-apoios-filtros.cjs` (33), `testar-confirmacao-impressao.cjs` (18),
+- Testes (fora do git): `node testes/rodar-testes.cjs` roda as 5 suítes; em 22/10: `testar-apoios-filtros.cjs` (33), `testar-confirmacao-impressao.cjs` (27),
   `testar-consulta-etiquetas.cjs` (52), `testar-funcoes-manutencao.cjs` (50), `testar-transporte-dataset.cjs` (60), todas sem falha. Alguns leem
   `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
 - Encoding: JS em CRLF no disco (medido em 20/10; o "LF" de 15/10 é histórico); `.gitattributes` com `eol=crlf`.

@@ -1504,6 +1504,17 @@
     width: min(560px, calc(100vw - 32px));
 }
 
+.fluig-style-guide.nwm .nwm-quadro-impressao {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 0;
+}
+
+.fluig-style-guide.nwm .nwm-confirmar-impressao-texto {
+    margin: 0;
+}
+
 .fluig-style-guide.nwm .nwm-modal.nwm-modal-pequeno {
     width: min(420px, calc(100vw - 32px));
 }

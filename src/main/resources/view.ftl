@@ -5,6 +5,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.4.0/js/tabulator.min.js" integrity="sha384-pYxmWRni6PTDEhE3EUFDBSQ4KQcsBHtS3N+syMWwrtxs9QRtJkxkphTVQMXEdVjT" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha384-JnbsSLBmv2/R0fUmF2XYIcAEMPHEAO51Gitn9IjL4l89uFTIgtLF1+jqIqqd9FSk" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/pt-BR.js" integrity="sha384-ukGBtXgWlWvAnvqBKFZnHi6C8eJqbLdnBc5ry6vVybVVjK4ExBTxUwn9tjJO8boy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/barcodes/JsBarcode.code128.min.js" integrity="sha384-7XguhfRLAUmvSGmJn2K+BQDpX0gf5NMsj79jcgd7TVtV87euzdySNZqTjOQxgIiB" crossorigin="anonymous"></script>
 
 <div id="widget_nw_manutEtiq_${instanceId}" class="super-widget wcm-widget-class fluig-style-guide nwm" data-params="widget_nw_manutEtiq.instance()">
     <div class="nwm-cabecalho">
@@ -361,6 +362,23 @@
             <button type="button" class="nwm-btn nwm-btn-contorno" data-historico-anterior disabled>Anterior</button>
             <button type="button" class="nwm-btn nwm-btn-contorno" data-historico-proximo disabled>Próxima</button>
             <button type="button" class="nwm-btn nwm-btn-contorno" data-fechar-historico>Fechar</button>
+        </div>
+    </dialog>
+
+    <dialog class="nwm-modal nwm-modal-pequeno" aria-labelledby="nwm-confirmar-impressao-titulo-${instanceId}" data-modal-confirmar-impressao>
+        <div class="nwm-modal-cabecalho">
+            <div>
+                <h3 class="nwm-modal-titulo" id="nwm-confirmar-impressao-titulo-${instanceId}">Confirmar impressão</h3>
+                <p class="nwm-modal-subtitulo" data-confirmar-impressao-pergunta></p>
+            </div>
+            <button type="button" class="nwm-modal-fechar" aria-label="Não confirmar" data-nao-confirmar-impressao><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+        <div class="nwm-modal-corpo">
+            <p class="nwm-confirmar-impressao-texto">Confirme só se a impressão ficou legível. A confirmação fica registrada no sistema e as etiquetas passam para <strong>Impressa</strong>. Se não saiu, clique em <strong>Não confirmar</strong> e imprima de novo.</p>
+        </div>
+        <div class="nwm-modal-rodape">
+            <button type="button" class="nwm-btn nwm-btn-contorno" data-nao-confirmar-impressao>Não confirmar</button>
+            <button type="button" class="nwm-btn nwm-btn-destaque" autofocus data-confirmar-impressao><i class="bi bi-printer" aria-hidden="true"></i>Sim, confirmar impressão</button>
         </div>
     </dialog>
 </div>

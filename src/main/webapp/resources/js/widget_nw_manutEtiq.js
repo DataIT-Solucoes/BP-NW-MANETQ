@@ -5,6 +5,7 @@ var NWM_FECHAMENTO_MODAIS = {
   "[data-modal-operacao]": "fecharOperacao",
   "[data-modal-acao-etiqueta]": "fecharAcaoEtiqueta",
   "[data-modal-historico]": "fecharHistorico",
+  "[data-modal-confirmar-impressao]": "naoConfirmarImpressao",
 };
 var NWM_EVENTOS_HISTORICO = {
   NASCIMENTO_RECEBIMENTO: { rotulo: "Recebimento", cor: "verde" },
@@ -314,6 +315,22 @@ var NWM_ETIQUETA_TESTE = {
   QTD: "10",
   UN: "LT",
 };
+var NWM_MODULO_CODIGO_BARRAS_MM = 0.5;
+var NWM_ALTURA_CODIGO_BARRAS_MM = 12;
+var NWM_ZONA_SILENCIOSA_MODULOS = 10;
+var NWM_BARRAS_CODIGO = /1+/g;
+var NWM_SEM_DESCRICAO = "—";
+var NWM_ESTILO_IMPRESSAO = [
+  "@page { size: 104mm 50mm; margin: 0; }",
+  "html, body { margin: 0; padding: 0; background: #fff; }",
+  "body { font-family: Arial, Helvetica, sans-serif; color: #000; }",
+  ".nwm-etiqueta { box-sizing: border-box; width: 104mm; height: 50mm; padding: 2mm 3mm; overflow: hidden; break-after: page; page-break-after: always; }",
+  ".nwm-etiqueta:last-child { break-after: auto; page-break-after: auto; }",
+  ".nwm-etiqueta-barras { display: block; max-width: 100%; margin: 0 auto; }",
+  ".nwm-etiqueta-numero { text-align: center; font-size: 3mm; letter-spacing: 0.4mm; margin: 0.5mm 0 1.5mm; }",
+  ".nwm-etiqueta-linha { font-size: 3.4mm; font-weight: bold; line-height: 4.5mm; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }",
+  ".nwm-etiqueta-dupla { display: flex; justify-content: space-between; gap: 3mm; }",
+].join("\n");
 
 var NWM_ACOES_POR_STATUS = {
   "NAO_IMPRESSA": [
@@ -402,7 +419,7 @@ var NWM_ACOES_POR_STATUS = {
 
 var NWM_LIMITE_JUSTIFICATIVA = 1000;
 var NWM_CONTROLES_JUSTIFICATIVA = /[\x00-\x08\x0b\x0c\x0e-\x1f]/;
-var NWM_JUSTIFICATIVA_IMPRESSAO_TESTE = "Confirmação de impressão para teste, sem envio à impressora.";
+var NWM_JUSTIFICATIVA_IMPRESSAO = "Impressão de etiqueta pelo navegador confirmada pelo usuário.";
 var NWM_COMANDOS_ETIQUETA = {
   imprimir: { dataset: "confirmarEtiqueta", acao: "CONFIRMAR_IMPRESSAO" },
   receber: { dataset: "confirmarEtiqueta", acao: "RECEBER_FISICO" },
@@ -431,6 +448,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   operacaoAtual: null,
 
   templateEtiqueta: null,
+
+  $quadroImpressao: null,
 
   impressoraOcupada: false,
 
@@ -552,6 +571,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       "testar-impressora": ["click_testarImpressora"],
       "salvar-impressora": ["click_salvarImpressora"],
       "leitor-cod-barras": ["keydown_lerCodigoBarras"],
+      "confirmar-impressao": ["click_confirmarImpressaoRealizada"],
+      "nao-confirmar-impressao": ["click_naoConfirmarImpressao"],
     },
     global: {},
   },
@@ -3174,10 +3195,16 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   prepararModais() {
+    var self = this;
     this.$modalDetalhes = $("[data-modal-detalhes]", this.DOM);
     this.$modalLegenda = $("[data-modal-legenda]", this.DOM);
     this.$modalOperacao = $("[data-modal-operacao]", this.DOM);
     this.$modalImpressora = $("[data-modal-impressora]", this.DOM);
+    this.$modalConfirmarImpressao = $("[data-modal-confirmar-impressao]", this.DOM);
+    this.$modalConfirmarImpressao.on("cancel.nwm", function (evento) {
+      evento.preventDefault();
+      self.naoConfirmarImpressao();
+    });
     this.ligarEventosModalOperacao();
     this.ligarFechamentoPeloFundo();
   },
@@ -4528,7 +4555,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var etiquetas = this.etiquetasDasLinhas(linhas);
     if (this.recusarEtiquetasIndisponiveis(acao, etiquetas)) return;
     this.acaoEtiquetaAtual = { acao: acao, etiquetas: etiquetas, indice: 0, concluidas: 0, enviando: false, incerta: false };
-    if (acao === "imprimir") return this.iniciarConfirmacaoImpressao(linhaOrigem);
+    if (acao === "imprimir") return this.iniciarImpressao(linhaOrigem);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-titulo]").text(NWM_ACOES[acao].rotulo);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-resumo]").text(etiquetas.length + " embalagem(ns). " + (acao === "estornar" ? "Informe o saldo final de cada embalagem, não a diferença." : "Informe a justificativa."));
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").val(etiquetas.length === 1 ? etiquetas[0].qtidadeAtu : "").closest(".nwm-campo").prop("hidden", acao !== "estornar");
@@ -4537,14 +4564,226 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.abrir(this.$modalAcaoEtiqueta);
   },
 
-  iniciarConfirmacaoImpressao(linhaOrigem) {
+  iniciarImpressao(linhaOrigem) {
+    var self = this;
     var operacao = this.acaoEtiquetaAtual;
-    operacao.campos = { justificativa: NWM_JUSTIFICATIVA_IMPRESSAO_TESTE };
     operacao.enviando = true;
     operacao.daLinha = !!linhaOrigem;
-    if (linhaOrigem) this.marcarLinhaCarregando(linhaOrigem, "imprimir");
+    operacao.linhaOrigem = linhaOrigem || null;
+    this.mostrarCarregamentoImpressao(operacao);
+    this.carregarDadosImpressao(operacao.etiquetas).then(
+      function (etiquetas) {
+        self.imprimirEtiquetas(operacao, etiquetas);
+      },
+      function (erro) {
+        self.falharPreparacaoImpressao(operacao, erro);
+      },
+    );
+  },
+
+  mostrarCarregamentoImpressao(operacao) {
+    if (operacao.daLinha) this.marcarLinhaCarregando(operacao.linhaOrigem, "imprimir");
     else this.bloquearTelaImpressao();
+  },
+
+  liberarCarregamentoImpressao(operacao) {
+    if (operacao.daLinha) return this.desmarcarLinhaCarregando();
+    this.confirmandoImpressao = false;
+    this.bloquearTelaEtiqueta(false);
+    this.atualizarCarregandoGlobal();
+  },
+
+  carregarDadosImpressao(etiquetas) {
+    var self = this;
+    var dados = [];
+    var cadeia = $.Deferred().resolve().promise();
+    $.each(etiquetas, function (indice, etiqueta) {
+      cadeia = cadeia.then(function () {
+        return self.obterEtiquetaParaImpressao(etiqueta).then(function (etiquetaImpressao) {
+          dados.push(etiquetaImpressao);
+        });
+      });
+    });
+    return cadeia.then(function () {
+      return dados;
+    });
+  },
+
+  obterEtiquetaParaImpressao(etiqueta) {
+    var self = this;
+    return this.obterDadosImpressaoEtiqueta(etiqueta)
+      .then(function (resultado) {
+        if (!resultado.sucesso) throw self.erroRecusaDataset(resultado);
+        var registro = resultado.dados[0];
+        if (!registro || registro.idEtiqueta !== etiqueta.idEtiqueta)
+          throw new Error("A consulta de impressão retornou outra etiqueta.");
+        return self.montarDadosEtiquetaImpressao(etiqueta, registro);
+      })
+      .then(null, function (erro) {
+        erro.etiqueta = etiqueta.etiqueta;
+        throw erro;
+      });
+  },
+
+  montarDadosEtiquetaImpressao(etiqueta, registro) {
+    return {
+      produto: etiqueta.descItem === NWM_SEM_DESCRICAO ? "" : String(etiqueta.descItem || ""),
+      codigo: String(registro.item || ""),
+      lote: String(registro.lote || ""),
+      validade: this.formatarData(registro.validadeLote),
+      codigoBarras: String(registro.codEtiqueta || ""),
+      quantidade: this.formatarQuantidade(registro.quantidadeInicial),
+      unidade: String(registro.unidade || ""),
+    };
+  },
+
+  imprimirEtiquetas(operacao, etiquetas) {
+    var self = this;
+    var paginas;
+    try {
+      paginas = $.map(etiquetas, function (dados) {
+        return self.montarPaginaEtiqueta(dados)[0];
+      });
+    } catch (erro) {
+      return this.falharPreparacaoImpressao(operacao, erro);
+    }
+    this.liberarCarregamentoImpressao(operacao);
+    this.abrirQuadroImpressao(paginas).then(function ($quadro) {
+      self.dispararImpressao($quadro);
+      self.perguntarConfirmacaoImpressao(operacao);
+    });
+  },
+
+  montarPaginaEtiqueta(dados) {
+    return $("<section>", { class: "nwm-etiqueta" })
+      .append($(this.marcacaoCodigoBarras(this.modulosCodigoBarras(dados.codigoBarras))))
+      .append($("<div>", { class: "nwm-etiqueta-numero", text: dados.codigoBarras }))
+      .append(this.linhaEtiqueta("C. Barras: " + dados.codigoBarras))
+      .append(this.linhaEtiqueta("Dat.Val: " + dados.validade))
+      .append(this.linhaEtiqueta("Lote: " + dados.lote))
+      .append(this.linhaEtiqueta("Prod: " + dados.produto))
+      .append(
+        this.linhaEtiqueta("Cod: " + dados.codigo)
+          .addClass("nwm-etiqueta-dupla")
+          .append($("<span>", { text: "(" + dados.quantidade + " " + dados.unidade + ")" })),
+      );
+  },
+
+  linhaEtiqueta(texto) {
+    return $("<div>", { class: "nwm-etiqueta-linha" }).append($("<span>", { text: texto }));
+  },
+
+  modulosCodigoBarras(texto) {
+    if (!texto) throw new Error("A etiqueta está sem código de barras.");
+    if (typeof window.JsBarcode !== "function")
+      throw new Error("A biblioteca de código de barras não carregou. Recarregue a página e tente de novo.");
+    var codificacao = {};
+    window.JsBarcode(codificacao, texto, { format: "CODE128" });
+    return $.map(codificacao.encodings, function (parte) {
+      return parte.data;
+    }).join("");
+  },
+
+  marcacaoCodigoBarras(modulos) {
+    var largura = modulos.length + 2 * NWM_ZONA_SILENCIOSA_MODULOS;
+    var barras = [];
+    modulos.replace(NWM_BARRAS_CODIGO, function (barra, posicao) {
+      barras.push('<rect x="' + (posicao + NWM_ZONA_SILENCIOSA_MODULOS) + '" width="' + barra.length + '" height="1"/>');
+      return barra;
+    });
+    return '<svg xmlns="http://www.w3.org/2000/svg" class="nwm-etiqueta-barras" viewBox="0 0 ' + largura + ' 1"' +
+      ' width="' + largura * NWM_MODULO_CODIGO_BARRAS_MM + 'mm" height="' + NWM_ALTURA_CODIGO_BARRAS_MM + 'mm"' +
+      ' preserveAspectRatio="none" shape-rendering="crispEdges" aria-hidden="true"><g fill="#000">' +
+      barras.join("") + "</g></svg>";
+  },
+
+  abrirQuadroImpressao(paginas) {
+    var carregado = $.Deferred();
+    this.removerQuadroImpressao();
+    this.$quadroImpressao = $("<iframe>", {
+      src: "about:blank",
+      class: "nwm-quadro-impressao",
+      title: "Etiquetas para impressão",
+      tabindex: "-1",
+      "aria-hidden": "true",
+    }).one("load", function () {
+      var $documento = $(this).contents();
+      $documento.find("html").attr("lang", "pt-BR");
+      $("<style>", { text: NWM_ESTILO_IMPRESSAO }).appendTo($documento.find("head"));
+      $documento.find("body").append(paginas);
+      carregado.resolve($(this));
+    }).appendTo(this.DOM);
+    return carregado.promise();
+  },
+
+  dispararImpressao($quadro) {
+    $quadro[0].contentWindow.print();
+  },
+
+  removerQuadroImpressao() {
+    if (!this.$quadroImpressao) return;
+    this.$quadroImpressao.remove();
+    this.$quadroImpressao = null;
+  },
+
+  perguntarConfirmacaoImpressao(operacao) {
+    operacao.aguardandoConfirmacao = true;
+    this.$modalConfirmarImpressao.find("[data-confirmar-impressao-pergunta]").text(
+      operacao.etiquetas.length === 1
+        ? "A etiqueta " + operacao.etiquetas[0].etiqueta + " saiu certa na impressora?"
+        : "As " + operacao.etiquetas.length + " etiquetas saíram certas na impressora?",
+    );
+    this.abrir(this.$modalConfirmarImpressao);
+  },
+
+  impressaoAguardandoConfirmacao() {
+    var operacao = this.acaoEtiquetaAtual;
+    return !!(operacao && operacao.acao === "imprimir" && operacao.aguardandoConfirmacao);
+  },
+
+  confirmarImpressaoRealizada(htmlElement, event) {
+    if (!this.impressaoAguardandoConfirmacao()) return;
+    var operacao = this.acaoEtiquetaAtual;
+    this.encerrarPerguntaImpressao(operacao);
+    this.iniciarConfirmacaoImpressao(operacao);
+  },
+
+  naoConfirmarImpressao(htmlElement, event) {
+    if (!this.impressaoAguardandoConfirmacao()) return;
+    var operacao = this.acaoEtiquetaAtual;
+    this.encerrarPerguntaImpressao(operacao);
+    operacao.enviando = false;
+    operacao.finalizada = true;
+    this.reformatarLinhasExibidas();
+    this.avisar("info", "Impressão não confirmada. O status das etiquetas não foi alterado.");
+  },
+
+  encerrarPerguntaImpressao(operacao) {
+    operacao.aguardandoConfirmacao = false;
+    this.fechar(this.$modalConfirmarImpressao);
+    this.removerQuadroImpressao();
+  },
+
+  iniciarConfirmacaoImpressao(operacao) {
+    operacao.campos = { justificativa: NWM_JUSTIFICATIVA_IMPRESSAO };
+    this.mostrarCarregamentoImpressao(operacao);
     this.enviarProximaEtiqueta(operacao);
+  },
+
+  falharPreparacaoImpressao(operacao, erro) {
+    this.liberarCarregamentoImpressao(operacao);
+    this.removerQuadroImpressao();
+    operacao.enviando = false;
+    operacao.finalizada = true;
+    operacao.erro = erro;
+    this.reformatarLinhasExibidas();
+    this.avisar("danger", this.mensagemFalhaPreparacaoImpressao(erro));
+  },
+
+  mensagemFalhaPreparacaoImpressao(erro) {
+    var detalhe = (erro && erro.message) || "Falha inesperada.";
+    var etiqueta = erro && erro.etiqueta ? " da etiqueta " + erro.etiqueta : "";
+    return "Não foi possível preparar a impressão" + etiqueta + ": " + detalhe + " Nada foi impresso.";
   },
 
   bloquearTelaImpressao() {
