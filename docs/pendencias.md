@@ -18,7 +18,7 @@ Aprovado ao vivo em 22/10 (JS `?v=0.1.2`, lotes GER-01 e 20102026-1; lote 201020
 subtítulo, Detalhes com Fazenda `código - descrição`, Histórico, `nivelAcesso` admin. Não testado ao vivo: Estornar acima da capacidade (nenhuma etiqueta EM_ESTOQUE fora do lote protegido) e hover do vermelho.
 
 ## Fora do widget
-- Transferência, Remessa e Devolução: testadas pelo usuário (22/10); o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; não mexer na tela.
+- Transferência, Remessa e Devolução: testadas pelo usuário (22/10); o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa.
 - Série de saída: hoje Select2 com opção fixa `1` (21/10). Aguardando o Cheli (dev Progress) criar a API que lista as séries válidas (22/10); sem contrato ainda, não ligar a tela.
 - Grupos definitivos de autorização (DT-054): por enquanto vale só `DefaultGroup-1` (decisão de 22/10); grupos definitivos e responsável a definir. Dataset mantém `DefaultGroup-1` e estabelecimentos 10904/11301.
 - Modelo/serviço e fluxo completo de impressão real: ainda não definido pelo usuário (22/10); o teste real da impressora não está configurado (depende do aplicativo local em `localhost:32478`, ausente na máquina do teste). Até lá, Imprimir só registra `CONFIRMAR_IMPRESSAO`.

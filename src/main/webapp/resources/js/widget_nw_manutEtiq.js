@@ -285,6 +285,7 @@ var NWM_ESTADOS_OPERACAO = {
 };
 
 var NWM_CODIGO_POSITIVO = /^[1-9][0-9]*$/;
+var NWM_VALOR_ITEM_PROVISORIO = 10;
 var NWM_SOMENTE_DIGITOS = /^[0-9]+$/;
 var NWM_ZEROS_A_ESQUERDA = /^0+(?=[0-9])/;
 var NWM_TECLA_CONFIRMAR = "Enter";
@@ -4072,6 +4073,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   montarSaidaDireta(operacao, classificacao, parametros) {
     var self = this;
     this.definirDestinoSaida(classificacao, parametros);
+    parametros.valorItem = NWM_VALOR_ITEM_PROVISORIO;
     $.each(operacao.dados, function (indice, etiqueta) {
       if (!self.embalagemPodeSair(etiqueta, parametros.codEstabel))
         throw new Error(

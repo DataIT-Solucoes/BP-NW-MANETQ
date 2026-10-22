@@ -82,7 +82,7 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
 `includes/contr-emb-api-operacoes.i:88-170` e `includes/contr-emb-operacao-rest.i:153-170`. `usuario`/`estabelecimentosPermitidos` o Dataset
 acrescenta; `chaveIdempotente` a tela gera. Todos: `codEstabel`, `natureza`, **`serie` (vazio → `PARAMETRO_INVALIDO`)**,
 `chaveIdempotente`, `selecao` (1–100 `{idEtiqueta, versao, quantidade}`, sem repetir, quantidade > 0 com até 4 casas).
-- Transferência/Remessa: `valorItem` (número ≥ 0, obrigatório). Transferência exige `codEstabelDestino` (≠ origem, mesma empresa);
+- Transferência/Remessa: `valorItem` (número ≥ 0, obrigatório; a tela envia 10 fixo, provisório, `NWM_VALOR_ITEM_PROVISORIO`, desde 22/10). Transferência exige `codEstabelDestino` (≠ origem, mesma empresa);
   Remessa aceita destino **ou** `emitenteDestino`; com destino, o emitente vem dele (informar outro → `EMITENTE_DESTINO_DIVERGENTE`).
 - Devolução: `emitenteOrigem`, `serieOrigem`, `numeroOrigem`, `naturezaOrigem` (sem eles → `ORIGEM_INVALIDA`).
 
