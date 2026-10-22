@@ -4,7 +4,7 @@
 > Pendência registrada não autoriza execução. Conferir o contrato vigente antes de planejar integração.
 
 ## Esperando decisão do usuário
-- Níveis de acesso (`admin`/`comum`, `nivelAcesso`): regra definida em 22/10 (ver `decisoes.md`), **ainda não implementada** a pedido do usuário (só anotada). Falta implementar quando ele mandar e testar o usuário comum (leitura do `colleagueGroup` pela API REST). Hoje a tela não muda por nível e o `nivelAcesso` só aparece no console.
+- Níveis de acesso: regra implementada em 22/10 (ver `decisoes.md`). Falta só testar ao vivo com um usuário comum (leitura do `colleagueGroup` pela API REST e telas sem Transferir/Devolver); o teste local cobre admin e comum.
 - Visão não-ADM: a decisão vigente mantém a tela ADM de aba única.
 
 ## Achados no Fluig de TESTE (21/10, estab 10904, item REGLONE; lote 20102026-2 intocado)
@@ -17,7 +17,6 @@ validar, natureza vazia/inexistente); fechamento pelo fundo e Esc; nível `admin
 Aprovado ao vivo em 22/10 (JS `?v=0.1.2`, lotes GER-01 e 20102026-1; lote 20102026-2 do Cheli intocado): código de barras (marca, vai à página 2, avisa se não achar), legenda com 12 status e sem
 subtítulo, Detalhes com Fazenda `código - descrição`, Histórico, `nivelAcesso` admin. Não testado ao vivo: Estornar acima da capacidade (nenhuma etiqueta EM_ESTOQUE fora do lote protegido) e hover do vermelho.
 
-- Legenda sem o status `RESERVADA` ("Reservada para operacao fiscal", visto na etiqueta 135 após a Remessa; chip aparece como "Reservada"). Falta o texto da legenda, a definir com o usuário.
 
 ## Fora do widget
 - Transferência, Remessa e Devolução: o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa. Remessa testada ao vivo em 22/10 (natureza 5949im, destino 11301, emitente 112267, etiqueta 135): aceita, documento de trabalho 493080, operação 211; usuário confirmou no Datasul que deu certo. Destino 10913 recusado ("Estabelecimento nao autorizado para esta acao"): o Dataset só autoriza 10904 e 11301; ajuste do Dataset fica com o usuário/Cheli. Devolução não testada.

@@ -196,7 +196,12 @@ var NWM_TAMANHO_PAGINA = 20;
 var NWM_LIMITE_ATUALIZACAO_LINHAS = 10;
 
 var NWM_GRUPOS_ADMINISTRADORES = ["DefaultGroup-1"];
-var NWM_NIVEIS_ACESSO = { ADMIN: "admin", COMUM: "comum" }; // ADMIN -> pode fazer tudo // COMUM -> não pode transferir, devolver e realizar qlqr acao fiscal
+var NWM_NIVEIS_ACESSO = { ADMIN: "admin", COMUM: "comum" };
+var NWM_ACOES_SOMENTE_ADMIN = ["transferir", "devolver"];
+var NWM_MENSAGENS_RECUSA = {
+  PREPARACAO_WT_RECUSADA:
+    "Não foi possível preparar a operação. Confira se as embalagens ainda estão disponíveis (não reservadas em outra operação nem alteradas), a natureza, a série e o destino. Clique em Buscar para atualizar a lista e tente de novo.",
+};
 
 var NWM_LEGENDA_STATUS = [
   {
@@ -248,6 +253,7 @@ var NWM_LEGENDA_STATUS = [
 NWM_LEGENDA_STATUS.push({ codigo: "INUTILIZADA", rotulo: "Inutilizada", descricao: "Frasco danificado, conteúdo zerado; pode ir para Bag. Correção pelo Estorno enquanto sem Bag." });
 NWM_LEGENDA_STATUS.push({ codigo: "ENCERRADA", rotulo: "Encerrada", descricao: "Perda ou extravio registrado. Estorno permite corrigir a ocorrência vigente, preservando o histórico." });
 NWM_LEGENDA_STATUS.push({ codigo: "CANCELADA", rotulo: "Cancelada", descricao: "Etiqueta cancelada; só permite consultar Detalhes e Histórico." });
+NWM_LEGENDA_STATUS.push({ codigo: "RESERVADA", rotulo: "Reservada", descricao: "Reservada para operação fiscal; aguarda a efetivação da nota no Datasul. Só permite consultar Detalhes e Histórico." });
 var NWM_CRESCIMENTO_DESCRICAO = 3;
 
 var NWM_LARGURAS_COLUNAS = {
@@ -502,6 +508,33 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       ? NWM_NIVEIS_ACESSO.ADMIN
       : NWM_NIVEIS_ACESSO.COMUM;
     console.log("Nível de acesso: " + this.nivelAcesso);
+    this.aplicarNivelAcessoNaTela();
+  },
+
+  acaoPermitidaNoNivel(acao) {
+    return (
+      $.inArray(acao, NWM_ACOES_SOMENTE_ADMIN) < 0 ||
+      this.nivelAcesso === NWM_NIVEIS_ACESSO.ADMIN
+    );
+  },
+
+  aplicarNivelAcessoNaTela() {
+    var self = this;
+    $.each(NWM_ACOES_SOMENTE_ADMIN, function (indice, acao) {
+      var permitida = self.acaoPermitidaNoNivel(acao);
+      $('[data-acao-lote] option[value="' + acao + '"]', self.DOM).prop({
+        hidden: !permitida,
+        disabled: !permitida,
+      });
+    });
+    if ($(".tabulator-row", this.DOM).length) this.tabela.redraw(true);
+  },
+
+  corresponderAcaoDoLote(parametros, opcao) {
+    if (!this.acaoPermitidaNoNivel(opcao.id)) return null;
+    var termo = String(parametros.term || "").trim().toLowerCase();
+    var encontrada = String(opcao.text).toLowerCase().indexOf(termo) >= 0;
+    return !termo || encontrada ? opcao : null;
   },
 
   bindings: {
@@ -1949,6 +1982,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   acaoPermitidaNaEtiqueta(acao, etiqueta) {
     if (acao === "detalhes" || acao === "historico") return true;
+    if (!this.acaoPermitidaNoNivel(acao)) return false;
     if (etiqueta.tipoControle !== "EMBALAGEM") return false;
     if (acao === "imprimir") return etiqueta.situacao === "ATIVA" && this.acoesDaEtiqueta(etiqueta).indexOf(acao) >= 0;
     if (this.possuiBag(etiqueta)) return false;
@@ -3343,6 +3377,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   aplicarAcao(acao, linhas, linhaOrigem) {
+    if (!this.acaoPermitidaNoNivel(acao)) return this.avisar("warning", "Seu nível de acesso não permite esta ação.");
     if (this.escritaEtiquetaBloqueada()) return this.avisar("warning", "Há uma operação em andamento ou sem resultado confirmado.");
     if (acao === "transferir" && this.recusarEtiquetasIndisponiveis(acao, this.etiquetasDasLinhas(linhas))) return;
     if (this.acaoAbreOperacao(acao)) return this.abrirOperacao(linhas, acao);
@@ -4255,8 +4290,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
     operacao.comando = null;
     this.guardarOperacaoPendente(null);
-    this.mostrarEstadoOperacao(resultado.mensagem);
+    this.mostrarEstadoOperacao(this.mensagemRecusaOperacao(resultado));
     if (resultado.codigoErro === "CONFLITO_VERSAO") this.atualizarGradeMantendoRecorte();
+  },
+
+  mensagemRecusaOperacao(resultado) {
+    return NWM_MENSAGENS_RECUSA[resultado.codigoErro] || resultado.mensagem;
   },
 
   concluirEnvioOperacao(operacao, resultado) {
@@ -4894,7 +4933,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       placeholder: "Selecione",
       dropdownParent: $(this.DOM),
     };
-    $("[data-acao-lote]", this.DOM).select2(configuracao);
+    var self = this;
+    $("[data-acao-lote]", this.DOM).select2(
+      $.extend({}, configuracao, {
+        matcher: function (parametros, opcao) {
+          return self.corresponderAcaoDoLote(parametros, opcao);
+        },
+      }),
+    );
     $("[data-item-qtde]", this.DOM).select2(configuracao);
     $('[data-operacao-campo="serie"]', this.DOM).select2(
       $.extend({}, configuracao, {

@@ -1306,6 +1306,9 @@
 .fluig-style-guide.nwm .nwm-chip-CANCELADA { border-color: #A8245F; background-color: #F7E3EC; }
 .fluig-style-guide.nwm .nwm-chip-CANCELADA .nwm-chip-ponto { background-color: #A8245F; }
 
+.fluig-style-guide.nwm .nwm-chip-RESERVADA { border-color: #475569; background-color: #E8ECF1; }
+.fluig-style-guide.nwm .nwm-chip-RESERVADA .nwm-chip-ponto { background-color: #475569; }
+
 .fluig-style-guide.nwm .nwm-tabela .nwm-chip {
     max-width: 100%;
 }

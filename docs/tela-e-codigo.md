@@ -3,7 +3,7 @@
 > Descrição do JS e da tela em 21/10/2026. **O fonte manda**: se divergir, vale `src/` e este arquivo é atualizado.
 > Decisões do usuário que explicam o comportamento: `decisoes.md`. Contrato e campos: `referencias-backend.md`.
 
-> Regra de níveis de acesso definida em 22/10 e **ainda não implementada**: ver `decisoes.md`.
+> Níveis de acesso (22/10): o usuário **comum** não vê Transferir nem Devolver, na linha nem no lote; o admin vê tudo. Decisão em `decisoes.md`; código em `NWM_ACOES_SOMENTE_ADMIN`, `acaoPermitidaNoNivel`, `aplicarNivelAcessoNaTela` e `corresponderAcaoDoLote`.
 
 ## Tela (`view.ftl`)
 - Cabeçalho "Manutenção Embalagens" / "Consulte, imprima e movimente as embalagens."; aba única (visão ADM).
