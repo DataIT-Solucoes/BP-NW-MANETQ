@@ -9,6 +9,8 @@ Uso (a partir da pasta do widget):
 - Mensagem tem de comecar com DOCS:, FIX: ou CHORE:. Commit sem coautor.
 - Arquivos relativos a pasta do widget. Nunca target/. Arquivo apagado ou renomeado: passe o caminho antigo tambem.
 - node --check e .war so rodam se algum arquivo estiver em src/.
+- Se algum arquivo estiver em src/ e application.info nao estiver na lista, sobe o patch de application.version (cache do JS)
+  e inclui application.info no commit. Com -Simular a versao volta ao valor original.
 #>
 param(
     [Parameter(Mandatory = $true)][string] $Mensagem,
@@ -53,6 +55,21 @@ foreach ($a in $Arquivos) {
 }
 Write-Host "OK  BOM/quebra de linha ($($Arquivos.Count) arquivo(s))"
 
+$info = 'src/main/resources/application.info'
+$infoOriginal = $null
+if ($temSrc -and ($Arquivos -notcontains $info)) {
+    $infoOriginal = [IO.File]::ReadAllBytes((Join-Path $widget $info))
+    $texto = [Text.Encoding]::UTF8.GetString($infoOriginal)
+    $m = [regex]::Match($texto, '(?m)^application\.version=(\d+)\.(\d+)\.(\d+)(?=\r?$)')
+    if (-not $m.Success) { Falhar 'application.version (x.y.z) nao encontrada no application.info.' }
+    $nova = "$($m.Groups[1].Value).$($m.Groups[2].Value).$([int]$m.Groups[3].Value + 1)"
+    $linhaVersao = 'application.version=' + $nova
+    $texto = [regex]::Replace($texto, '(?m)^application\.version=\d+\.\d+\.\d+(?=\r?$)', $linhaVersao)
+    [IO.File]::WriteAllBytes((Join-Path $widget $info), (New-Object Text.UTF8Encoding $false).GetBytes($texto))
+    $Arquivos += $info
+    Write-Host "OK  application.version $($m.Groups[1].Value).$($m.Groups[2].Value).$($m.Groups[3].Value) -> $nova"
+}
+
 if ($temSrc) {
     $js = "src/main/webapp/resources/js/$nome.js"
     $saida = node --check $js 2>&1 | Out-String
@@ -68,7 +85,11 @@ if ($temSrc) {
     Write-Host '--  sem arquivo em src/: node --check e .war pulados'
 }
 
-if ($Simular) { Write-Host '--  -Simular: sem commit e sem push'; exit 0 }
+if ($Simular) {
+    if ($infoOriginal) { [IO.File]::WriteAllBytes((Join-Path $widget $info), $infoOriginal) }
+    Write-Host '--  -Simular: sem commit e sem push'
+    exit 0
+}
 
 # Apagado que ja esta no indice (git rm/git mv) nao casa no git add: so entra no commit
 $paraAdicionar = @($Arquivos | Where-Object { (Test-Path -LiteralPath $_) -or (git ls-files -- $_) })

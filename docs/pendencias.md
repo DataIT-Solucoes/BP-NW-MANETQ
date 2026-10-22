@@ -4,15 +4,8 @@
 > Pendência registrada não autoriza execução. Conferir o contrato vigente antes de planejar integração.
 
 ## Esperando decisão do usuário
-- Série de saída: hoje Select2 com opção fixa `1` (21/10). Definir a API que lista as séries válidas.
-- Níveis de acesso (`admin`/`comum`, `nivelAcesso`): o que muda na tela para o `comum` (hoje só aparece no console).
-- Comportamento do campo Código de barras (`data-leitor-cod-barras`): hoje só visual.
-- Qtde Sel.: soma do saldo (`qtidadeAtu`) ou da quantidade inicial.
+- Níveis de acesso (`admin`/`comum`, `nivelAcesso`): o usuário ainda não definiu o que cada nível pode fazer (22/10). Hoje só aparece no console; até a definição, a tela não muda por nível.
 - Visão não-ADM: a decisão vigente mantém a tela ADM de aba única.
-- `testes/` e `evidencias/` no git: manter fora dos commits até decisão.
-- Limpeza opcional de `situacoesApresentadas()`, `textoQuantidadeEtiquetas()` e do modal Mais ações (sem uso na linha).
-- Subir `application.version` a cada publicação para evitar cache do JS (`?v=0.1.0`): sugestão, não autorizada.
-- Status `CANCELADA` na legenda: reavaliar a legenda atual antes de decidir.
 
 ## Achados no Fluig de TESTE (21/10, estab 10904, item REGLONE; lote 20102026-2 intocado)
 Aprovado ao vivo (JS publicado = fonte): validação sem campo vermelho; autocomplete (teclado e clique); overlay só na widget + toast
@@ -30,7 +23,7 @@ validar, natureza vazia/inexistente); fechamento pelo fundo e Esc; nível `admin
 - Detalhes mostra Fazenda só com o código (`10904`); a grade mostra `código - descrição`.
 - Modal de ação de etiqueta não mostra qual etiqueta (só "1 embalagem(ns)").
 - Texto `widget_nw_manutEtiq.js:3728` ainda cita "valor por item" (campo removido em 21/10).
-- Legenda: sem `CANCELADA` (há etiquetas canceladas no lote GER-01); subtítulo fala em "desta consulta" mas a lista é fixa.
+- Legenda: subtítulo fala em "desta consulta" mas a lista é fixa.
 - Sugestões de Lote repetem o código como descrição (`01102025-2 01102025-2`); opção do autocomplete sem separador no nome acessível.
 - `versao` da linha não muda após confirmar impressão (a tela reconsulta a versão antes de cada ação, sem efeito prático).
 - Dados: etiquetas 241, 243, 264, 265 com código sem zeros (ordenação por Etiqueta fica fora de ordem); lote 20102026-1 com 1009 por embalagem.
@@ -45,6 +38,7 @@ validar, natureza vazia/inexistente); fechamento pelo fundo e Esc; nível `admin
 - Desempenho em produção não medido.
 
 ## Fora do widget
+- Série de saída: hoje Select2 com opção fixa `1` (21/10). Aguardando o Cheli (dev Progress) criar a API que lista as séries válidas (22/10); sem contrato ainda, não ligar a tela.
 - Grupos definitivos de autorização (DT-054), responsável a definir. Dataset mantém `DefaultGroup-1` e estabelecimentos 10904/11301.
 - Modelo/serviço e fluxo completo de impressão real: a definir com o usuário.
 - Origem da aprovação funcional do commit de 16/10 não comprovada; perguntar ao usuário se uma decisão nova depender dela.

@@ -15,6 +15,7 @@
     caractere de controle; data válida. Aviso em toast `warning`; só os erros de conteúdo marcam o campo em vermelho (obrigatório vazio não marca).
 - **Barra de seleção**: tabela "Itens selecionados" (Código | Descrição | Qtde Sel.) · Escolher item + Quantidade + **Executar** (marca
   embalagens inteiras do item — ativas, no estabelecimento, sem Bag, saldo = quantidade inicial — até a quantidade pedida) ·
+  **Código de barras** (Enter: localiza o número entre as linhas carregadas, marca e vai à página; `lerCodigoBarras`) ·
   **Ação em lote** (Imprimir, Receber, Estornar, Transferir, Devolução, Inutilizar, Registrar perda/extravio) + Aplicar ·
   **Código de barras** (`data-leitor-cod-barras`, sem comportamento). Selects com Select2 4.0.13 (pt-BR).
 - **Tabela** (Tabulator): marcação | Código | Descrição | Tipo de Embalagem (`codTipo`) | Fazenda (`código - descrição`) | Etiqueta | Lote |
@@ -43,7 +44,7 @@
   pela regra da embalagem (`acaoPermitidaNaEtiqueta`: status, Bag, local, saldo) **não aparece**; bloqueio temporário (escrita em
   andamento/incerta, linha carregando) deixa o botão desabilitado com o motivo no `title` (`textoMotivoIndisponivel`).
 - **Modais** (sete `<dialog>`, fecham pelo fundo — `NWM_FECHAMENTO_MODAIS`/`cliqueForaModal`): Detalhes · Movimentar embalagens
-  (operação) · Legenda dos status · Mais ações (no código, sem botão na linha) · Impressora · Ação de etiqueta · Histórico da embalagem.
+  (operação) · Legenda dos status · Impressora · Ação de etiqueta · Histórico da embalagem.
 
 ## Arquitetura do JS
 - **Nível de acesso** (`identificarNivelAcesso`, no `init`): `WCMAPI.getUserCode()` + dataset `colleagueGroup` (`consultarGruposUsuario`);
@@ -102,7 +103,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Busca e carga (2070–2650) | `buscar`, `montarParametrosEtiquetas`, `carregarEtiquetas`, `consultarPaginaEtiquetas`, `descreverItensCarga`, `descreverEstabelecimentosCarga`, `concluirCargaEtiquetas`, `mapearEtiqueta`, `registroEtiquetaValido` |
 | Validação dos filtros (2649–2796) | `lerFiltros`, `valorFiltroInformado`, `validarFiltros`, `verificarFiltrosObrigatorios`, `verificarOrdemFaixas`, `verificarTextoFiltros`, `marcarInvalidos` |
 | Ações da linha, lote e quantidade (2797–2950) | `acaoNaLinha`, `aplicarLote`, `executarQuantidade`, `escolherEmbalagensDoItem` |
-| Modais, Detalhes e Mais ações (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `abrirMaisAcoes`, `aplicarAcao` |
+| Modais e Detalhes (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |
 | Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarConfirmacaoImpressao`, `enviarAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
 | Histórico e loading (4489–4614) | `abrirHistorico`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `montarBadgeEventoHistorico`, `renderizarHistoricoEtiqueta` |

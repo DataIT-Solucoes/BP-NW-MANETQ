@@ -91,7 +91,7 @@ o script numa chamada só:
 ```
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/entregar.ps1 -Mensagem "FIX: Texto" <arquivos...>
 ```
-- Confere BOM e quebra de linha misturada nos fontes de `src/`; se algum arquivo estiver em `src/`, roda `node --check` e gera
+- Confere BOM e quebra de linha misturada nos fontes de `src/`; se algum arquivo estiver em `src/`, sobe o patch de `application.version` (`application.info` entra no commit), roda `node --check` e gera
   `target/widget_nw_manutEtiq.war` (`pack-widget.ps1`; Ctrl+F7 no VSCode faz o mesmo). Só `.md`: pula os dois.
 - Commit **só dos arquivos informados** (nunca `target/`; apagado/renomeado: passar o caminho antigo também), em português,
   **sem coautor** e **sempre com prefixo**: `DOCS: Texto` (`.md`, `AGENTS.md`, `docs/`), `FIX: Texto` (código em `src/`),

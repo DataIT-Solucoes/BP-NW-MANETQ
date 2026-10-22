@@ -295,22 +295,6 @@
         </div>
     </dialog>
 
-    <dialog class="nwm-modal nwm-modal-pequeno" aria-labelledby="nwm-mais-acoes-titulo-${instanceId}" data-modal-mais-acoes>
-        <div class="nwm-modal-cabecalho">
-            <div>
-                <h3 class="nwm-modal-titulo" id="nwm-mais-acoes-titulo-${instanceId}">Mais ações</h3>
-                <p class="nwm-modal-subtitulo" data-mais-acoes-subtitulo></p>
-            </div>
-            <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-mais-acoes><i class="bi bi-x-lg" aria-hidden="true"></i></button>
-        </div>
-        <div class="nwm-modal-corpo">
-            <ul class="nwm-mais-acoes" data-mais-acoes-lista></ul>
-        </div>
-        <div class="nwm-modal-rodape">
-            <button type="button" class="nwm-btn nwm-btn-contorno" autofocus data-fechar-mais-acoes>Fechar</button>
-        </div>
-    </dialog>
-
     <dialog class="nwm-modal nwm-modal-medio" aria-labelledby="nwm-impressora-titulo-${instanceId}" data-modal-impressora>
         <div class="nwm-modal-cabecalho">
             <div>

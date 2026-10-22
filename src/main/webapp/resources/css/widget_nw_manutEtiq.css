@@ -1445,68 +1445,6 @@
     color: #fff;
 }
 
-.fluig-style-guide.nwm .nwm-mais-acoes {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.fluig-style-guide.nwm .nwm-mais-acoes-botao {
-    display: grid;
-    grid-template-columns: 24px minmax(0, 1fr);
-    align-items: center;
-    column-gap: 12px;
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--nwm-linha);
-    border-radius: 10px;
-    background-color: #fff;
-    font: inherit;
-    text-align: left;
-    color: var(--nwm-tinta);
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.fluig-style-guide.nwm .nwm-mais-acoes-botao i {
-    grid-row: span 2;
-    font-size: 18px;
-    color: var(--nwm-tinta-suave);
-}
-
-.fluig-style-guide.nwm .nwm-mais-acoes-botao:hover:not(:disabled) {
-    border-color: var(--nwm-verde);
-    background-color: var(--nwm-nevoa);
-}
-
-.fluig-style-guide.nwm .nwm-mais-acoes-botao:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
-}
-
-.fluig-style-guide.nwm .nwm-mais-acoes-botao:disabled {
-    background-color: var(--nwm-marfim);
-    color: var(--nwm-tinta-suave);
-    cursor: not-allowed;
-}
-
-.fluig-style-guide.nwm .nwm-mais-acoes-rotulo {
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.fluig-style-guide.nwm .nwm-mais-acoes-motivo {
-    font-size: 12px;
-    color: var(--nwm-tinta-suave);
-}
-
-.fluig-style-guide.nwm .nwm-mais-acoes-motivo:empty {
-    display: none;
-}
-
 /* linha recém-alterada brilha em amarelo solar */
 .fluig-style-guide.nwm .nwm-tabela.tabulator .tabulator-row.nwm-linha-nova {
     animation: nwm-linha-nova 2.2s ease-out;

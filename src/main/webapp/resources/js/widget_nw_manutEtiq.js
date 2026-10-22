@@ -2,7 +2,6 @@ var NWM_FECHAMENTO_MODAIS = {
   "[data-modal-detalhes]": "fecharDetalhes",
   "[data-modal-legenda]": "fecharLegenda",
   "[data-modal-impressora]": "fecharImpressora",
-  "[data-modal-mais-acoes]": "fecharMaisAcoes",
   "[data-modal-operacao]": "fecharOperacao",
   "[data-modal-acao-etiqueta]": "fecharAcaoEtiqueta",
   "[data-modal-historico]": "fecharHistorico",
@@ -64,24 +63,21 @@ var NWM_POSICOES = {
 var NWM_ACOES = {
   detalhes: { rotulo: "Detalhes", icone: "bi-eye" },
   historico: { rotulo: "Histórico", icone: "bi-clock-history" },
-  imprimir: { rotulo: "Imprimir", icone: "bi-printer", secundaria: true },
+  imprimir: { rotulo: "Imprimir", icone: "bi-printer" },
   receber: {
     rotulo: "Receber",
     icone: "bi-box-arrow-in-down",
-    secundaria: true,
   },
   estornar: {
     rotulo: "Estornar",
     icone: "bi-arrow-counterclockwise",
-    secundaria: true,
   },
   inutilizar: {
     rotulo: "Inutilizar",
     icone: "bi-trash3",
     destrutivo: true,
-    secundaria: true,
   },
-  perda: { rotulo: "Registrar perda/extravio", icone: "bi-x-circle", destrutivo: true, secundaria: true },
+  perda: { rotulo: "Registrar perda/extravio", icone: "bi-x-circle", destrutivo: true },
   transferir: { rotulo: "Transferir / Remessa", icone: "bi-arrow-left-right" },
   devolver: { rotulo: "Devolver", icone: "bi-box-arrow-up" },
 };
@@ -251,6 +247,7 @@ var NWM_LEGENDA_STATUS = [
 ];
 NWM_LEGENDA_STATUS.push({ codigo: "INUTILIZADA", rotulo: "Inutilizada", descricao: "Frasco danificado, conteúdo zerado; pode ir para Bag. Correção pelo Estorno enquanto sem Bag." });
 NWM_LEGENDA_STATUS.push({ codigo: "ENCERRADA", rotulo: "Encerrada", descricao: "Perda ou extravio registrado. Estorno permite corrigir a ocorrência vigente, preservando o histórico." });
+NWM_LEGENDA_STATUS.push({ codigo: "CANCELADA", rotulo: "Cancelada", descricao: "Etiqueta cancelada; só permite consultar Detalhes e Histórico." });
 var NWM_CRESCIMENTO_DESCRICAO = 3;
 
 var NWM_LARGURAS_COLUNAS = {
@@ -288,6 +285,9 @@ var NWM_ESTADOS_OPERACAO = {
 };
 
 var NWM_CODIGO_POSITIVO = /^[1-9][0-9]*$/;
+var NWM_SOMENTE_DIGITOS = /^[0-9]+$/;
+var NWM_ZEROS_A_ESQUERDA = /^0+(?=[0-9])/;
+var NWM_TECLA_CONFIRMAR = "Enter";
 var NWM_SOMENTE_DIGITOS = /^[0-9]+$/;
 var NWM_CARACTERE_CONTROLE = /[\x00-\x1f]/;
 var NWM_DECIMAL_ATE_QUATRO_CASAS = /^[0-9]+(?:\.[0-9]{1,4})?$/;
@@ -427,8 +427,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   impressoraOcupada: false,
 
-  linhaMaisAcoes: null,
-
   nivelAcesso: null,
 
   linhaCarregando: null,
@@ -519,7 +517,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       "impressora-lista": ["change_atualizarBotoesImpressora"],
       "testar-impressora": ["click_testarImpressora"],
       "salvar-impressora": ["click_salvarImpressora"],
-      "fechar-mais-acoes": ["click_fecharMaisAcoes"],
+      "leitor-cod-barras": ["keydown_lerCodigoBarras"],
     },
     global: {},
   },
@@ -1882,21 +1880,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     );
   },
 
-  montarBotaoMaisAcoes(etiqueta) {
-    return $("<button>", {
-      type: "button",
-      class: "nwm-acao nwm-acao-mais",
-      "data-acao": "mais",
-      "aria-haspopup": "dialog",
-      title: "Mais ações",
-      "aria-label":
-        "Mais ações da etiqueta " +
-        etiqueta.etiqueta +
-        " do item " +
-        etiqueta.itCodigo,
-    }).append($("<i>", { class: "bi bi-three-dots", "aria-hidden": "true" }));
-  },
-
   montarBotaoAcao(acao, configuracao, etiqueta) {
     var disponivel = this.acaoDisponivel(acao, etiqueta);
     var carregando = this.linhaEstaCarregando(etiqueta);
@@ -2080,6 +2063,52 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     });
     this.redesenharChecks();
     this.atualizarSelecao();
+  },
+
+  normalizarCodigoEtiqueta(codigo) {
+    var texto = String(codigo || "").trim();
+    return NWM_SOMENTE_DIGITOS.test(texto)
+      ? texto.replace(NWM_ZEROS_A_ESQUERDA, "")
+      : texto;
+  },
+
+  localizarLinhaPorCodigo(codigo) {
+    var self = this;
+    var procurado = this.normalizarCodigoEtiqueta(codigo);
+    return $.grep(this.tabela.getRows(), function (linha) {
+      return self.normalizarCodigoEtiqueta(linha.getData().codBarras) === procurado;
+    })[0];
+  },
+
+  mostrarLinha(linha) {
+    var tabela = this.tabela;
+    tabela.setPageToRow(linha).then(function () {
+      tabela.scrollToRow(linha, "center", false);
+    });
+  },
+
+  lerCodigoBarras(htmlElement, event) {
+    if (event.key !== NWM_TECLA_CONFIRMAR) return;
+    event.preventDefault();
+    var $campo = $(htmlElement);
+    var codigo = String($campo.val() || "").trim();
+    if (!codigo) return;
+    if (this.marcarPorCodigoBarras(codigo)) $campo.val("");
+  },
+
+  marcarPorCodigoBarras(codigo) {
+    var linha = this.tabela && this.localizarLinhaPorCodigo(codigo);
+    if (!linha) {
+      this.avisar("warning", "Etiqueta " + codigo + " não está na lista carregada. Faça a busca antes de ler o código.");
+      return false;
+    }
+    if (!this.podeSelecionarEtiqueta(linha.getData())) {
+      this.avisar("warning", "A etiqueta " + codigo + " não pode ser marcada.");
+      return false;
+    }
+    this.marcarLinha(linha.getData().id, true);
+    this.mostrarLinha(linha);
+    return true;
   },
 
   limparSelecao() {
@@ -2968,10 +2997,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       this.abrirDetalhes(linha);
       return;
     }
-    if (acao === "mais") {
-      this.abrirMaisAcoes(linha);
-      return;
-    }
     if (this.aguardarAcaoDaLinha()) return;
     if (acao === "historico") return this.abrirHistorico(linha);
     if (!this.podeSelecionarEtiqueta(linha.getData())) {
@@ -3118,8 +3143,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.$modalLegenda = $("[data-modal-legenda]", this.DOM);
     this.$modalOperacao = $("[data-modal-operacao]", this.DOM);
     this.$modalImpressora = $("[data-modal-impressora]", this.DOM);
-    this.$modalMaisAcoes = $("[data-modal-mais-acoes]", this.DOM);
-    this.ligarAcoesSecundarias();
     this.ligarEventosModalOperacao();
     this.ligarFechamentoPeloFundo();
   },
@@ -3316,72 +3339,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   fecharDetalhes(htmlElement, event) {
     this.fechar(this.$modalDetalhes);
-  },
-
-  abrirMaisAcoes(linha) {
-    var self = this;
-    var etiqueta = linha.getData();
-    this.linhaMaisAcoes = linha;
-    $("[data-mais-acoes-subtitulo]", this.DOM).text(
-      "Etiqueta " +
-        etiqueta.etiqueta +
-        " · item " +
-        etiqueta.itCodigo +
-        " — " +
-        etiqueta.descItem,
-    );
-    var $lista = $("[data-mais-acoes-lista]", this.DOM).empty();
-    $.each(NWM_ACOES, function (acao, configuracao) {
-      if (configuracao.secundaria)
-        self.montarItemMaisAcoes(acao, configuracao, etiqueta).appendTo($lista);
-    });
-    this.abrir(this.$modalMaisAcoes);
-  },
-
-  montarItemMaisAcoes(acao, configuracao, etiqueta) {
-    var disponivel = this.acaoDisponivel(acao, etiqueta);
-
-    var $botao = $("<button>", {
-      type: "button",
-      class: "nwm-mais-acoes-botao nwm-mais-acoes-" + acao,
-      "data-acao-secundaria": acao,
-      disabled: !disponivel,
-    })
-      .append(
-        $("<i>", { class: "bi " + configuracao.icone, "aria-hidden": "true" }),
-      )
-      .append(
-        $("<span>", {
-          class: "nwm-mais-acoes-rotulo",
-          text: configuracao.rotulo,
-        }),
-      )
-      .append(
-        $("<span>", {
-          class: "nwm-mais-acoes-motivo",
-          text: disponivel ? "" : this.textoMotivoIndisponivel(acao),
-        }),
-      );
-
-    return $("<li>").append($botao);
-  },
-
-  ligarAcoesSecundarias() {
-    var self = this;
-    this.$modalMaisAcoes.on("click.nwm", "[data-acao-secundaria]", function () {
-      self.executarAcaoSecundaria($(this).attr("data-acao-secundaria"));
-    });
-  },
-
-  executarAcaoSecundaria(acao) {
-    var linha = this.linhaMaisAcoes;
-    this.fecharMaisAcoes();
-    if (linha) this.acaoNaLinha(acao, linha);
-  },
-
-  fecharMaisAcoes(htmlElement, event) {
-    this.fechar(this.$modalMaisAcoes);
-    this.linhaMaisAcoes = null;
   },
 
   aplicarAcao(acao, linhas, linhaOrigem) {
@@ -4944,31 +4901,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         )
         .appendTo($lista);
     });
-  },
-
-  situacoesApresentadas() {
-    var porCodigo = Object.create(null);
-    var lista = [];
-    if (!this.tabela) return lista;
-    $.each(this.tabela.getRows(), function (indice, linha) {
-      var etiqueta = linha.getData();
-      if (!porCodigo[etiqueta.situacaoApresentada]) {
-        porCodigo[etiqueta.situacaoApresentada] = {
-          codigo: etiqueta.situacaoApresentada,
-          descricao: etiqueta.descricaoSituacao,
-          quantidade: 0,
-        };
-        lista.push(porCodigo[etiqueta.situacaoApresentada]);
-      }
-      porCodigo[etiqueta.situacaoApresentada].quantidade++;
-    });
-    return lista;
-  },
-
-  textoQuantidadeEtiquetas(quantidade) {
-    return quantidade === 1
-      ? "1 etiqueta nesta consulta"
-      : quantidade + " etiquetas nesta consulta";
   },
 
   abrirLegenda() {
