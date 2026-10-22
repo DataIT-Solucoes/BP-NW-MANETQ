@@ -3,5 +3,9 @@
     "allow": [
       "Bash(python *)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "chrome-devtools"
+  ],
+  "enableAllProjectMcpServers": true
 }
