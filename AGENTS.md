@@ -78,10 +78,10 @@ Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o p
 - **Refatorar não muda comportamento**: mensagens, seletores, classes CSS e parâmetros do Dataset ficam idênticos.
   Mantenha os nomes dos métodos e dos campos de estado já existentes (`operacaoAtual`, `consultaEtiquetas`,
   `apoiosFiltros`, `consultasDataset`…): os bindings e os testes dependem deles.
-- **Testes**: rodar `node testes/testar-apoios-filtros.cjs`, `testar-consulta-etiquetas.cjs`, `testar-funcoes-manutencao.cjs`
-  e `testar-transporte-dataset.cjs` antes e depois; todos com `FALHAS=0`. Os testes usam um jQuery simulado (`testes/testar-apoios-filtros.cjs`) que casa o **texto exato dos
-  seletores** e só tem parte da API: método jQuery novo (ex.: `.add`, `$.proxy`) em trecho que os testes executam precisa existir no
-  simulador, senão o teste quebra. Alguns testes leem `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
+- **Testes**: rodar `node testes/rodar-testes.cjs` antes e depois; ele roda as 5 suítes (`testar-apoios-filtros.cjs`, `testar-confirmacao-impressao.cjs`,
+  `testar-consulta-etiquetas.cjs`, `testar-funcoes-manutencao.cjs`, `testar-transporte-dataset.cjs`) e tem de terminar com `FALHARAM=0`. O ambiente (`testes/ambiente.cjs`) usa jsdom e as **bibliotecas reais** nas versões do Fluig/CDN
+  (jQuery 3.6.3, Tabulator 6.4.0, Select2 4.0.13, em `testes/package.json`) com o markup do `view.ftl`; só simula o que é do Fluig, da rede ou do
+  layout: `$.ajax`, timers com atraso, `FLUIGC.toast`, `WCMAPI`, medidas dos elementos e `<dialog>`. Teste novo usa as coisas reais, não mock. Alguns testes leem `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
 - Encoding: JS em CRLF (`.gitattributes` com `eol=crlf`); medir antes e manter.
 
 ## Forma de trabalho (pedidos do usuário)
