@@ -44,6 +44,7 @@
 | 22/10 | Qtde Sel. (soma do saldo `qtidadeAtu`, como já está) está correta; nada a mudar | Pedido do usuário |
 | 22/10 | `testes/` e `evidencias/` ficam fora do git (já cobertos pelo `.gitignore`) | Pedido do usuário |
 | 22/10 | Removidos o código sem uso `situacoesApresentadas()`, `textoQuantidadeEtiquetas()` e o modal Mais ações (JS, `view.ftl`, CSS e a marca `secundaria` de `NWM_ACOES`) | Pedido do usuário |
+| 22/10 | Prefixos de commit aceitos: FIX, FEAT, REFACTOR, PERF, STYLE, DOCS, TEST, CHORE, CI, BUILD, REVERT, SECURITY (antes só DOCS, FIX, CHORE) | Pedido do usuário |
 | 22/10 | `CANCELADA` entra na legenda (agora 12 status), com o texto "Etiqueta cancelada; só permite consultar Detalhes e Histórico." (texto proposto por mim, ajustável) | Pedido do usuário |
 | 21/10 | Texto do badge de Status vem do código `situacaoApresentada` traduzido por `situacaoFacilitada` (rótulo da legenda, ex.: "Impressa"), não do `descricaoSituacao` do backend (que fica no `title`) | Pedido do usuário |
 | 21/10 | Ação clicada na linha da tabela (Imprimir, Histórico) **não** mostra o loading global nem o toast "Carregando...": desabilita os botões daquela linha e mostra carregamento na linha (fundo névoa, barra de progresso na base, spinner no botão clicado). A recarga da grade após o Imprimir da linha é silenciosa. Ação em lote e Buscar continuam com o loading global. Substitui, para a linha, as decisões de 20/10 sobre loading/toast do Histórico | Pedido do usuário |

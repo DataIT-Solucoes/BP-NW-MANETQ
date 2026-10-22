@@ -6,7 +6,7 @@ Uso (a partir da pasta do widget):
   powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/entregar.ps1 -Mensagem "FIX: Texto" arq1 arq2 ...
   -Simular: faz as conferencias e o .war, mas nao faz commit nem push.
 
-- Mensagem tem de comecar com DOCS:, FIX: ou CHORE:. Commit sem coautor.
+- Mensagem tem de comecar com FIX:, FEAT:, REFACTOR:, PERF:, STYLE:, DOCS:, TEST:, CHORE:, CI:, BUILD:, REVERT: ou SECURITY:. Commit sem coautor.
 - Arquivos relativos a pasta do widget. Nunca target/. Arquivo apagado ou renomeado: passe o caminho antigo tambem.
 - node --check e .war so rodam se algum arquivo estiver em src/.
 - Se algum arquivo estiver em src/ e application.info nao estiver na lista, sobe o patch de application.version (cache do JS)
@@ -28,7 +28,7 @@ function Falhar([string] $texto) {
     exit 1
 }
 
-if ($Mensagem -notmatch '^(DOCS|FIX|CHORE): \S') { Falhar 'mensagem tem de comecar com "DOCS: ", "FIX: " ou "CHORE: ".' }
+if ($Mensagem -notmatch '^(FIX|FEAT|REFACTOR|PERF|STYLE|DOCS|TEST|CHORE|CI|BUILD|REVERT|SECURITY): \S') { Falhar 'mensagem tem de comecar com FIX:, FEAT:, REFACTOR:, PERF:, STYLE:, DOCS:, TEST:, CHORE:, CI:, BUILD:, REVERT: ou SECURITY: (seguido de espaco e texto).' }
 if (-not $Arquivos -or $Arquivos.Count -eq 0) { Falhar 'informe os arquivos do commit.' }
 
 $Arquivos = @($Arquivos | ForEach-Object { $_ -replace '\\', '/' -replace '^\./', '' })
