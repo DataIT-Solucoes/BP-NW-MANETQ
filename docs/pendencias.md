@@ -4,7 +4,7 @@
 > Pendência registrada não autoriza execução. Conferir o contrato vigente antes de planejar integração.
 
 ## Esperando decisão do usuário
-- Níveis de acesso (`admin`/`comum`, `nivelAcesso`): o usuário ainda não definiu o que cada nível pode fazer (22/10) e avisa quando definir; o teste do usuário comum (leitura do `colleagueGroup` pela API REST) fica para depois dessa definição. Hoje só aparece no console; até a definição, a tela não muda por nível.
+- Níveis de acesso (`admin`/`comum`, `nivelAcesso`): regra definida em 22/10 (ver `decisoes.md`), **ainda não implementada** a pedido do usuário (só anotada). Falta implementar quando ele mandar e testar o usuário comum (leitura do `colleagueGroup` pela API REST). Hoje a tela não muda por nível e o `nivelAcesso` só aparece no console.
 - Visão não-ADM: a decisão vigente mantém a tela ADM de aba única.
 
 ## Achados no Fluig de TESTE (21/10, estab 10904, item REGLONE; lote 20102026-2 intocado)

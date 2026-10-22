@@ -3,6 +3,8 @@
 > Descrição do JS e da tela em 21/10/2026. **O fonte manda**: se divergir, vale `src/` e este arquivo é atualizado.
 > Decisões do usuário que explicam o comportamento: `decisoes.md`. Contrato e campos: `referencias-backend.md`.
 
+> Regra de níveis de acesso definida em 22/10 e **ainda não implementada**: ver `decisoes.md`.
+
 ## Tela (`view.ftl`)
 - Cabeçalho "Manutenção Embalagens" / "Consulte, imprima e movimente as embalagens."; aba única (visão ADM).
 - **Filtros** (todos visíveis, faixa De/Até): Estabelecimento (**obrigatório**) · Itens · Depósito · Cód Barras · Lote · Data Validade
