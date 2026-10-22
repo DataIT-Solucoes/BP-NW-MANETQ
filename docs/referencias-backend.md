@@ -96,6 +96,15 @@ acrescenta; `chaveIdempotente` a tela gera. Todos: `codEstabel`, `natureza`, **`
   Reimpressão não cria identidade nem movimenta saldo.
 - Impressora: aplicativo local `http://localhost:32478`, chave `impressora` no `localStorage`, template de teste no GED (documento 423).
   O botão Imprimir hoje só registra `CONFIRMAR_IMPRESSAO` (sem enviar à impressora).
+- Lido em 22/10 (`esp/api/v1/controle-embalagens.p:519` `pi-dados-impressao`, `contr-emb-rastreio.p:1809` `obterDadosImpressao`,
+  GER-05/DT-072): `GET /dados-impressao?idEtiqueta=` só lê, não imprime nem grava. Recusa `ETIQUETA_NAO_IMPRIMIVEL` (não é `EMBALAGEM`),
+  `GERACAO_NAO_CONFIRMADA` (evento de geração não `CONCLUIDO`), `ETIQUETA_NAO_DISPONIVEL` (fora dos estabelecimentos permitidos).
+  Devolve os campos da etiqueta (`codEtiqueta`, `item`, `lote`, `validadeLote`, `unidade`, `capacidade`, `quantidadeInicial`, `quantidadeAtual`, `versao`…),
+  **sem descrição do item** (vem de `apoiarItens`, já na grade como `descItem`).
+- Template 423 (`etiqueta.txt`, EPL2, 370 bytes, cópia em `evidencias/impressao/`): marcadores `##PRODUTO## ##CODIGO## ##LOTE## ##DATAVAL##
+  ##CBARRA## ##QTD## ##UN##`. Aplicativo local: `GET /` (status), `GET /impressoras` (`impressoras`, `impressorapadrao`),
+  `POST /imprimir` (`impressora`, `template`, `dados`) → `message`. A tela antiga (`pagina_antiga_manutencao_etiquetas/`) usa esse fluxo.
+  Conclusão: impressão real não exige API nova; falta só ligar no front (dados → `POST /imprimir` → `CONFIRMAR_IMPRESSAO`).
 
 ### Decisões de projeto (DT)
 - DT-093/094: Transferência e Devolução (compra e empréstimo) em **um modal único** pela natureza. Receber é pelo ANFE/Datasul
