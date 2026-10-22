@@ -14,6 +14,8 @@ na linha, abre após sucesso, data e badges); Imprimir da linha (linha atualizad
 `a9,5x-` → `9,5`, decimal gravado); Inutilizar e estorno da inutilização; Perda e estorno da Encerrada; recusa do backend mantém o modal;
 Imprimir em lote; Executar quantidade; Aplicar sem ação / Transferir e Imprimir sem marcadas; modal Transferir (título, série escondida até
 validar, natureza vazia/inexistente); fechamento pelo fundo e Esc; nível `admin` para totvsrp.
+Aprovado ao vivo em 22/10 (JS `?v=0.1.2`, lotes GER-01 e 20102026-1; lote 20102026-2 do Cheli intocado): código de barras (marca, vai à página 2, avisa se não achar), legenda com 12 status e sem
+subtítulo, Detalhes com Fazenda `código - descrição`, Histórico, `nivelAcesso` admin. Não testado ao vivo: Estornar acima da capacidade (nenhuma etiqueta EM_ESTOQUE fora do lote protegido) e hover do vermelho.
 
 ## Fora do widget
 - Transferência, Remessa e Devolução: testadas pelo usuário (22/10); o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; não mexer na tela.
