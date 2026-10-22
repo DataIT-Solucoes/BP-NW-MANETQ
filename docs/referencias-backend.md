@@ -105,6 +105,6 @@ acrescenta; `chaveIdempotente` a tela gera. Todos: `codEstabel`, `natureza`, **`
 - `.war`: `scripts/entregar.ps1` (usa `pack-widget.ps1`). Último registrado antes da reorganização (20/10): SHA256
   `0e9345bfb61718b4fe4be0ac323ccf533cb7b84bf6da96f83e3a73bfb8f70ffd`, 12 arquivos comparados byte a byte.
 - Testes (fora do git): `node testes/rodar-testes.cjs` roda as 5 suítes; em 22/10: `testar-apoios-filtros.cjs` (33), `testar-confirmacao-impressao.cjs` (18),
-  `testar-consulta-etiquetas.cjs` (48), `testar-funcoes-manutencao.cjs` (49), `testar-transporte-dataset.cjs` (60), todas sem falha. Alguns leem
+  `testar-consulta-etiquetas.cjs` (52), `testar-funcoes-manutencao.cjs` (50), `testar-transporte-dataset.cjs` (60), todas sem falha. Alguns leem
   `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
 - Encoding: JS em CRLF no disco (medido em 20/10; o "LF" de 15/10 é histórico); `.gitattributes` com `eol=crlf`.
