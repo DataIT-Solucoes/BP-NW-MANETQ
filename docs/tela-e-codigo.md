@@ -46,7 +46,7 @@
   pela regra da embalagem (`acaoPermitidaNaEtiqueta`: status, Bag, local, saldo) **não aparece**; bloqueio temporário (escrita em
   andamento/incerta, linha carregando) deixa o botão desabilitado com o motivo no `title` (`textoMotivoIndisponivel`).
 - **Modais** (sete `<dialog>`, fecham pelo fundo — `NWM_FECHAMENTO_MODAIS`/`cliqueForaModal`): Detalhes · Movimentar embalagens
-  (operação) · Legenda dos status · Impressora · Ação de etiqueta · Histórico da embalagem · Confirmar impressão.
+  (operação) · Legenda dos status · Impressora · Ação de etiqueta · Histórico da embalagem.
 
 ## Arquitetura do JS
 - **Nível de acesso** (`identificarNivelAcesso`, no `init`): `WCMAPI.getUserCode()` + dataset `colleagueGroup` (`consultarGruposUsuario`);
@@ -69,8 +69,8 @@
   etiqueta por vez (`obterEtiquetaParaImpressao`, `montarDadosEtiquetaImpressao`); `montarPaginaEtiqueta` gera uma `<section>` por
   etiqueta (barras por `modulosCodigoBarras` + `marcacaoCodigoBarras`: JsBarcode só calcula os módulos e a tela desenha o SVG);
   `abrirQuadroImpressao` põe tudo num iframe oculto com `NWM_ESTILO_IMPRESSAO` (`@page` 104 × 50 mm) e `dispararImpressao` chama o
-  `print()` dele. Depois `perguntarConfirmacaoImpressao` abre o modal **Confirmar impressão**: Sim → `iniciarConfirmacaoImpressao`
-  (envia `CONFIRMAR_IMPRESSAO` com `NWM_JUSTIFICATIVA_IMPRESSAO`); Não, Esc ou fundo → `naoConfirmarImpressao` (nada gravado). Falha
+  `print()` dele (`enviarParaImpressora`: erro só avisa, não impede). Em seguida, sem perguntar, `registrarImpressao` envia
+  `CONFIRMAR_IMPRESSAO` com `NWM_JUSTIFICATIVA_IMPRESSAO`. O iframe fica até a próxima impressão (`removerQuadroImpressao`). Falha
   ao buscar dados ou montar a etiqueta → `falharPreparacaoImpressao` (aviso, nada impresso). Depois da confirmação, atualiza as linhas. **Após ação de etiqueta** (`terminarAtualizacaoEtiqueta` → `atualizarAposAcaoEtiqueta`): limpa a seleção e
   reconsulta cada embalagem envolvida (`etiquetasEnvolvidas`: até a que falhou) com os filtros da busca + `codEstabel`/`codEtiqueta`
   (`atualizarLinhaEtiqueta`); `aplicarEtiquetaAtualizada` faz `row.update` (mantém `descItem`/`fazenda`) e atualiza `carga.dados`, ou
@@ -78,7 +78,7 @@
   (`atualizarGradeMantendoRecorte`). No fim, `reformatarLinhasExibidas` (sem `redraw`), para não perder rolagem nem página.
 - **Loading global** (padrão Bags): `atualizarCarregandoGlobal` põe o overlay `.nwm-carregando-global`
   dentro de `this.DOM` (bloqueia só a widget, `aria-busy`) enquanto há busca (`carregandoTela`) ou Imprimir em lote buscando dados ou
-  confirmando (`confirmandoImpressao`; sai durante a pergunta). Junto, toast info "Carregando..." único por instância (`atualizarAvisoCarregando`, sai 100 ms após o fim).
+  confirmando (`confirmandoImpressao`). Junto, toast info "Carregando..." único por instância (`atualizarAvisoCarregando`, sai 100 ms após o fim).
 - **Carregamento na linha** (ação clicada na tabela): `marcarLinhaCarregando`/`desmarcarLinhaCarregando` guardam `linhaCarregando`
   (`{ id, acao }`); `rowFormatter` → `pintarLinhaCarregando` põe `.nwm-linha-carregando` + `aria-busy`, os botões da linha ficam
   desabilitados e o clicado mostra spinner (`iconeBotaoAcao`). Enquanto houver, `aguardarAcaoDaLinha` recusa nova ação na tabela e Buscar.
@@ -112,7 +112,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Ações da linha, lote e quantidade (2797–2950) | `acaoNaLinha`, `aplicarLote`, `executarQuantidade`, `escolherEmbalagensDoItem` |
 | Modais e Detalhes (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |
-| Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarImpressao`, `carregarDadosImpressao`, `montarPaginaEtiqueta`, `marcacaoCodigoBarras`, `abrirQuadroImpressao`, `perguntarConfirmacaoImpressao`, `confirmarImpressaoRealizada`, `naoConfirmarImpressao`, `iniciarConfirmacaoImpressao`, `enviarAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
+| Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarImpressao`, `carregarDadosImpressao`, `montarPaginaEtiqueta`, `marcacaoCodigoBarras`, `abrirQuadroImpressao`, `enviarParaImpressora`, `registrarImpressao`, `enviarAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
 | Histórico e loading (4489–4614) | `abrirHistorico`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `montarBadgeEventoHistorico`, `renderizarHistoricoEtiqueta` |
 | Impressão, Select2 e legenda (4615–4690) | `obterDadosImpressaoEtiqueta`, `validarRespostaIndividual`, `prepararSelect2`, `montarLegenda`, `abrirLegenda` |
 | Impressora (4692–4882) | `abrirImpressora`, `carregarImpressoras`, `chamarAplicativoImpressao`, `salvarImpressora`, `testarImpressora`, `obterTemplateEtiqueta` |

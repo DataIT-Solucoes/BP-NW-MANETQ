@@ -1511,10 +1511,6 @@
     border: 0;
 }
 
-.fluig-style-guide.nwm .nwm-confirmar-impressao-texto {
-    margin: 0;
-}
-
 .fluig-style-guide.nwm .nwm-modal.nwm-modal-pequeno {
     width: min(420px, calc(100vw - 32px));
 }

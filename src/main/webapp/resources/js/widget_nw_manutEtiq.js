@@ -5,7 +5,6 @@ var NWM_FECHAMENTO_MODAIS = {
   "[data-modal-operacao]": "fecharOperacao",
   "[data-modal-acao-etiqueta]": "fecharAcaoEtiqueta",
   "[data-modal-historico]": "fecharHistorico",
-  "[data-modal-confirmar-impressao]": "naoConfirmarImpressao",
 };
 var NWM_EVENTOS_HISTORICO = {
   NASCIMENTO_RECEBIMENTO: { rotulo: "Recebimento", cor: "verde" },
@@ -419,7 +418,7 @@ var NWM_ACOES_POR_STATUS = {
 
 var NWM_LIMITE_JUSTIFICATIVA = 1000;
 var NWM_CONTROLES_JUSTIFICATIVA = /[\x00-\x08\x0b\x0c\x0e-\x1f]/;
-var NWM_JUSTIFICATIVA_IMPRESSAO = "Impressão de etiqueta pelo navegador confirmada pelo usuário.";
+var NWM_JUSTIFICATIVA_IMPRESSAO = "Impressão de etiqueta pelo navegador.";
 var NWM_COMANDOS_ETIQUETA = {
   imprimir: { dataset: "confirmarEtiqueta", acao: "CONFIRMAR_IMPRESSAO" },
   receber: { dataset: "confirmarEtiqueta", acao: "RECEBER_FISICO" },
@@ -571,8 +570,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       "testar-impressora": ["click_testarImpressora"],
       "salvar-impressora": ["click_salvarImpressora"],
       "leitor-cod-barras": ["keydown_lerCodigoBarras"],
-      "confirmar-impressao": ["click_confirmarImpressaoRealizada"],
-      "nao-confirmar-impressao": ["click_naoConfirmarImpressao"],
     },
     global: {},
   },
@@ -3195,16 +3192,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   prepararModais() {
-    var self = this;
     this.$modalDetalhes = $("[data-modal-detalhes]", this.DOM);
     this.$modalLegenda = $("[data-modal-legenda]", this.DOM);
     this.$modalOperacao = $("[data-modal-operacao]", this.DOM);
     this.$modalImpressora = $("[data-modal-impressora]", this.DOM);
-    this.$modalConfirmarImpressao = $("[data-modal-confirmar-impressao]", this.DOM);
-    this.$modalConfirmarImpressao.on("cancel.nwm", function (evento) {
-      evento.preventDefault();
-      self.naoConfirmarImpressao();
-    });
     this.ligarEventosModalOperacao();
     this.ligarFechamentoPeloFundo();
   },
@@ -4647,10 +4638,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     } catch (erro) {
       return this.falharPreparacaoImpressao(operacao, erro);
     }
-    this.liberarCarregamentoImpressao(operacao);
     this.abrirQuadroImpressao(paginas).then(function ($quadro) {
-      self.dispararImpressao($quadro);
-      self.perguntarConfirmacaoImpressao(operacao);
+      self.enviarParaImpressora($quadro);
+      self.registrarImpressao(operacao);
     });
   },
 
@@ -4716,6 +4706,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return carregado.promise();
   },
 
+  enviarParaImpressora($quadro) {
+    try {
+      this.dispararImpressao($quadro);
+    } catch (erro) {
+      this.avisar("warning", "A janela de impressão não abriu. A impressão será registrada mesmo assim.");
+    }
+  },
+
   dispararImpressao($quadro) {
     $quadro[0].contentWindow.print();
   },
@@ -4726,47 +4724,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.$quadroImpressao = null;
   },
 
-  perguntarConfirmacaoImpressao(operacao) {
-    operacao.aguardandoConfirmacao = true;
-    this.$modalConfirmarImpressao.find("[data-confirmar-impressao-pergunta]").text(
-      operacao.etiquetas.length === 1
-        ? "A etiqueta " + operacao.etiquetas[0].etiqueta + " saiu certa na impressora?"
-        : "As " + operacao.etiquetas.length + " etiquetas saíram certas na impressora?",
-    );
-    this.abrir(this.$modalConfirmarImpressao);
-  },
-
-  impressaoAguardandoConfirmacao() {
-    var operacao = this.acaoEtiquetaAtual;
-    return !!(operacao && operacao.acao === "imprimir" && operacao.aguardandoConfirmacao);
-  },
-
-  confirmarImpressaoRealizada(htmlElement, event) {
-    if (!this.impressaoAguardandoConfirmacao()) return;
-    var operacao = this.acaoEtiquetaAtual;
-    this.encerrarPerguntaImpressao(operacao);
-    this.iniciarConfirmacaoImpressao(operacao);
-  },
-
-  naoConfirmarImpressao(htmlElement, event) {
-    if (!this.impressaoAguardandoConfirmacao()) return;
-    var operacao = this.acaoEtiquetaAtual;
-    this.encerrarPerguntaImpressao(operacao);
-    operacao.enviando = false;
-    operacao.finalizada = true;
-    this.reformatarLinhasExibidas();
-    this.avisar("info", "Impressão não confirmada. O status das etiquetas não foi alterado.");
-  },
-
-  encerrarPerguntaImpressao(operacao) {
-    operacao.aguardandoConfirmacao = false;
-    this.fechar(this.$modalConfirmarImpressao);
-    this.removerQuadroImpressao();
-  },
-
-  iniciarConfirmacaoImpressao(operacao) {
+  registrarImpressao(operacao) {
     operacao.campos = { justificativa: NWM_JUSTIFICATIVA_IMPRESSAO };
-    this.mostrarCarregamentoImpressao(operacao);
     this.enviarProximaEtiqueta(operacao);
   },
 

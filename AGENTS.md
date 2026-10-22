@@ -52,7 +52,7 @@ Nenhum (só identificação).
 ## Regras de negócio e de tela (ativas)
 - Status = `situacaoApresentada`/`descricaoSituacao`; `situacao` é o estado técnico. Ações por status em `NWM_ACOES_POR_STATUS`.
 - Imprimir (22/10): busca os dados de cada etiqueta (`obterDadosImpressao`), monta a etiqueta em HTML num iframe e chama a impressão do
-  navegador; depois pergunta se saiu certa e só no "Sim" registra `CONFIRMAR_IMPRESSAO`. Não usa o aplicativo local (`localhost:32478`). Depois de ação de etiqueta, só as linhas envolvidas são reconsultadas no backend e
+  navegador e já registra `CONFIRMAR_IMPRESSAO`, sem perguntar: clicar em Imprimir vale como impresso (erro de impressora não impede o registro). Não usa o aplicativo local (`localhost:32478`). Depois de ação de etiqueta, só as linhas envolvidas são reconsultadas no backend e
   atualizadas (`row.update`), sem recriar a tabela; a tela nunca muda status ou saldo localmente.
 - Resultado incerto (operação ou ação de etiqueta) bloqueia novas escritas; não reenviar automaticamente nem gerar chave nova para a mesma intenção.
 - **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando só a widget. Não usar `FLUIGC.loading(window)` nem

@@ -105,7 +105,7 @@ acrescenta; `chaveIdempotente` a tela gera. Todos: `codEstabel`, `natureza`, **`
   ##CBARRA## ##QTD## ##UN##`. Aplicativo local: `GET /` (status), `GET /impressoras` (`impressoras`, `impressorapadrao`),
   `POST /imprimir` (`impressora`, `template`, `dados`) → `message`. A tela antiga (`pagina_antiga_manutencao_etiquetas/`) usa esse fluxo.
   Conclusão: impressão real não exige API nova. Implementado em 22/10 **sem** o aplicativo local: `obterDadosImpressao` → etiqueta HTML
-  (mesmos campos do modelo 423) → `print()` do navegador → pergunta → `CONFIRMAR_IMPRESSAO`. Envelope real de `obterDadosImpressao`
+  (mesmos campos do modelo 423) → `print()` do navegador → `CONFIRMAR_IMPRESSAO` (sem pergunta). Envelope real de `obterDadosImpressao`
   conferido no TESTE em 22/10 (etiqueta 139: `sucesso`, `total` 1, `temMais` false, `campoCursor` `proximoId`).
 
 ### Decisões de projeto (DT)
