@@ -283,7 +283,6 @@
         <div class="nwm-modal-cabecalho">
             <div>
                 <h3 class="nwm-modal-titulo" id="nwm-legenda-titulo-${instanceId}">Legenda dos status</h3>
-                <p class="nwm-modal-subtitulo">Status operacional das etiquetas desta consulta, como o backend informa. A situação técnica, a posição e o Bag aparecem nos detalhes.</p>
             </div>
             <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-legenda><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>

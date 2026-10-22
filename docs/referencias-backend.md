@@ -6,7 +6,7 @@
 ## Fontes da verdade
 | O quê | Onde |
 |---|---|
-| Widget | `origin` = `https://github.com/HumbertoAlcantaraArruda/BP-NW-MANETQ.git`, branch `fechamento-controle-embalagens` (destino registrado: `DataIT-Solucoes/BP-NW-MANETQ`; trocar só com autorização) |
+| Widget | `origin` = `https://github.com/DataIT-Solucoes/BP-NW-MANETQ.git`, branch `fechamento-controle-embalagens` (trocar só com autorização) |
 | Dataset publicado | `https://github.com/DataIT-Solucoes/BP-NW-DATASET` → `dsNwEmbalagens.js` (decisão do usuário registrada no `widget_nw_bags`, 19/10). Até 20/10 esta tela lia a cópia `../widget_nw_embalagens/datasets/dsNwEmbalagens.js` (SHA256 `1fca73eaa71d05e20d18b3098c762058d0a2d7bef432ace9394c7d6eb1a2d7f3` em 20/10) |
 | APIs REST (Progress) | `https://github.com/DataIT-Solucoes/BP-NW-Embalagens`, branch `fechamento-controle-embalagens`, `APIs-Controle-Embalagens/fontes/progress/` (só leitura, CP850) |
 | Documentação do projeto | `../widget_nw_embalagens/fluig-rest/docs/` (referência histórica) |

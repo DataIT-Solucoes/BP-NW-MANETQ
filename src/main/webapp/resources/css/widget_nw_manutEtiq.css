@@ -1440,8 +1440,8 @@
 .fluig-style-guide.nwm .nwm-acao[data-acao="inutilizar"]:hover:not(:disabled),
 .fluig-style-guide.nwm .nwm-acao[data-acao="perda"]:hover:not(:disabled),
 .fluig-style-guide.nwm .nwm-acao[data-acao="descartar"]:hover:not(:disabled) {
-    border-color: var(--nwm-vermelho);
-    background-color: var(--nwm-vermelho);
+    border-color: var(--nwm-vermelho-escuro);
+    background-color: var(--nwm-vermelho-escuro);
     color: #fff;
 }
 

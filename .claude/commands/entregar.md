@@ -10,7 +10,8 @@ Entregar as alterações pendentes deste widget com a mensagem: $ARGUMENTS
    `srv/`, `em_homologacao/`. Se não sobrar arquivo, avisar e parar.
 2. Prefixo da mensagem: se `$ARGUMENTS` já começar com um prefixo aceito (`FIX`, `FEAT`, `REFACTOR`, `PERF`, `STYLE`, `DOCS`, `TEST`, `CHORE`, `CI`, `BUILD`,
    `REVERT`, `SECURITY`, seguido de `: `), usar como está. Senão, escolher pelo tipo dos arquivos: algum em `src/` → `FIX: `; só `.md`/`docs/`/`AGENTS.md` → `DOCS: `; outros (script, build, `.claude/`) → `CHORE: `.
-   Se `$ARGUMENTS` vier vazio, perguntar o texto e parar.
+   Se `$ARGUMENTS` vier vazio, **não perguntar**: montar a mensagem a partir do `git diff` (prefixo pelo tipo dos arquivos, ou `FEAT: ` se
+   houver funcionalidade nova; texto curto em português resumindo o que mudou) e seguir.
 3. Se `src/main/webapp/resources/js/widget_nw_manutEtiq.js` estiver na lista, rodar os quatro testes do `AGENTS.md`
    (`node testes/<nome>.cjs`). Se algum falhar além da falha preexistente de `testar-consulta-etiquetas.cjs`, mostrar a saída e parar.
 4. Rodar uma vez, a partir da pasta do widget:

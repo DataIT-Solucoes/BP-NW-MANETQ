@@ -21,7 +21,7 @@
 - **Tabela** (Tabulator): marcação | Código | Descrição | Tipo de Embalagem (`codTipo`) | Fazenda (`código - descrição`) | Etiqueta | Lote |
   Data Val. | Qtde Emb | Qtde Saldo | UN | Status | Ações. Larguras em `NWM_LARGURAS_COLUNAS` (Ações 320px, alinhada à esquerda).
   - A busca lê **todas** as páginas do Dataset (100 por chamada) e só então mostra; grade com 20 por página, altura 560, cabeçalho fixo;
-    ordem inicial Código → Etiqueta. Marcar todos vale só para o visível; só `EMBALAGEM` de busca concluída pode ser marcada.
+    ordem inicial Código → Etiqueta. Marcar todos vale para todas as páginas da busca (todas as linhas ativas, não só as 20 visíveis); só `EMBALAGEM` de busca concluída pode ser marcada.
   - Status = chip colorido (`montarChipStatus`, classe `nwm-chip-<codigo>`); texto = `situacaoFacilitada(situacaoApresentada)` (rótulo de
     `NWM_LEGENDA_STATUS`; código fora da legenda vira texto legível) e `descricaoSituacao` do backend no `title`; botão no título abre a Legenda.
 - **Ações por linha** (`NWM_ACOES_POR_STATUS`, botões só-ícone com `title`/`aria-label`, borda verde e hover colorido por ação):

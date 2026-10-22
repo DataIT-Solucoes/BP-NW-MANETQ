@@ -45,6 +45,24 @@
 | 22/10 | `testes/` e `evidencias/` ficam fora do git (já cobertos pelo `.gitignore`) | Pedido do usuário |
 | 22/10 | Removidos o código sem uso `situacoesApresentadas()`, `textoQuantidadeEtiquetas()` e o modal Mais ações (JS, `view.ftl`, CSS e a marca `secundaria` de `NWM_ACOES`) | Pedido do usuário |
 | 22/10 | Prefixos de commit aceitos: FIX, FEAT, REFACTOR, PERF, STYLE, DOCS, TEST, CHORE, CI, BUILD, REVERT, SECURITY (antes só DOCS, FIX, CHORE) | Pedido do usuário |
+| 22/10 | `origin` trocado para `DataIT-Solucoes/BP-NW-MANETQ` (antes `HumbertoAlcantaraArruda/BP-NW-MANETQ`) | Pedido do usuário |
+| 22/10 | Commit e push só quando o usuário pedir (`/entregar`); a origem da aprovação funcional do commit de 16/10 deixa de ser pendência | Pedido do usuário |
+| 22/10 | Grupo de autorização por enquanto: só `DefaultGroup-1` (o já usado); grupos definitivos (DT-054) ficam para depois | Pedido do usuário |
+| 22/10 | Marcar todos marca todas as páginas da busca (não só a página visível): comportamento correto, mantido | Pedido do usuário |
+| 22/10 | Legenda dos status sem subtítulo (o texto citava "desta consulta", mas a lista é fixa) | Pedido do usuário |
+| 22/10 | Etiquetas com código sem zeros (241, 243, 264, 265) ficarem fora de ordem na ordenação por Etiqueta é aceito; sem ajuste | Pedido do usuário |
+| 22/10 | `versao` da linha não mudar após confirmar impressão é comportamento do backend; sem ação no widget | Pedido do usuário |
+| 22/10 | Sugestões de Lote repetirem o código como descrição, e a opção do autocomplete sem separador no nome acessível, ficam como estão (fácil de entender) | Pedido do usuário |
+| 22/10 | Modal de ação de etiqueta mostrar só "N embalagem(ns)", sem identificar a etiqueta, está correto | Pedido do usuário |
+| 22/10 | Detalhes mostra Fazenda como `código - descrição`, igual à grade (só o código enquanto a descrição não carrega) | Pedido do usuário |
+| 22/10 | Modal do Histórico estreito, com as colunas Atual e Justificativa só por rolagem horizontal, está correto | Pedido do usuário |
+| 22/10 | Colunas Ações e Status fora da tela em 1366/1600px e Fazenda truncada: sem ajuste, a rolagem horizontal da tabela resolve | Pedido do usuário |
+| 22/10 | Busca ampla (sem filtro de lote) demorar, em chamadas de 100 etiquetas com a tela bloqueada, é intencional: evita timeout do Fluig | Pedido do usuário |
+| 22/10 | Estornar com saldo final acima da capacidade é barrado na tela, antes de enviar, com mensagem clara (etiqueta, capacidade e o que fazer); a recusa genérica do backend deixa de aparecer nesse caso | Pedido do usuário |
+| 22/10 | Transferir/Remessa/Devolução e lote > 10 continuam recarregando a grade inteira (volta à mesma página); recarga com `replaceData` não será feita | Pedido do usuário |
+| 22/10 | Transferência, Remessa e Devolução ficam de fora por ora: o usuário já testou e o Cheli está mudando a API | Pedido do usuário |
+| 22/10 | Desempenho em produção não foi medido e não será medido por ora | Pedido do usuário |
+| 22/10 | Conferência visual feita pelo código (contraste calculado): chips dos status todos acima de 13:1; hover das ações com texto branco acima de 5:1, exceto o vermelho puro (4,4:1), trocado por `--nwm-vermelho-escuro` no hover de Inutilizar/Perda/Descartar; caixas de mensagem vazias somem (`:empty`, sem espaço no HTML) | Pedido do usuário |
 | 22/10 | `CANCELADA` entra na legenda (agora 12 status), com o texto "Etiqueta cancelada; só permite consultar Detalhes e Histórico." (texto proposto por mim, ajustável) | Pedido do usuário |
 | 21/10 | Texto do badge de Status vem do código `situacaoApresentada` traduzido por `situacaoFacilitada` (rótulo da legenda, ex.: "Impressa"), não do `descricaoSituacao` do backend (que fica no `title`) | Pedido do usuário |
 | 21/10 | Ação clicada na linha da tabela (Imprimir, Histórico) **não** mostra o loading global nem o toast "Carregando...": desabilita os botões daquela linha e mostra carregamento na linha (fundo névoa, barra de progresso na base, spinner no botão clicado). A recarga da grade após o Imprimir da linha é silenciosa. Ação em lote e Buscar continuam com o loading global. Substitui, para a linha, as decisões de 20/10 sobre loading/toast do Histórico | Pedido do usuário |

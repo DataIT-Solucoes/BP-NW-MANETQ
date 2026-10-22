@@ -3289,7 +3289,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         valor: etiqueta.itCodigo + " — " + etiqueta.descItem,
         largo: true,
       },
-      { rotulo: "Fazenda", valor: etiqueta.codEstabel },
+      { rotulo: "Fazenda", valor: etiqueta.fazenda },
       {
         rotulo: "Posição",
         valor: NWM_POSICOES[etiqueta.tipoLocal] || etiqueta.tipoLocal,
@@ -3682,7 +3682,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.mostrarEstadoOperacao(
       classificacao.exigeOrigem
         ? "Informe o documento de entrada e carregue suas embalagens elegíveis."
-        : "Confira destino, série e valor por item. As embalagens serão movimentadas inteiras.",
+        : "Confira destino e série. As embalagens serão movimentadas inteiras.",
     );
   },
 
@@ -4537,7 +4537,21 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var quantidade = String(this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").val() || "").trim().replace(",", ".");
     if (!NWM_DECIMAL_ATE_QUATRO_CASAS.test(quantidade) || !this.numeroFinito(Number(quantidade))) throw new Error("Informe a quantidade atual absoluta, zero ou positiva, com até quatro casas decimais.");
     campos.quantidadeAtual = Number(quantidade);
+    this.verificarQuantidadeAteCapacidade(campos.quantidadeAtual);
     return campos;
+  },
+
+  verificarQuantidadeAteCapacidade(quantidade) {
+    var self = this;
+    var acima = $.grep(this.acaoEtiquetaAtual.etiquetas, function (etiqueta) {
+      return Number(etiqueta.capacidade) > 0 &&
+        Math.round(quantidade * NWM_ESCALA_QUANTIDADE) > Math.round(etiqueta.capacidade * NWM_ESCALA_QUANTIDADE);
+    })[0];
+    if (!acima) return;
+    throw new Error(
+      "A quantidade " + self.formatarQuantidade(quantidade) + " é maior que a capacidade da etiqueta " + acima.etiqueta +
+      " (" + self.quantidadeComUnidade(acima.capacidade, acima.unidade) + "). Informe um saldo final até a capacidade.",
+    );
   },
 
   enviarAcaoEtiqueta() {

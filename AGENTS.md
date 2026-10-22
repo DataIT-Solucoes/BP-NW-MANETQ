@@ -26,7 +26,7 @@ embalagem (visão ADM, aba única).
 - Prefixo de classe CSS: `nwm` (container `.fluig-style-guide.nwm`)
 - Padrão visual: o de `widget_nw_embalagens` e `widget_nw_itensComCtrllDeEmb`; loading global e badges/hover/borda das ações: os de `widget_nw_bags`
 - Onde é usado: `http://fluig-web-teste.brancoperes.com.br:8190/portal/p/1/ManutencaoDeEmbNew`
-- Repositório: `origin` = `https://github.com/HumbertoAlcantaraArruda/BP-NW-MANETQ.git` (destino registrado: `DataIT-Solucoes/BP-NW-MANETQ`;
+- Repositório: `origin` = `https://github.com/DataIT-Solucoes/BP-NW-MANETQ.git` (trocado em 22/10 a pedido do usuário;
   alterar `origin` só com autorização). Trabalho no branch **`fechamento-controle-embalagens`**.
 
 ## Recursos declarados no `application.info`
