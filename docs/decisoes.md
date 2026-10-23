@@ -22,6 +22,7 @@
 | 20/10 | Ocorrências do Histórico da embalagem em badges iguais às de Bags, com os códigos conferidos nos fontes `.p` e na página publicada | Pedido do usuário |
 | 23/10 | Novas ocorrências no Histórico: `VINCULACAO_RESERVA_WT` = "Vinculada - Doc. FT4003", `LIBERACAO_RESERVA_WT` = "Desvinculada - Doc. FT4003" | Pedido do usuário |
 | 23/10 | As duas badges FT4003 terminam com ": <wtReserva>" (ex.: "Vinculada - Doc. FT4003: 999999"); o número é o `wtReserva` da etiqueta (`dadosOriginais`); sem ele, só o rótulo | Pedido do usuário |
+| 23/10 | Detalhes da etiqueta: campo "WT Docto - FT4003" logo abaixo de "Nota fiscal", com o mesmo `wtReserva` (vazio → "—") | Pedido do usuário |
 | 20/10 | Campo Data do Histórico da embalagem no formato `DD/MM/AAAA - HH:MM` | Pedido do usuário |
 | 02/10 | Nome exibido "Manutenção Embalagens"; `application.code` continua `widget_nw_manutEtiq` | `HISTORICO.md` |
 

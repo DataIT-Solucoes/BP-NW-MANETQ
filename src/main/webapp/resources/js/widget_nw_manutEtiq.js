@@ -3432,6 +3432,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       { rotulo: "Família", valor: "—" },
       { rotulo: "Código de barras", valor: etiqueta.codBarras },
       { rotulo: "Nota fiscal", valor: "—" },
+      { rotulo: "WT Docto - FT4003", valor: this.wtReservaDaEtiqueta(etiqueta) || "—" },
     ];
   },
 
@@ -5139,8 +5140,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   wtReservaHistorico() {
-    var etiqueta = (this.historicoAtual || {}).etiqueta || {};
-    return String((etiqueta.dadosOriginais || {}).wtReserva || "").trim();
+    return this.wtReservaDaEtiqueta((this.historicoAtual || {}).etiqueta);
+  },
+
+  wtReservaDaEtiqueta(etiqueta) {
+    return String(((etiqueta || {}).dadosOriginais || {}).wtReserva || "").trim();
   },
 
   renderizarHistoricoEtiqueta(registros) {
