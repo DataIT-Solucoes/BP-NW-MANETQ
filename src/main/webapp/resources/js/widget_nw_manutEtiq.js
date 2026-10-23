@@ -35,8 +35,8 @@ var NWM_EVENTOS_HISTORICO = {
     cor: "cinza",
   },
   DESCARTE_ENVIO_BAG: { rotulo: "Envio para descarte", cor: "petroleo" },
-  VINCULACAO_RESERVA_WT: { rotulo: "Vinculada - Doc. FT4003", cor: "petroleo", mostraWtReserva: true },
-  LIBERACAO_RESERVA_WT: { rotulo: "Desvinculada - Doc. FT4003", cor: "cinza", mostraWtReserva: true },
+  VINCULACAO_RESERVA_WT: { rotulo: "Vinculada - Doc. FT4003", cor: "petroleo", mostraWt: true },
+  LIBERACAO_RESERVA_WT: { rotulo: "Desvinculada - Doc. FT4003", cor: "cinza", mostraWt: true },
 };
 var NWM_RAIZES_EVENTOS_HISTORICO = [
   { raiz: /REABERTURA|REABRIR/, rotulo: "Reabertura", cor: "verde" },
@@ -5125,23 +5125,20 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }).always(function () { historico.carregando = false; self.botoesHistorico(); });
   },
 
-  montarBadgeEventoHistorico(evento, wtReserva) {
+  montarBadgeEventoHistorico(evento, wt) {
     var codigo = String(evento || "").toUpperCase();
     var tipo = NWM_EVENTOS_HISTORICO[codigo] || $.grep(NWM_RAIZES_EVENTOS_HISTORICO, function (registro) {
       return registro.raiz.test(codigo);
     })[0];
     return $("<span>", {
       class: "nwm-evento-badge" + (tipo ? " is-" + tipo.cor : ""),
-      text: tipo ? this.rotuloEventoHistorico(tipo, wtReserva) : codigo || "—",
+      text: tipo ? this.rotuloEventoHistorico(tipo, wt) : codigo || "—",
     });
   },
 
-  rotuloEventoHistorico(tipo, wtReserva) {
-    return tipo.mostraWtReserva && wtReserva ? tipo.rotulo + ": " + wtReserva : tipo.rotulo;
-  },
-
-  wtReservaHistorico() {
-    return this.wtReservaDaEtiqueta((this.historicoAtual || {}).etiqueta);
+  rotuloEventoHistorico(tipo, wt) {
+    var numero = String(wt == null ? "" : wt).trim();
+    return tipo.mostraWt && numero ? tipo.rotulo + ": " + numero : tipo.rotulo;
   },
 
   wtReservaDaEtiqueta(etiqueta) {
@@ -5151,11 +5148,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   renderizarHistoricoEtiqueta(registros) {
     var self = this;
     var $corpo = $("[data-historico-corpo]", this.DOM).empty();
-    var wtReserva = this.wtReservaHistorico();
     $.each(registros, function (indice, registro) {
       var $linha = $("<tr>").appendTo($corpo);
       $("<td>", { text: self.formatarDataHoraHistorico(registro.dataEvento || registro.dataRegistro) }).appendTo($linha);
-      $("<td>").append(self.montarBadgeEventoHistorico(registro.ocorrencia || registro.acao, wtReserva)).appendTo($linha);
+      $("<td>").append(self.montarBadgeEventoHistorico(registro.ocorrencia || registro.acao, registro.wt)).appendTo($linha);
       $.each([registro.usuario, registro.quantidadeAnterior, registro.quantidadeAtual, registro.justificativa], function (posicao, valor) { $("<td>", { text: valor == null ? "—" : String(valor) }).appendTo($linha); });
     });
   },
