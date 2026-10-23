@@ -91,7 +91,7 @@
   grande), ela é silenciosa (`atualizarGradeMantendoRecorte(true)` → `carregarEtiquetas(parametros, true)`).
 - **Histórico**: `abrirHistorico(linha)` carrega com o carregamento na linha e só abre o modal após sucesso; paginação por `aposRegistro`;
   badge por código exato (`NWM_EVENTOS_HISTORICO`) ou raiz (`NWM_RAIZES_EVENTOS_HISTORICO`); sem correspondência, o código em badge
-  neutra. Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico` (23/10): até 1100px de largura
+  neutra. Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico` (23/10): até 1600px de largura (Justificativa quebra linha, mínimo 240px)
   e a tabela rola a partir da altura da tela menos 320px (mínimo 280px). Tabela e paginação num quadro com borda; rodapé da paginação
   no padrão da tabela principal (`.nwm-historico-paginacao`): "Mostrando X–Y eventos" à esquerda e ‹ página › à direita (cursor, sem
   total nem primeira/última). O rodapé do modal tem só Fechar.

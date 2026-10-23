@@ -1516,7 +1516,14 @@
 }
 
 .fluig-style-guide.nwm .nwm-modal.nwm-modal-historico {
-    width: min(1100px, calc(100vw - 32px));
+    width: min(1600px, calc(100vw - 32px));
+}
+
+/* justificativa longa quebra linha em vez de criar rolagem horizontal */
+.fluig-style-guide.nwm .nwm-modal-historico .nwm-tabelinha td:last-child {
+    min-width: 240px;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .fluig-style-guide.nwm .nwm-modal-historico .nwm-origem-rolagem {

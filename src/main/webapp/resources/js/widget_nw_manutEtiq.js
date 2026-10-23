@@ -5114,6 +5114,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var parametros = { codEstabel: historico.etiqueta.codEstabel, idEtiqueta: historico.etiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA };
     if (historico.cursor) parametros.aposRegistro = historico.cursor;
     return this.consultarDataset("consultarHistoricoEtiqueta", parametros, "historico").then(function (resultado) {
+      console.log("[widget_nw_manutEtiq] consultarHistoricoEtiqueta", resultado);
       if (self.historicoAtual !== historico) return;
       historico.proximo = resultado.temMais ? resultado.proximoRegistro : "";
       historico.quantidade = resultado.dados.length;
