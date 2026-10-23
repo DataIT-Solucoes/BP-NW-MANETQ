@@ -349,7 +349,7 @@
             </div>
         </form>
     </dialog>
-    <dialog class="nwm-modal nwm-modal-medio" aria-labelledby="nwm-historico-titulo-${instanceId}" data-modal-historico>
+    <dialog class="nwm-modal nwm-modal-historico" aria-labelledby="nwm-historico-titulo-${instanceId}" data-modal-historico>
         <div class="nwm-modal-cabecalho">
             <div><h3 class="nwm-modal-titulo" id="nwm-historico-titulo-${instanceId}">Histórico da embalagem</h3><p class="nwm-modal-subtitulo" role="status" data-historico-estado></p></div>
             <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-historico><i class="bi bi-x-lg" aria-hidden="true"></i></button>

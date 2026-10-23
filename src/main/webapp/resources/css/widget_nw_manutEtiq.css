@@ -1515,6 +1515,14 @@
     width: min(420px, calc(100vw - 32px));
 }
 
+.fluig-style-guide.nwm .nwm-modal.nwm-modal-historico {
+    width: min(1100px, calc(100vw - 32px));
+}
+
+.fluig-style-guide.nwm .nwm-modal-historico .nwm-origem-rolagem {
+    max-height: max(280px, calc(100vh - 260px));
+}
+
 .fluig-style-guide.nwm .nwm-modal-cabecalho {
     display: flex;
     align-items: flex-start;

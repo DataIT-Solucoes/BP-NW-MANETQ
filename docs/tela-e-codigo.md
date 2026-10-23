@@ -86,7 +86,8 @@
   grande), ela é silenciosa (`atualizarGradeMantendoRecorte(true)` → `carregarEtiquetas(parametros, true)`).
 - **Histórico**: `abrirHistorico(linha)` carrega com o carregamento na linha e só abre o modal após sucesso; paginação por `aposRegistro`;
   badge por código exato (`NWM_EVENTOS_HISTORICO`) ou raiz (`NWM_RAIZES_EVENTOS_HISTORICO`); sem correspondência, o código em badge
-  neutra. Data por `formatarDataHoraHistorico` (sem conversão de fuso).
+  neutra. Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico` (23/10): até 1100px de largura
+  e a tabela rola a partir da altura da tela menos 260px (mínimo 280px).
 - **Impressora**: modal com lista do aplicativo local (`NWM_APLICATIVO_IMPRESSAO`), salvar no `localStorage`, imprimir teste
   (`NWM_ETIQUETA_TESTE`, template do GED). Não é usado pelo botão Imprimir (linha e lote), que imprime pelo navegador.
 - **Avisos**: `avisar(tipo, mensagem, duracao)` via `FLUIGC.toast`.
