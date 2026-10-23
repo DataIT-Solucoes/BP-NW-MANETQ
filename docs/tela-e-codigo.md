@@ -27,7 +27,9 @@
   **Código de barras** (`data-leitor-cod-barras`, sem comportamento). Selects com Select2 4.0.13 (pt-BR).
 - **Tabela** (Tabulator): marcação | Código | Descrição | Tipo de Embalagem (`codTipo`) | Fazenda (`código - descrição`) | Etiqueta | Lote |
   Data Val. | Qtde Emb | Qtde Saldo | UN | Status | Ações. Larguras em `NWM_LARGURAS_COLUNAS` (Ações 320px, alinhada à esquerda).
-  - A busca lê **todas** as páginas do Dataset (100 por chamada) e só então mostra; grade com 20 por página, altura 560, cabeçalho fixo;
+  - A busca lê **todas** as páginas do Dataset (100 por chamada) e só então mostra; grade com 20 por página, sem altura própria (cresce com a página);
+    cabeçalho fixo ao descer a página (`prepararCabecalhoFixo`, `NWM_TOPO_CABECALHO_FIXO`, como no `widget_nw_bags`): cópia do
+    `.tabulator-header` em `.nwm-cabecalho-fixo`; clicar numa coluna da cópia ordena a tabela; "marcar todos" e a legenda do Status funcionam na cópia;
     ordem inicial Código → Etiqueta. Marcar todos vale para todas as páginas da busca (todas as linhas ativas, não só as 20 visíveis); só `EMBALAGEM` de busca concluída pode ser marcada.
   - Status = chip colorido (`montarChipStatus`, classe `nwm-chip-<codigo>`); texto = `situacaoFacilitada(situacaoApresentada)` (rótulo de
     `NWM_LEGENDA_STATUS`; código fora da legenda vira texto legível) e `descricaoSituacao` do backend no `title`; botão no título abre a Legenda.

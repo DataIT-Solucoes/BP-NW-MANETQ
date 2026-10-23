@@ -29,6 +29,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 23/10 | **Cabeçalho fixo** na tabela principal ao descer a página, no modelo do `widget_nw_bags` (skill, `references/cabecalho-fixo-tabela.md`): tabela sem `maxHeight` (cresce com a página) e cópia do cabeçalho presa no topo. Rollback: reverter o commit | Pedido do usuário |
 | 21/10 | Modal fecha sozinho quando a ação termina sem nada pendente: ação de etiqueta com todas confirmadas e operação concluída/localizada; o resultado vai para toast (operação: 8 s, com WT e operação). Erro, recusa e resultado incerto mantêm o modal aberto | Pedido do usuário |
 | 21/10 | Série de saída só **aparece** depois de validar a natureza (some de novo se a natureza mudar ou na reabertura de operação pendente) | Pedido do usuário |
 | 21/10 | Série de saída vira Select2 com uma opção fixa `1` (provisório; depois virá de API). Continua desabilitada até validar a natureza | Pedido do usuário |

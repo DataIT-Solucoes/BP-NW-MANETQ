@@ -1178,6 +1178,27 @@
     box-shadow: none;
 }
 
+.fluig-style-guide.nwm .nwm-cabecalho-fixo {
+    position: fixed;
+    z-index: 40;
+    overflow: hidden;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 6px 16px rgba(32, 32, 30, 0.12);
+}
+
+.fluig-style-guide.nwm .nwm-cabecalho-fixo[hidden] {
+    display: none;
+}
+
+.fluig-style-guide.nwm .nwm-cabecalho-fixo > .nwm-tabela.tabulator {
+    margin: 0;
+    border-radius: 0 0 14px 14px;
+}
+
+.fluig-style-guide.nwm .nwm-cabecalho-fixo .tabulator-header {
+    overflow: hidden;
+}
+
 .fluig-style-guide.nwm .nwm-carregando-global {
     position: absolute;
     inset: 0;

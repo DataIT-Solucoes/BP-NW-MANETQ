@@ -196,7 +196,7 @@ var NWM_DURACAO_SAIDA_AVISO_MS = 200;
 var NWM_DURACAO_AVISO_CONCLUSAO_MS = 8000;
 var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
 var NWM_ESCALA_QUANTIDADE = 10000;
-var NWM_ALTURA_MAXIMA_TABELA = 560;
+var NWM_TOPO_CABECALHO_FIXO = 100;
 var NWM_TAMANHO_PAGINA = 20;
 var NWM_LIMITE_ATUALIZACAO_LINHAS = 10;
 
@@ -1701,6 +1701,123 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.tabela.on("tableBuilt", function () {
       self.atualizarSelecao();
     });
+    this.prepararCabecalhoFixo();
+  },
+
+  prepararCabecalhoFixo() {
+    var self = this;
+    this.cabecalhoFixo = {
+      $fixo: $("<div>", {
+        class: "nwm-cabecalho-fixo",
+        "aria-hidden": "true",
+        hidden: true,
+      })
+        .css("top", NWM_TOPO_CABECALHO_FIXO + "px")
+        .appendTo(this.DOM),
+      desatualizado: true,
+    };
+    $.each(["renderComplete", "dataSorted", "columnResized"], function (indice, nome) {
+      self.tabela.on(nome, function () {
+        self.refazerCabecalhoFixo();
+      });
+    });
+    this.ligarRolagemAoCabecalhoFixo();
+    this.ligarCliquesDoCabecalhoFixo();
+  },
+
+  ligarRolagemAoCabecalhoFixo() {
+    var self = this;
+    var evento = ".nwmCabecalhoFixo" + this.instanceId;
+    var ajustar = function () {
+      self.ajustarCabecalhoFixo();
+    };
+    $(window)
+      .off(evento)
+      .on("scroll" + evento, ajustar)
+      .on("resize" + evento, function () {
+        self.refazerCabecalhoFixo();
+      });
+    this.tabela.on("tableBuilt", function () {
+      $(self.tabela.element)
+        .children(".tabulator-tableholder")
+        .on("scroll" + evento, ajustar);
+    });
+  },
+
+  ligarCliquesDoCabecalhoFixo() {
+    var self = this;
+    this.cabecalhoFixo.$fixo
+      .on("click", ".nwm-ajuda-status", function (evento) {
+        evento.stopPropagation();
+        self.abrirLegenda();
+      })
+      .on("click", "[data-check-todos]", function (evento) {
+        evento.stopPropagation();
+      })
+      .on("change", "[data-check-todos]", function () {
+        self.marcarTodos($(this).prop("checked"));
+      })
+      .on("click", ".tabulator-col[tabulator-field]", function () {
+        self.ordenarPelaCopiaDoCabecalho($(this).attr("tabulator-field"));
+      });
+  },
+
+  ordenarPelaCopiaDoCabecalho(campo) {
+    var coluna = this.tabela.getColumn(campo);
+    if (!coluna || coluna.getDefinition().headerSort === false) return;
+    $(coluna.getElement()).trigger("click");
+  },
+
+  refazerCabecalhoFixo() {
+    this.cabecalhoFixo.desatualizado = true;
+    this.ajustarCabecalhoFixo();
+  },
+
+  ajustarCabecalhoFixo() {
+    var $tabela = $(this.tabela.element);
+    var $fixo = this.cabecalhoFixo.$fixo;
+    var caixa = $tabela[0].getBoundingClientRect();
+    if (!this.deveMostrarCabecalhoFixo($tabela, caixa)) {
+      $fixo.prop("hidden", true);
+      return;
+    }
+    if (this.cabecalhoFixo.desatualizado || $fixo.prop("hidden"))
+      this.copiarCabecalhoFixo($tabela);
+    $fixo
+      .css({ left: caixa.left + "px", width: caixa.width + "px" })
+      .prop("hidden", false);
+    $fixo
+      .find(".tabulator-header")
+      .scrollLeft($tabela.children(".tabulator-tableholder").scrollLeft());
+  },
+
+  deveMostrarCabecalhoFixo($tabela, caixa) {
+    var alturaCabecalho =
+      $tabela.children(".tabulator-header").outerHeight() || 0;
+    var alturaRodape = $tabela.children(".tabulator-footer").outerHeight() || 0;
+    return (
+      $tabela.is(":visible") &&
+      caixa.top < NWM_TOPO_CABECALHO_FIXO &&
+      caixa.bottom - alturaRodape > NWM_TOPO_CABECALHO_FIXO + alturaCabecalho
+    );
+  },
+
+  copiarCabecalhoFixo($tabela) {
+    var $original = $tabela.children(".tabulator-header");
+    var $copia = $original.clone();
+    $copia.find("[id]").removeAttr("id");
+    $copia.find("[tabindex]").addBack("[tabindex]").removeAttr("tabindex");
+    $copia.find("input, button").attr("tabindex", "-1");
+    $copia
+      .find("[data-check-todos]")
+      .prop("indeterminate", $original.find("[data-check-todos]").prop("indeterminate"));
+    this.cabecalhoFixo.$fixo.empty().append(
+      $("<div>", {
+        class: $tabela.attr("class"),
+        "tabulator-layout": $tabela.attr("tabulator-layout"),
+      }).append($copia),
+    );
+    this.cabecalhoFixo.desatualizado = false;
   },
 
   opcoesTabela() {
@@ -1710,7 +1827,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       index: "id",
       layout: "fitColumns",
       responsiveLayout: false,
-      maxHeight: NWM_ALTURA_MAXIMA_TABELA,
       pagination: true,
       paginationSize: NWM_TAMANHO_PAGINA,
       paginationCounter: function (
