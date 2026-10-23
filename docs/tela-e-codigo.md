@@ -13,6 +13,11 @@
     Depósito, Lote, Família e Nota Fiscal; escolher vira **selo** "código - descrição" com × (exceto Específicas). Nos campos de faixa
     preenche só o código. Texto digitado sem escolher na lista conta como campo vazio (`valorFiltroInformado`). Nota Fiscal De/Até usa `apoiarDocumentosEntrada` (exige Estabelecimento De e Até) e grava o número da nota.
   - Item e Depósito só filtram por estabelecimento quando Estabelecimento De = Até; Lote recebe as faixas de estabelecimento, item e depósito.
+  - Cód Barras De/Até (23/10): autocomplete por `apoiarEmbalagens` (`codEstabel` = Estabelecimento De = Até, só dígitos, a partir de 1 dígito;
+    o digitado é completado com zeros à esquerda até 10 dígitos, `completarCodigoBarras`: `139` → `0000000139`, busca exata no backend;
+    sugestão "código - descrição do item"); grava o código em `etiquetaDe`/`etiquetaAte`. Sem estabelecimento único ou com letra, a lista
+    explica e não consulta (`agendarApoioCodigoBarras`, `recusaPesquisaCodigoBarras`). Como nos outros apoios, texto sem escolher não filtra.
+    Código só do Cód Barras: os outros autocompletes (inclusive Estabelecimento) não mudaram.
   - Validação (`validarFiltros`): Estabelecimento De **e** Até; Itens **ou** Nota Fiscal; De ≤ Até (texto); até 100 caracteres, sem
     caractere de controle; data válida. Aviso em toast `warning`; só os erros de conteúdo marcam o campo em vermelho (obrigatório vazio não marca).
 - **Barra de seleção**: tabela "Itens selecionados" (Código | Descrição | Qtde Sel.) · Escolher item + Quantidade + **Executar** (marca

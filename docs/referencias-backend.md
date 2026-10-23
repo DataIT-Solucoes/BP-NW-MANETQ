@@ -24,6 +24,28 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
   Usuário, grupos e estabelecimentos permitidos vêm do Dataset (sessão Fluig), nunca do Widget.
 - Regras (20/10): `DefaultGroup-1`, estabelecimentos 10904/11301 (configuração de TESTE); grupos definitivos pendentes (DT-054).
   Escritas de etiqueta habilitadas para esse grupo. Conferir sempre `regras` e `escritasHabilitadas`.
+  Desde o commit `37d22b1` (22/10): `todosEstabelecimentosTeste: true` libera todos os estabelecimentos (o Dataset acrescenta `*` aos
+  permitidos), só com o serviço `DATASUL_REST_HOMOLOG`; as listas 10904/11301 ficam guardadas para voltar ao modo restrito.
+
+### Dataset `37d22b1` (lido em 23/10)
+- Versão lida: commit `37d22b1` de 22/10. O SHA256 do arquivo convertido para CRLF (`932d5b2e…`) é o informado no `LEIA-ME.md`. Comparada com a de 19/10 (`e9083b2`), nenhuma
+  ação, campo ou parâmetro foi removido: as 20 ações usadas pela tela continuam iguais.
+- **Reserva WT automática**: `consultarEtiquetas` e `consultarSituacaoEtiqueta`, quando a resposta traz linha com
+  `estadoReservaFiscal = "WT_EXCLUIDO_SEM_FISCAL"` (exige `reservaFiscalAtiva`, `situacaoApresentada = "RESERVADA"`, `idOperacaoReserva`,
+  `wtReserva`, `versaoOperacaoReserva`), fazem POST `reconciliarReservaWt` (`/operacoes/reservas/reconciliacao`, chave
+  `AUTO-WT-<estab>-<idOperacao>-V<versao>`, até 100 operações) e repetem a consulta, sem retry. A tela recebe a página já reconsultada.
+  Novos erros dessa consulta: `ATUALIZACAO_RESERVA_PENDENTE`, `FALHA_ATUALIZACAO_RESERVA` e `RESPOSTA_INVALIDA` (metadados de reserva
+  incompletos). Cada chamada ao REST tem 60 s; a tela espera 90 s (`NWM_TEMPO_LIMITE_CONSULTA_MS`).
+- **Apoios novos** (`apoiarEmbalagens`, `apoiarBags`, `apoiarSeries`, `apoiarNaturezas`, `apoiarEmitentes`): `codEstabel` e `filtro`
+  obrigatórios, sem o mínimo de 2 caracteres (embalagens e Bags: só dígitos; emitentes: código numérico ou 2+ caracteres), `limite` 1–20,
+  cursor `aposCodigo`/`proximoCodigo`. O cursor de naturezas pode trazer TAB e tem de ir de volta inteiro. Campos de resposta só no
+  `LEIA-ME.md` para naturezas (código, nome, contexto `MESMO_ESTADO`/`OUTRO_ESTADO`, `descricaoExibicao`, `exibeRecebimento`). O LEIA-ME
+  diz que o REST e a prova real pelo Dataset ainda estão pendentes. A tela usa só o `apoiarEmbalagens` (Cód Barras, 23/10).
+- `apoiarEmbalagens` (fonte `docs/contr-emb-autocompletes.i.txt`, cópia local fora do git, modo `EMBALAGEM`, passado pelo usuário em 23/10): lê
+  `contr_emb_etiqueta` do `codEstabel` com `tipo-controle = "EMBALAGEM"`, em ordem de `id-etiqueta`, sem filtrar situação. Compara
+  `cod-etiqueta` (`acCorresponde`): igual → acha; filtro começando com 0 → exato sem zeros à esquerda; sem zero → começo do código sem zeros.
+  Registro: `codigo` (`cod-etiqueta`), `descricao` (descrição do item ou `it-codigo`), `item`, `idEtiqueta`, `codEstabel`, `situacao`
+  (técnica), `tipoLocal`; cursor `proximoCodigo` = `idEtiqueta`. Erros: `SEM_PERMISSAO`, `FILTRO_INVALIDO`, `FALHA_CONSULTA_APOIO`.
 - Ações usadas:
 
 | Grupo | Ações |

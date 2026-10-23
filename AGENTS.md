@@ -98,7 +98,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/entregar.ps1 -Me
   **sem coautor** e **sempre com prefixo** (`FIX`, `FEAT`, `REFACTOR`, `PERF`, `STYLE`, `DOCS`, `TEST`, `CHORE`, `CI`, `BUILD`,
   `REVERT`, `SECURITY`): `DOCS: Texto` (`.md`, `AGENTS.md`, `docs/`), `FIX: Texto` (correção em `src/`), `FEAT: Texto` (funcionalidade nova),
   `CHORE: Texto` (manutenção, renomear sem mudar conteúdo).
-- Nunca no commit: `evidencias/`, `debug.log`, `testes/*.cjs`, `pagina_antiga_manutencao_etiquetas/`, `.playwright-mcp/`, `srv/`, `em_homologacao/`.
+- Nunca no commit: `evidencias/`, `debug.log`, `testes/*.cjs`, `pagina_antiga_manutencao_etiquetas/`, `.playwright-mcp/`, `srv/`, `em_homologacao/`, `docs/*.i.txt` (fontes Progress passados pelo usuário).
 - Push no branch atual e conferência do remoto (`git ls-remote`). `-Simular` faz tudo menos commit e push.
 - Importar no Fluig (Painel de Controle → Desenvolvimento → Widgets): feito pelo usuário.
 

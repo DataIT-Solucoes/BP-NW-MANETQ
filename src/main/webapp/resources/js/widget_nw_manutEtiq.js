@@ -90,9 +90,12 @@ var NWM_APOIOS_FILTROS = {
   dep: "apoiarDepositos",
   lote: "apoiarLotes",
   familia: "apoiarFamilias",
+  barras: "apoiarEmbalagens",
 };
 
 var NWM_APOIO_DOCUMENTOS = "apoiarDocumentosEntrada";
+var NWM_APOIO_EMBALAGENS = "apoiarEmbalagens";
+var NWM_TAMANHO_CODIGO_BARRAS = 10;
 var NWM_CAMPO_DESTINO_OPERACAO = "codEstabelDestino";
 
 var NWM_RESTRICOES_APOIO = {
@@ -828,6 +831,18 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return acao === "apoiarItens" || acao === "apoiarDepositos";
   },
 
+  montarParametrosCodigoBarras(termo, filtros) {
+    return {
+      filtro: this.completarCodigoBarras(termo),
+      limite: NWM_LIMITE_SUGESTOES,
+      codEstabel: filtros.estDe,
+    };
+  },
+
+  completarCodigoBarras(termo) {
+    return termo.padStart(NWM_TAMANHO_CODIGO_BARRAS, "0");
+  },
+
   copiarRecorteApoio(acao, filtros, parametros) {
     $.each(NWM_PARAMETROS_RECORTE_LOTE, function (campo, parametro) {
       var somenteEstabelecimento = acao === NWM_APOIO_DOCUMENTOS;
@@ -881,6 +896,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var self = this;
     this.cancelarApoioFiltro(apoio);
     this.reiniciarPesquisaApoio(apoio);
+    if (apoio.acao === NWM_APOIO_EMBALAGENS) {
+      this.agendarApoioCodigoBarras(apoio);
+      return;
+    }
     if (apoio.termo.length < 2) return;
     if (this.faltaEstabelecimentoParaDocumentos(apoio)) {
       apoio.erro = this.erroDataset(
@@ -911,6 +930,40 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     apoio.cursores = Object.create(null);
     apoio.temMais = false;
     apoio.erro = null;
+  },
+
+  agendarApoioCodigoBarras(apoio) {
+    var self = this;
+    if (!apoio.termo) return;
+    var filtros = this.lerFiltros();
+    apoio.erro = this.recusaPesquisaCodigoBarras(apoio.termo, filtros);
+    if (apoio.erro) {
+      this.renderizarApoioFiltro(apoio);
+      return;
+    }
+    apoio.parametros = this.montarParametrosCodigoBarras(apoio.termo, filtros);
+    var sequencia = apoio.sequencia;
+    apoio.temporizador = setTimeout(function () {
+      apoio.temporizador = null;
+      if (apoio.sequencia === sequencia)
+        self.consultarPaginaApoio(apoio, false);
+    }, NWM_ATRASO_APOIO_MS);
+  },
+
+  recusaPesquisaCodigoBarras(termo, filtros) {
+    if (!filtros.estDe || filtros.estDe !== filtros.estAte)
+      return this.erroDataset(
+        "CONTEXTO_OBRIGATORIO",
+        "Preencha um único estabelecimento (De igual a Até) antes de buscar Códigos de Barras",
+        NWM_TIPOS_ERRO.FUNCIONAL,
+      );
+    if (!NWM_SOMENTE_DIGITOS.test(termo))
+      return this.erroDataset(
+        "FILTRO_INVALIDO",
+        "Digite só números para buscar Códigos de Barras",
+        NWM_TIPOS_ERRO.FUNCIONAL,
+      );
+    return null;
   },
 
   faltaEstabelecimentoParaDocumentos(apoio) {
