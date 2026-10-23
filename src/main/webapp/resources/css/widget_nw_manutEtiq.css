@@ -1520,7 +1520,82 @@
 }
 
 .fluig-style-guide.nwm .nwm-modal-historico .nwm-origem-rolagem {
-    max-height: max(280px, calc(100vh - 260px));
+    max-height: max(280px, calc(100vh - 320px));
+    margin-top: 0;
+}
+
+/* rodapé da paginação igual ao da tabela principal (.tabulator-footer / .tabulator-page) */
+.fluig-style-guide.nwm .nwm-historico-quadro {
+    margin-top: 16px;
+    border: 1px solid var(--nwm-linha);
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-historico-paginacao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--nwm-linha);
+    background-color: var(--nwm-marfim);
+}
+
+.fluig-style-guide.nwm .nwm-historico-paginas {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.fluig-style-guide.nwm .nwm-historico-pagina {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 34px;
+    height: 34px;
+    margin: 0 2px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--nwm-tinta);
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-historico-pagina:not(:disabled):not(.is-atual):hover {
+    border-color: var(--nwm-linha);
+    background-color: #fff;
+}
+
+.fluig-style-guide.nwm .nwm-historico-pagina.is-atual {
+    border-color: var(--nwm-verde);
+    background-color: #fff;
+    cursor: default;
+}
+
+.fluig-style-guide.nwm .nwm-historico-pagina:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.fluig-style-guide.nwm .nwm-historico-pagina:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 107, 53, 0.28);
+}
+
+.fluig-style-guide.nwm .nwm-historico-pagina i {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 1;
+    vertical-align: -1px;
+    -webkit-text-stroke: 1.2px currentColor;
 }
 
 .fluig-style-guide.nwm .nwm-modal-cabecalho {

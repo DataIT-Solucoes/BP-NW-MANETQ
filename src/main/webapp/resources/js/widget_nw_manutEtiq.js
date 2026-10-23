@@ -35,8 +35,8 @@ var NWM_EVENTOS_HISTORICO = {
     cor: "cinza",
   },
   DESCARTE_ENVIO_BAG: { rotulo: "Envio para descarte", cor: "petroleo" },
-  VINCULACAO_RESERVA_WT: { rotulo: "Vinculada - Doc. FT4003", cor: "petroleo" },
-  LIBERACAO_RESERVA_WT: { rotulo: "Desvinculada - Doc. FT4003", cor: "cinza" },
+  VINCULACAO_RESERVA_WT: { rotulo: "Vinculada - Doc. FT4003", cor: "petroleo", mostraWtReserva: true },
+  LIBERACAO_RESERVA_WT: { rotulo: "Desvinculada - Doc. FT4003", cor: "cinza", mostraWtReserva: true },
 };
 var NWM_RAIZES_EVENTOS_HISTORICO = [
   { raiz: /REABERTURA|REABRIR/, rotulo: "Reabertura", cor: "verde" },
@@ -5115,31 +5115,42 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return this.consultarDataset("consultarHistoricoEtiqueta", parametros, "historico").then(function (resultado) {
       if (self.historicoAtual !== historico) return;
       historico.proximo = resultado.temMais ? resultado.proximoRegistro : "";
+      historico.quantidade = resultado.dados.length;
       self.renderizarHistoricoEtiqueta(resultado.dados);
       $("[data-historico-estado]", self.DOM).text(resultado.dados.length ? "Etiqueta " + historico.etiqueta.etiqueta : "Nenhum evento encontrado.");
     }, function (erro) {
-      if (self.historicoAtual === historico) { historico.erro = erro; historico.proximo = ""; $("[data-historico-corpo]", self.DOM).empty(); $("[data-historico-estado]", self.DOM).text(erro.message); }
+      if (self.historicoAtual === historico) { historico.erro = erro; historico.proximo = ""; historico.quantidade = 0; $("[data-historico-corpo]", self.DOM).empty(); $("[data-historico-estado]", self.DOM).text(erro.message); }
     }).always(function () { historico.carregando = false; self.botoesHistorico(); });
   },
 
-  montarBadgeEventoHistorico(evento) {
+  montarBadgeEventoHistorico(evento, wtReserva) {
     var codigo = String(evento || "").toUpperCase();
     var tipo = NWM_EVENTOS_HISTORICO[codigo] || $.grep(NWM_RAIZES_EVENTOS_HISTORICO, function (registro) {
       return registro.raiz.test(codigo);
     })[0];
     return $("<span>", {
       class: "nwm-evento-badge" + (tipo ? " is-" + tipo.cor : ""),
-      text: tipo ? tipo.rotulo : codigo || "—",
+      text: tipo ? this.rotuloEventoHistorico(tipo, wtReserva) : codigo || "—",
     });
+  },
+
+  rotuloEventoHistorico(tipo, wtReserva) {
+    return tipo.mostraWtReserva && wtReserva ? tipo.rotulo + ": " + wtReserva : tipo.rotulo;
+  },
+
+  wtReservaHistorico() {
+    var etiqueta = (this.historicoAtual || {}).etiqueta || {};
+    return String((etiqueta.dadosOriginais || {}).wtReserva || "").trim();
   },
 
   renderizarHistoricoEtiqueta(registros) {
     var self = this;
     var $corpo = $("[data-historico-corpo]", this.DOM).empty();
+    var wtReserva = this.wtReservaHistorico();
     $.each(registros, function (indice, registro) {
       var $linha = $("<tr>").appendTo($corpo);
       $("<td>", { text: self.formatarDataHoraHistorico(registro.dataEvento || registro.dataRegistro) }).appendTo($linha);
-      $("<td>").append(self.montarBadgeEventoHistorico(registro.ocorrencia || registro.acao)).appendTo($linha);
+      $("<td>").append(self.montarBadgeEventoHistorico(registro.ocorrencia || registro.acao, wtReserva)).appendTo($linha);
       $.each([registro.usuario, registro.quantidadeAnterior, registro.quantidadeAtual, registro.justificativa], function (posicao, valor) { $("<td>", { text: valor == null ? "—" : String(valor) }).appendTo($linha); });
     });
   },
@@ -5148,6 +5159,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var historico = this.historicoAtual;
     $("[data-historico-anterior]", this.DOM).prop("disabled", !historico || historico.carregando || !historico.anteriores.length);
     $("[data-historico-proximo]", this.DOM).prop("disabled", !historico || historico.carregando || !historico.proximo);
+    $("[data-historico-pagina]", this.DOM).text(historico ? historico.anteriores.length + 1 : 1);
+    $("[data-historico-contador]", this.DOM).text(historico && !historico.carregando ? this.textoContadorHistorico(historico) : "");
+  },
+
+  textoContadorHistorico(historico) {
+    if (!historico.quantidade) return "";
+    var primeiro = historico.anteriores.length * NWM_TAMANHO_PAGINA + 1;
+    var ultimo = primeiro + historico.quantidade - 1;
+    return "Mostrando " + primeiro + "–" + ultimo + (ultimo === 1 ? " evento" : " eventos");
   },
 
   proximaPaginaHistorico() {

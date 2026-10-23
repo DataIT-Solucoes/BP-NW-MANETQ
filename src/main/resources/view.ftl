@@ -354,13 +354,20 @@
             <div><h3 class="nwm-modal-titulo" id="nwm-historico-titulo-${instanceId}">Histórico da embalagem</h3><p class="nwm-modal-subtitulo" role="status" data-historico-estado></p></div>
             <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-historico><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
-        <div class="nwm-modal-corpo"><div class="nwm-origem-rolagem"><table class="nwm-tabelinha">
+        <div class="nwm-modal-corpo"><div class="nwm-historico-quadro"><div class="nwm-origem-rolagem"><table class="nwm-tabelinha">
             <thead><tr><th>Data</th><th>Ocorrência</th><th>Usuário</th><th>Anterior</th><th>Atual</th><th>Justificativa</th></tr></thead>
             <tbody data-historico-corpo></tbody>
-        </table></div></div>
+        </table></div>
+            <div class="nwm-historico-paginacao">
+                <span class="nwm-tabela-contador" data-historico-contador></span>
+                <span class="nwm-historico-paginas">
+                    <button type="button" class="nwm-historico-pagina" aria-label="Página anterior" title="Página anterior" data-historico-anterior disabled><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
+                    <span class="nwm-historico-pagina is-atual" aria-current="page" data-historico-pagina>1</span>
+                    <button type="button" class="nwm-historico-pagina" aria-label="Próxima página" title="Próxima página" data-historico-proximo disabled><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+                </span>
+            </div>
+        </div></div>
         <div class="nwm-modal-rodape">
-            <button type="button" class="nwm-btn nwm-btn-contorno" data-historico-anterior disabled>Anterior</button>
-            <button type="button" class="nwm-btn nwm-btn-contorno" data-historico-proximo disabled>Próxima</button>
             <button type="button" class="nwm-btn nwm-btn-contorno" data-fechar-historico>Fechar</button>
         </div>
     </dialog>
