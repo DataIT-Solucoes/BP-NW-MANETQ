@@ -20,6 +20,7 @@
 |---|---|---|
 | 20/10 | Remover a mensagem inicial "Em lote, cada embalagem..." dos modais; manter campo para andamento/resultado | Pedido do usuário |
 | 20/10 | Ocorrências do Histórico da embalagem em badges iguais às de Bags, com os códigos conferidos nos fontes `.p` e na página publicada | Pedido do usuário |
+| 23/10 | Novas ocorrências no Histórico: `VINCULACAO_RESERVA_WT` = "Vinculada - Doc. FT4003", `LIBERACAO_RESERVA_WT` = "Desvinculada - Doc. FT4003" | Pedido do usuário |
 | 20/10 | Campo Data do Histórico da embalagem no formato `DD/MM/AAAA - HH:MM` | Pedido do usuário |
 | 02/10 | Nome exibido "Manutenção Embalagens"; `application.code` continua `widget_nw_manutEtiq` | `HISTORICO.md` |
 

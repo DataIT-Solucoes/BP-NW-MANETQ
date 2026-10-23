@@ -35,6 +35,8 @@ var NWM_EVENTOS_HISTORICO = {
     cor: "cinza",
   },
   DESCARTE_ENVIO_BAG: { rotulo: "Envio para descarte", cor: "petroleo" },
+  VINCULACAO_RESERVA_WT: { rotulo: "Vinculada - Doc. FT4003", cor: "petroleo" },
+  LIBERACAO_RESERVA_WT: { rotulo: "Desvinculada - Doc. FT4003", cor: "cinza" },
 };
 var NWM_RAIZES_EVENTOS_HISTORICO = [
   { raiz: /REABERTURA|REABRIR/, rotulo: "Reabertura", cor: "verde" },

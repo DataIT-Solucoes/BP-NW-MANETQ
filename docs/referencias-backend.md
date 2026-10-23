@@ -76,6 +76,7 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
   ajuste, inutilização, perda e correções; `contr-emb-bags.p:377` confirma `DESCARTE_ENVIO_BAG` e movimentos de Bag (lidos em 20/10, CP850).
 - `NWM_EVENTOS_HISTORICO` = os 22 códigos de `EVENTOS_EMBALAGEM_BAGS` do Bags (inclui os de teste `NASCIMENTO_TESTE`/`ESVAZIAMENTO_TESTE`,
   que não estão nos `.p`); `NWM_RAIZES_EVENTOS_HISTORICO` = as 8 raízes de evento de Bag. Conferido contra a página publicada de Bags em 20/10.
+  Em 23/10, a pedido do usuário: `VINCULACAO_RESERVA_WT` ("Vinculada - Doc. FT4003") e `LIBERACAO_RESERVA_WT` ("Desvinculada - Doc. FT4003").
 - Data: `dataEvento` (fallback `dataRegistro`).
 
 ### Operações: campos exigidos (lido em 21/10, commit `b26b5f5`)
