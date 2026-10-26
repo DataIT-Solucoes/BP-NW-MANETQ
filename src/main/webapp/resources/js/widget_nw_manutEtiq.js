@@ -4707,7 +4707,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.$modalAcaoEtiqueta.find("form").on("submit", function (evento) { evento.preventDefault(); self.enviarAcaoEtiqueta(); });
     this.$modalAcaoEtiqueta.on("cancel", function (evento) { if (self.acaoEtiquetaAtual && self.acaoEtiquetaAtual.enviando) evento.preventDefault(); });
     $("[data-fechar-acao-etiqueta]", this.DOM).on("click", function () { self.fecharAcaoEtiqueta(); });
-    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").on("input", function () { self.filtrarQuantidadeDigitada($(this)); });
+    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").on("input", function () { self.filtrarQuantidadeDigitada($(this)); self.limparErroAcaoEtiqueta(); });
+    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-motivo]").on("input", function () { self.limparErroAcaoEtiqueta(); });
     $("[data-fechar-historico]", this.DOM).on("click", function () { self.fecharHistorico(); });
     $("[data-historico-proximo]", this.DOM).on("click", function () { self.proximaPaginaHistorico(); });
     $("[data-historico-anterior]", this.DOM).on("click", function () { self.paginaAnteriorHistorico(); });
@@ -4717,13 +4718,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   abrirAcaoEtiqueta(acao, linhas, linhaOrigem) {
     var etiquetas = this.etiquetasDasLinhas(linhas);
     if (this.recusarEtiquetasIndisponiveis(acao, etiquetas)) return;
-    this.acaoEtiquetaAtual = { acao: acao, etiquetas: etiquetas, indice: 0, concluidas: 0, enviando: false, incerta: false };
+    this.acaoEtiquetaAtual = { acao: acao, etiquetas: etiquetas, indice: 0, concluidas: 0, enviando: false, incerta: false, emLote: !linhaOrigem };
     if (acao === "imprimir") return this.iniciarImpressao(linhaOrigem);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-titulo]").text(NWM_ACOES[acao].rotulo);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-resumo]").text(etiquetas.length + " embalagem(ns). " + (acao === "estornar" ? "Informe o saldo final de cada embalagem, não a diferença." : "Informe a justificativa."));
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").val(etiquetas.length === 1 ? etiquetas[0].qtidadeAtu : "").closest(".nwm-campo").prop("hidden", acao !== "estornar");
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-motivo]").val("");
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text("");
+    this.limparErroAcaoEtiqueta();
     this.abrir(this.$modalAcaoEtiqueta);
   },
 
@@ -4941,12 +4943,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   camposAcaoEtiqueta() {
-    var motivo = String(this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-motivo]").val() || "").trim();
-    if (!motivo || motivo.length > NWM_LIMITE_JUSTIFICATIVA || NWM_CONTROLES_JUSTIFICATIVA.test(motivo)) throw new Error("Informe uma justificativa de até 1000 caracteres.");
+    var $motivo = this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-motivo]");
+    var motivo = String($motivo.val() || "").trim();
+    if (!motivo || motivo.length > NWM_LIMITE_JUSTIFICATIVA || NWM_CONTROLES_JUSTIFICATIVA.test(motivo)) throw this.erroCampoAcaoEtiqueta("Informe uma justificativa de até 1000 caracteres.", $motivo);
     var campos = { justificativa: motivo };
     if (this.acaoEtiquetaAtual.acao !== "estornar") return campos;
-    var quantidade = String(this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").val() || "").trim().replace(",", ".");
-    if (!NWM_DECIMAL_ATE_QUATRO_CASAS.test(quantidade) || !this.numeroFinito(Number(quantidade))) throw new Error("Informe a quantidade atual absoluta, zero ou positiva, com até quatro casas decimais.");
+    var $quantidade = this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]");
+    var quantidade = String($quantidade.val() || "").trim().replace(",", ".");
+    if (!NWM_DECIMAL_ATE_QUATRO_CASAS.test(quantidade) || !this.numeroFinito(Number(quantidade))) throw this.erroCampoAcaoEtiqueta("Informe a quantidade atual absoluta, zero ou positiva, com até quatro casas decimais.", $quantidade);
     campos.quantidadeAtual = Number(quantidade);
     this.verificarQuantidadeAteCapacidade(campos.quantidadeAtual);
     return campos;
@@ -4959,20 +4963,46 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         Math.round(quantidade * NWM_ESCALA_QUANTIDADE) > Math.round(etiqueta.capacidade * NWM_ESCALA_QUANTIDADE);
     })[0];
     if (!acima) return;
-    throw new Error(
+    throw this.erroCampoAcaoEtiqueta(
       "A quantidade " + self.formatarQuantidade(quantidade) + " é maior que a capacidade da etiqueta " + acima.etiqueta +
       " (" + self.quantidadeComUnidade(acima.capacidade, acima.unidade) + "). Informe um saldo final até a capacidade.",
+      this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]"),
     );
+  },
+
+  erroCampoAcaoEtiqueta(mensagem, $campo) {
+    var erro = new Error(mensagem);
+    erro.$campo = $campo;
+    return erro;
+  },
+
+  recusarCamposAcaoEtiqueta(erro) {
+    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").addClass("is-erro").text(erro.message);
+    if (!erro.$campo) return;
+    erro.$campo.addClass("is-invalido").attr("aria-invalid", "true").trigger("focus");
+  },
+
+  limparErroAcaoEtiqueta() {
+    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado].is-erro").removeClass("is-erro").text("");
+    this.$modalAcaoEtiqueta.find(".is-invalido").removeClass("is-invalido").removeAttr("aria-invalid");
   },
 
   enviarAcaoEtiqueta() {
     var operacao = this.acaoEtiquetaAtual;
     if (!operacao || this.escritaEtiquetaBloqueada() || operacao.finalizada) return;
+    this.limparErroAcaoEtiqueta();
     try { operacao.campos = this.camposAcaoEtiqueta(); }
-    catch (erro) { return this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text(erro.message); }
+    catch (erro) { return this.recusarCamposAcaoEtiqueta(erro); }
     operacao.enviando = true;
     this.bloquearTelaEtiqueta(true);
+    this.mostrarCarregamentoAcaoEmLote(operacao, true);
     this.enviarProximaEtiqueta(operacao);
+  },
+
+  mostrarCarregamentoAcaoEmLote(operacao, carregando) {
+    if (!operacao.emLote) return;
+    this.enviandoAcaoEmLote = carregando;
+    this.atualizarCarregandoGlobal();
   },
 
   enviarProximaEtiqueta(operacao) {
@@ -5044,7 +5074,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }, function () {
       operacao.atualizacaoFalhou = true;
       self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").append($("<span>", { text: " A atualização da consulta falhou; clique em Buscar. Não repita comandos já confirmados." }));
-    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.finalizarConfirmacaoImpressao(operacao); self.reformatarLinhasExibidas(); self.encerrarAcaoEtiquetaConcluida(operacao); });
+    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.mostrarCarregamentoAcaoEmLote(operacao, false); self.finalizarConfirmacaoImpressao(operacao); self.reformatarLinhasExibidas(); self.encerrarAcaoEtiquetaConcluida(operacao); });
     if (operacao.ultimaEtiqueta) this.consultarDataset("consultarHistoricoEtiqueta", { codEstabel: operacao.ultimaEtiqueta.codEstabel, idEtiqueta: operacao.ultimaEtiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA }, "historico:apos-acao");
   },
 
@@ -5178,7 +5208,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   atualizarCarregandoGlobal() {
-    var carregando = !!(this.carregandoTela || this.confirmandoImpressao);
+    var carregando = !!(this.carregandoTela || this.confirmandoImpressao || this.enviandoAcaoEmLote);
     if (!this.$carregandoGlobal) {
       this.$carregandoGlobal = $("<div>", {
         class: "nwm-carregando-global",

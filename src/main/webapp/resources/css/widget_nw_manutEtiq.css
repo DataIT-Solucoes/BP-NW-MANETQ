@@ -1965,6 +1965,12 @@
     display: none;
 }
 
+.fluig-style-guide.nwm .nwm-operacao-mensagem.is-erro {
+    background: #FDECEC;
+    color: var(--nwm-vermelho-escuro);
+    font-weight: 600;
+}
+
 .fluig-style-guide.nwm .nwm-operacao-chave {
     font-size: 11px;
     color: #64746c;

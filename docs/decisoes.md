@@ -29,6 +29,8 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 26/10 | Modal de ação de etiqueta (Receber, Estornar, Inutilizar, Perda): erro de preenchimento **em destaque**: mensagem em vermelho com fundo claro (`.nwm-operacao-mensagem.is-erro`) e o campo culpado com borda vermelha, `aria-invalid` e foco (justificativa vazia/inválida, quantidade inválida ou acima da capacidade). Some ao digitar | Pedido do usuário (após teste ao vivo) |
+| 26/10 | Ação de etiqueta **em lote** (Aplicar) usa o **loading global** da widget + toast "Carregando..." do Confirmar até a consulta atualizar (`enviandoAcaoEmLote`), como já dizia o `AGENTS.md`. Da linha, continua sem loading global | Pedido do usuário ("corrige o código") |
 | 23/10 | **Cabeçalho fixo** na tabela principal ao descer a página, no modelo do `widget_nw_bags` (skill, `references/cabecalho-fixo-tabela.md`): tabela sem `maxHeight` (cresce com a página) e cópia do cabeçalho presa no topo. Rollback: reverter o commit | Pedido do usuário |
 | 21/10 | Modal fecha sozinho quando a ação termina sem nada pendente: ação de etiqueta com todas confirmadas e operação concluída/localizada; o resultado vai para toast (operação: 8 s, com WT e operação). Erro, recusa e resultado incerto mantêm o modal aberto | Pedido do usuário |
 | 21/10 | Série de saída só **aparece** depois de validar a natureza (some de novo se a natureza mudar ou na reabertura de operação pendente) | Pedido do usuário |

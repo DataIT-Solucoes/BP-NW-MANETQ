@@ -15,7 +15,7 @@ na linha, abre após sucesso, data e badges); Imprimir da linha (linha atualizad
 Imprimir em lote; Executar quantidade; Aplicar sem ação / Transferir e Imprimir sem marcadas; modal Transferir (título, série escondida até
 validar, natureza vazia/inexistente); fechamento pelo fundo e Esc; nível `admin` para totvsrp.
 Aprovado ao vivo em 22/10 (JS `?v=0.1.2`, lotes GER-01 e 20102026-1; lote 20102026-2 do Cheli intocado): código de barras (marca, vai à página 2, avisa se não achar), legenda com 12 status e sem
-subtítulo, Detalhes com Fazenda `código - descrição`, Histórico, `nivelAcesso` admin. Não testado ao vivo: Estornar acima da capacidade (nenhuma etiqueta EM_ESTOQUE fora do lote protegido) e hover do vermelho.
+subtítulo, Detalhes com Fazenda `código - descrição`, Histórico, `nivelAcesso` admin. Estornar acima da capacidade e hover do vermelho: aprovados em 26/10 (abaixo).
 
 
 Teste ao vivo em 23/10 (JS `?v=0.1.14`, igual ao fonte; usuário totvsrp/admin; lote 20102026-2 do Cheli intocado, que agora tem 3.000 etiquetas):
@@ -25,14 +25,27 @@ Teste ao vivo em 23/10 (JS `?v=0.1.14`, igual ao fonte; usuário totvsrp/admin; 
   números...", faixa 139–141 trouxe 139 e 141); cabeçalho fixo (aparece no topo 100 px, ordenar pela cópia funciona, "?" da cópia abre a Legenda
   sem ordenar); Imprimir da linha na 143 (NÃO_IMPRESSA → IMPRESSA, linha atualizada, ficou na página 2).
 - **Defeito**: o cabeçalho fixo não acompanha a rolagem horizontal. `ajustarCabecalhoFixo` faz `scrollLeft` no `.tabulator-header` da cópia, mas
-  no Tabulator 6 quem rola é o `.tabulator-header-contents` (medido: original 272, cópia 0). Corrigido no fonte em 26/10 (`scrollLeft` no `.tabulator-header-contents` da cópia); falta conferir ao vivo.
+  no Tabulator 6 quem rola é o `.tabulator-header-contents` (medido: original 272, cópia 0). Corrigido em 26/10 (`scrollLeft` no `.tabulator-header-contents` da cópia) e aprovado ao vivo na v0.1.15 (janela de
+  1350 px, rolagem 0/300/522: cópia igual à original, colunas alinhadas).
 - Observações: em janela de 1600 px a tabela já rola na horizontal (colunas 1648 px, espaço 1376 px) e a coluna Ações fica cortada; selos do
   Cód Barras De/Até aparecem truncados "00000001…" (não dá para distinguir); busca 10904/REGLONE sem faixa de etiqueta levou ~3 min (31 chamadas
   de 100, por causa das 3.000 do Cheli); etiquetas 241, 243, 264 e 265 vêm do backend sem zeros à esquerda; o `print()` do navegador trava a
   página até a janela de impressão fechar (o registro só sai depois; esperado do navegador).
-- Parou em: modal **Receber** da 0000000143 aberto (faixa Cód Barras 139–199, 31 etiquetas, sem lote protegido). Clicar Confirmar com
-  justificativa vazia manteve o modal, mas não vi toast nem campo marcado (não confirmado na tela). Falta: Receber, Estornar acima da capacidade (EM_ESTOQUE fora do lote protegido: 129 com saldo 9,5, 241, 264),
-  Inutilizar + estorno, Perda + estorno, ações em lote, Executar quantidade, leitor de código de barras, hover do vermelho, usuário comum.
+- Retomado em 26/10 (v0.1.15, mesma faixa 139–199, 31 etiquetas): **Receber** da 0000000143 aprovado (Impressa → Em estoque, ~5 s,
+  só a linha atualizada, botão Receber trocado por Estornar, mensagem "1 embalagem(ns) confirmada(s). Consulta atualizada.").
+  Justificativa vazia mostrava o aviso em texto escuro, sem destaque: destacado em 26/10 (ver `decisoes.md`), falta conferir ao vivo.
+- Também aprovado em 26/10 (todas no lote 0112026-1; lote do Cheli fora da busca): Estornar acima da capacidade na 143 (11 > 10: mensagem
+  "A quantidade 11 é maior que a capacidade...", sem chamada ao backend); estorno válido 143 10 → 8 (~13 s); Inutilizar 145 (Não impressa →
+  Inutilizada, saldo 0) e estorno com saldo 10 (volta a Não impressa); Perda 147 (Impressa → Encerrada, saldo 0, só Detalhes/Histórico/Estornar)
+  e estorno com saldo 10 (volta a Impressa); Receber em lote 139 + 141 (Em estoque, ~16 s, "2 embalagem(ns) confirmada(s)"); Executar
+  quantidade 25 (marca 139, 141, 145 = 30, pula a 143 por não estar inteira); leitor (149 marcada, campo limpo, foco mantido; reler não
+  desmarca; 0000009999 → aviso "não está na lista carregada", valor fica no campo); hover vermelho de Inutilizar e Perda (#C4161C, ícone branco).
+- Ação de etiqueta em lote não mostrava o loading global: corrigido em 26/10 (`enviandoAcaoEmLote`, ver `decisoes.md`), falta conferir ao vivo.
+- **Divergência a decidir (achada no código em 26/10, não testada ao vivo)**: Receber/Estornar/Inutilizar/Perda **clicados na linha** também
+  não seguem a regra do `AGENTS.md` ("desabilita os botões daquela linha e mostra o carregamento na própria linha"): abrem o modal e, ao
+  confirmar, desabilitam todos os controles da widget (`bloquearTelaEtiqueta`), sem `linhaCarregando`. Só Imprimir e Histórico da linha
+  seguem a regra. Corrigir o código ou o texto.
+- Falta: usuário comum (precisa de outro login).
 
 ## Fora do widget
 - Transferência, Remessa e Devolução: o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa. Remessa testada ao vivo em 22/10 (natureza 5949im, destino 11301, emitente 112267, etiqueta 135): aceita, documento de trabalho 493080, operação 211; usuário confirmou no Datasul que deu certo. Destino 10913 recusado ("Estabelecimento nao autorizado para esta acao"): o Dataset só autoriza 10904 e 11301; ajuste do Dataset fica com o usuário/Cheli. Devolução não testada.
