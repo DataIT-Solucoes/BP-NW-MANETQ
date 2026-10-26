@@ -40,7 +40,8 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
   obrigatórios, sem o mínimo de 2 caracteres (embalagens e Bags: só dígitos; emitentes: código numérico ou 2+ caracteres), `limite` 1–20,
   cursor `aposCodigo`/`proximoCodigo`. O cursor de naturezas pode trazer TAB e tem de ir de volta inteiro. Campos de resposta só no
   `LEIA-ME.md` para naturezas (código, nome, contexto `MESMO_ESTADO`/`OUTRO_ESTADO`, `descricaoExibicao`, `exibeRecebimento`). O LEIA-ME
-  diz que o REST e a prova real pelo Dataset ainda estão pendentes. A tela usa só o `apoiarEmbalagens` (Cód Barras, 23/10).
+  diz que o REST e a prova real pelo Dataset ainda estão pendentes. A tela usa o `apoiarEmbalagens` (Cód Barras, 23/10) e o `apoiarSeries`
+  (série de saída do modal Movimentar, 26/10; resposta `codigo`/`descricao`, provada no TESTE pelo `wdgt_monitor_nw_novo`).
 - `apoiarEmbalagens` (fonte `docs/contr-emb-autocompletes.i.txt`, cópia local fora do git, modo `EMBALAGEM`, passado pelo usuário em 23/10): lê
   `contr_emb_etiqueta` do `codEstabel` com `tipo-controle = "EMBALAGEM"`, em ordem de `id-etiqueta`, sem filtrar situação. Compara
   `cod-etiqueta` (`acCorresponde`): igual → acha; filtro começando com 0 → exato sem zeros à esquerda; sem zero → começo do código sem zeros.

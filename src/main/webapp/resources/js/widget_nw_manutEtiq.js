@@ -95,6 +95,7 @@ var NWM_APOIOS_FILTROS = {
 
 var NWM_APOIO_DOCUMENTOS = "apoiarDocumentosEntrada";
 var NWM_APOIO_EMBALAGENS = "apoiarEmbalagens";
+var NWM_APOIO_SERIES = "apoiarSeries";
 var NWM_TAMANHO_CODIGO_BARRAS = 10;
 var NWM_CAMPO_DESTINO_OPERACAO = "codEstabelDestino";
 
@@ -5383,13 +5384,97 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     );
     $("[data-item-qtde]", this.DOM).select2(configuracao);
     $('[data-operacao-campo="serie"]', this.DOM).select2(
-      $.extend({}, configuracao, {
-        dropdownParent: $("[data-modal-operacao]", this.DOM),
-      }),
+      this.configuracaoSelect2Serie(configuracao),
     );
     $('[data-acao-lote], [data-item-qtde], [data-operacao-campo="serie"]', this.DOM)
       .closest(".nwm-campo-caixa-select")
       .addClass("is-select2");
+  },
+
+  configuracaoSelect2Serie(configuracao) {
+    var self = this;
+    return $.extend({}, configuracao, {
+      dropdownParent: $("[data-modal-operacao]", this.DOM),
+      minimumInputLength: 1,
+      ajax: {
+        delay: NWM_ATRASO_APOIO_MS,
+        transport: function (opcoes, sucesso, falha) {
+          return self.consultarSeriesOperacao(opcoes.data, sucesso, falha);
+        },
+        processResults: function (resultado) {
+          return self.resultadosSeriesOperacao(resultado);
+        },
+      },
+    });
+  },
+
+  consultarSeriesOperacao(pesquisa, sucesso, falha) {
+    var self = this;
+    var parametros = this.parametrosSeriesOperacao(pesquisa);
+    var requisicao = this.chamarEmbalagens(NWM_APOIO_SERIES, parametros);
+    requisicao.then(
+      function (resultado) {
+        self.receberSeriesOperacao(parametros, resultado, sucesso, falha);
+      },
+      function (erro) {
+        if (!erro || erro.tipo !== NWM_TIPOS_ERRO.CANCELAMENTO) falha();
+      },
+    );
+    return requisicao;
+  },
+
+  parametrosSeriesOperacao(pesquisa) {
+    var parametros = {
+      codEstabel: (this.operacaoAtual || {}).codEstabel || "",
+      filtro: String(pesquisa.term || "").trim(),
+      limite: NWM_LIMITE_SUGESTOES,
+    };
+    var paginacao = this.paginacaoSerie;
+    if (pesquisa.page > 1 && paginacao && paginacao.filtro === parametros.filtro)
+      parametros.aposCodigo = paginacao.cursor;
+    return parametros;
+  },
+
+  receberSeriesOperacao(parametros, resultado, sucesso, falha) {
+    if (!this.seriesOperacaoValidas(parametros, resultado)) return falha();
+    this.paginacaoSerie = {
+      filtro: parametros.filtro,
+      cursor: resultado.proximoCodigo,
+    };
+    sucesso(resultado);
+  },
+
+  seriesOperacaoValidas(parametros, resultado) {
+    var self = this;
+    if (!resultado.sucesso || typeof resultado.proximoCodigo !== "string")
+      return false;
+    if (resultado.temMais && resultado.proximoCodigo === parametros.aposCodigo)
+      return false;
+    var invalidas = $.grep(resultado.dados, function (registro) {
+      return !self.serieSugeridaValida(registro);
+    });
+    return !invalidas.length && resultado.dados.length <= NWM_LIMITE_SUGESTOES;
+  },
+
+  serieSugeridaValida(registro) {
+    return (
+      this.sugestaoValida(registro) &&
+      this.textoPreenchido(registro.codigo) &&
+      !NWM_CARACTERE_CONTROLE.test(registro.codigo)
+    );
+  },
+
+  resultadosSeriesOperacao(resultado) {
+    return {
+      results: $.map(resultado.dados, function (registro) {
+        var descricao = registro.descricao.trim();
+        return {
+          id: registro.codigo,
+          text: descricao ? registro.codigo + " - " + descricao : registro.codigo,
+        };
+      }),
+      pagination: { more: resultado.temMais },
+    };
   },
 
   montarLegenda() {

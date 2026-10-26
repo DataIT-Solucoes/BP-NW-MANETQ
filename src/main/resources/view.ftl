@@ -235,7 +235,6 @@
                     <div class="nwm-campo-caixa nwm-campo-caixa-select">
                         <select id="nwm-serie-${instanceId}" class="nwm-campo-input nwm-campo-select" data-operacao-campo="serie" disabled>
                             <option value="">Selecione</option>
-                            <option value="1">1</option>
                         </select>
                     </div>
                 </div>
