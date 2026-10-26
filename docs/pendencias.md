@@ -18,6 +18,22 @@ Aprovado ao vivo em 22/10 (JS `?v=0.1.2`, lotes GER-01 e 20102026-1; lote 201020
 subtítulo, Detalhes com Fazenda `código - descrição`, Histórico, `nivelAcesso` admin. Não testado ao vivo: Estornar acima da capacidade (nenhuma etiqueta EM_ESTOQUE fora do lote protegido) e hover do vermelho.
 
 
+Teste ao vivo em 23/10 (JS `?v=0.1.14`, igual ao fonte; usuário totvsrp/admin; lote 20102026-2 do Cheli intocado, que agora tem 3.000 etiquetas):
+- Aprovado: validação sem filtros (toast, sem vermelho); autocomplete de Estabelecimento e Itens; overlay só na widget + toast "Carregando...";
+  Detalhes da 135 com "WT Docto - FT4003" = 493080; Histórico da 135 (carregamento na linha, sem overlay global, abre em ~7 s, 1537 px numa janela
+  de 1600, badge "Vinculada - Doc. FT4003: 493080", rodapé "Mostrando 1–4 eventos"); Cód Barras De/Até (`139` → `0000000139`, letra → "Digite só
+  números...", faixa 139–141 trouxe 139 e 141); cabeçalho fixo (aparece no topo 100 px, ordenar pela cópia funciona, "?" da cópia abre a Legenda
+  sem ordenar); Imprimir da linha na 143 (NÃO_IMPRESSA → IMPRESSA, linha atualizada, ficou na página 2).
+- **Defeito**: o cabeçalho fixo não acompanha a rolagem horizontal. `ajustarCabecalhoFixo` faz `scrollLeft` no `.tabulator-header` da cópia, mas
+  no Tabulator 6 quem rola é o `.tabulator-header-contents` (medido: original 272, cópia 0). Corrigido no fonte em 26/10 (`scrollLeft` no `.tabulator-header-contents` da cópia); falta conferir ao vivo.
+- Observações: em janela de 1600 px a tabela já rola na horizontal (colunas 1648 px, espaço 1376 px) e a coluna Ações fica cortada; selos do
+  Cód Barras De/Até aparecem truncados "00000001…" (não dá para distinguir); busca 10904/REGLONE sem faixa de etiqueta levou ~3 min (31 chamadas
+  de 100, por causa das 3.000 do Cheli); etiquetas 241, 243, 264 e 265 vêm do backend sem zeros à esquerda; o `print()` do navegador trava a
+  página até a janela de impressão fechar (o registro só sai depois; esperado do navegador).
+- Parou em: modal **Receber** da 0000000143 aberto (faixa Cód Barras 139–199, 31 etiquetas, sem lote protegido). Clicar Confirmar com
+  justificativa vazia manteve o modal, mas não vi toast nem campo marcado (não confirmado na tela). Falta: Receber, Estornar acima da capacidade (EM_ESTOQUE fora do lote protegido: 129 com saldo 9,5, 241, 264),
+  Inutilizar + estorno, Perda + estorno, ações em lote, Executar quantidade, leitor de código de barras, hover do vermelho, usuário comum.
+
 ## Fora do widget
 - Transferência, Remessa e Devolução: o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa. Remessa testada ao vivo em 22/10 (natureza 5949im, destino 11301, emitente 112267, etiqueta 135): aceita, documento de trabalho 493080, operação 211; usuário confirmou no Datasul que deu certo. Destino 10913 recusado ("Estabelecimento nao autorizado para esta acao"): o Dataset só autoriza 10904 e 11301; ajuste do Dataset fica com o usuário/Cheli. Devolução não testada.
 - Série de saída: hoje Select2 com opção fixa `1` (21/10). O Dataset `37d22b1` (22/10) já tem `apoiarSeries`, mas os campos de resposta não estão documentados e o REST ainda não foi provado (LEIA-ME); não ligar a tela sem pedido.

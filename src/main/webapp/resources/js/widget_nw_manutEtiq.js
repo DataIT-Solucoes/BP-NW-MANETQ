@@ -1787,7 +1787,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       .css({ left: caixa.left + "px", width: caixa.width + "px" })
       .prop("hidden", false);
     $fixo
-      .find(".tabulator-header")
+      .find(".tabulator-header-contents")
       .scrollLeft($tabela.children(".tabulator-tableholder").scrollLeft());
   },
 
