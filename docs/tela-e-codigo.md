@@ -74,9 +74,11 @@
   situação/versão antes (`consultarEstadoEtiqueta`), para na primeira recusa; resultado incerto vai para o `sessionStorage` e bloqueia
   escritas (`escritaEtiquetaBloqueada`). Modal (receber, estornar, inutilizar, perda): `camposAcaoEtiqueta` valida e lança
   `erroCampoAcaoEtiqueta` com o campo; `recusarCamposAcaoEtiqueta` mostra a mensagem com `.is-erro` e marca o campo (`is-invalido`,
-  `aria-invalid`, foco); `limparErroAcaoEtiqueta` ao digitar, ao abrir e ao confirmar. Ao confirmar, `bloquearTelaEtiqueta` desabilita os
-  controles da widget; se veio do Aplicar (`emLote`), `mostrarCarregamentoAcaoEmLote` liga o loading global (`enviandoAcaoEmLote`) até
-  a consulta atualizar. **Imprimir** (`iniciarImpressao`): `carregarDadosImpressao` busca `obterDadosImpressao` uma
+  `aria-invalid`, foco); `limparErroAcaoEtiqueta` ao digitar, ao abrir e ao confirmar. Ao confirmar: **da linha** (`daLinha`),
+  `iniciarAcaoDaLinha` fecha o modal e marca `linhaCarregando`; `finalizarAcaoDaLinha` desmarca e avisa por toast (recusa com
+  `mensagemRecusaAcaoEtiqueta`, incerto com a chave; sucesso em `encerrarAcaoEtiquetaConcluida`). **Do Aplicar**, o modal fica aberto,
+  `bloquearTelaEtiqueta` desabilita os controles da widget e `mostrarCarregamentoAcaoEmLote` liga o loading global (`enviandoAcaoEmLote`)
+  até a consulta atualizar. **Imprimir** (`iniciarImpressao`): `carregarDadosImpressao` busca `obterDadosImpressao` uma
   etiqueta por vez (`obterEtiquetaParaImpressao`, `montarDadosEtiquetaImpressao`); `montarPaginaEtiqueta` gera uma `<section>` por
   etiqueta (barras por `modulosCodigoBarras` + `marcacaoCodigoBarras`: JsBarcode só calcula os módulos e a tela desenha o SVG);
   `abrirQuadroImpressao` põe tudo num iframe oculto com `NWM_ESTILO_IMPRESSAO` (`@page` 104 × 50 mm) e `dispararImpressao` chama o
@@ -126,7 +128,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Ações da linha, lote e quantidade (2797–2950) | `acaoNaLinha`, `aplicarLote`, `executarQuantidade`, `escolherEmbalagensDoItem` |
 | Modais e Detalhes (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |
-| Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarImpressao`, `carregarDadosImpressao`, `montarPaginaEtiqueta`, `marcacaoCodigoBarras`, `abrirQuadroImpressao`, `enviarParaImpressora`, `registrarImpressao`, `camposAcaoEtiqueta`, `recusarCamposAcaoEtiqueta`, `limparErroAcaoEtiqueta`, `enviarAcaoEtiqueta`, `mostrarCarregamentoAcaoEmLote`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
+| Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarImpressao`, `carregarDadosImpressao`, `montarPaginaEtiqueta`, `marcacaoCodigoBarras`, `abrirQuadroImpressao`, `enviarParaImpressora`, `registrarImpressao`, `camposAcaoEtiqueta`, `recusarCamposAcaoEtiqueta`, `limparErroAcaoEtiqueta`, `enviarAcaoEtiqueta`, `iniciarAcaoDaLinha`, `finalizarAcaoDaLinha`, `mostrarCarregamentoAcaoEmLote`, `mensagemRecusaAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
 | Histórico e loading (4489–4614) | `abrirHistorico`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `montarBadgeEventoHistorico`, `renderizarHistoricoEtiqueta` |
 | Impressão, Select2 e legenda (4615–4690) | `obterDadosImpressaoEtiqueta`, `validarRespostaIndividual`, `prepararSelect2`, `montarLegenda`, `abrirLegenda` |
 | Impressora (4692–4882) | `abrirImpressora`, `carregarImpressoras`, `chamarAplicativoImpressao`, `salvarImpressora`, `testarImpressora`, `obterTemplateEtiqueta` |

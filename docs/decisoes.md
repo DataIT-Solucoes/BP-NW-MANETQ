@@ -29,6 +29,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 26/10 | Receber, Estornar, Inutilizar e Perda **clicados na linha** seguem a regra do `AGENTS.md`: o Confirmar valida no modal; se ok, o modal fecha e só aquela linha carrega (`linhaCarregando`, botões dela desabilitados, sem loading global e sem travar a widget). Resultado por toast: sucesso, recusa (`danger`, mesmo texto que o modal mostrava) ou incerto (`warning` com a chave; escritas bloqueadas). Como o Imprimir da linha | Pedido do usuário ("corrige o código") |
 | 26/10 | Modal de ação de etiqueta (Receber, Estornar, Inutilizar, Perda): erro de preenchimento **em destaque**: mensagem em vermelho com fundo claro (`.nwm-operacao-mensagem.is-erro`) e o campo culpado com borda vermelha, `aria-invalid` e foco (justificativa vazia/inválida, quantidade inválida ou acima da capacidade). Some ao digitar | Pedido do usuário (após teste ao vivo) |
 | 26/10 | Ação de etiqueta **em lote** (Aplicar) usa o **loading global** da widget + toast "Carregando..." do Confirmar até a consulta atualizar (`enviandoAcaoEmLote`), como já dizia o `AGENTS.md`. Da linha, continua sem loading global | Pedido do usuário ("corrige o código") |
 | 23/10 | **Cabeçalho fixo** na tabela principal ao descer a página, no modelo do `widget_nw_bags` (skill, `references/cabecalho-fixo-tabela.md`): tabela sem `maxHeight` (cresce com a página) e cópia do cabeçalho presa no topo. Rollback: reverter o commit | Pedido do usuário |

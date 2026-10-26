@@ -33,19 +33,27 @@ Teste ao vivo em 23/10 (JS `?v=0.1.14`, igual ao fonte; usuário totvsrp/admin; 
   página até a janela de impressão fechar (o registro só sai depois; esperado do navegador).
 - Retomado em 26/10 (v0.1.15, mesma faixa 139–199, 31 etiquetas): **Receber** da 0000000143 aprovado (Impressa → Em estoque, ~5 s,
   só a linha atualizada, botão Receber trocado por Estornar, mensagem "1 embalagem(ns) confirmada(s). Consulta atualizada.").
-  Justificativa vazia mostrava o aviso em texto escuro, sem destaque: destacado em 26/10 (ver `decisoes.md`), falta conferir ao vivo.
+  Justificativa vazia mostrava o aviso em texto escuro, sem destaque: destacado em 26/10 (ver `decisoes.md`) e aprovado ao vivo na v0.1.16
+  (mensagem vermelha com fundo claro, campo com borda vermelha e foco; some ao digitar; no Estornar 143 com 11, só o saldo fica marcado).
 - Também aprovado em 26/10 (todas no lote 0112026-1; lote do Cheli fora da busca): Estornar acima da capacidade na 143 (11 > 10: mensagem
   "A quantidade 11 é maior que a capacidade...", sem chamada ao backend); estorno válido 143 10 → 8 (~13 s); Inutilizar 145 (Não impressa →
   Inutilizada, saldo 0) e estorno com saldo 10 (volta a Não impressa); Perda 147 (Impressa → Encerrada, saldo 0, só Detalhes/Histórico/Estornar)
   e estorno com saldo 10 (volta a Impressa); Receber em lote 139 + 141 (Em estoque, ~16 s, "2 embalagem(ns) confirmada(s)"); Executar
   quantidade 25 (marca 139, 141, 145 = 30, pula a 143 por não estar inteira); leitor (149 marcada, campo limpo, foco mantido; reler não
   desmarca; 0000009999 → aviso "não está na lista carregada", valor fica no campo); hover vermelho de Inutilizar e Perda (#C4161C, ícone branco).
-- Ação de etiqueta em lote não mostrava o loading global: corrigido em 26/10 (`enviandoAcaoEmLote`, ver `decisoes.md`), falta conferir ao vivo.
-- **Divergência a decidir (achada no código em 26/10, não testada ao vivo)**: Receber/Estornar/Inutilizar/Perda **clicados na linha** também
-  não seguem a regra do `AGENTS.md` ("desabilita os botões daquela linha e mostra o carregamento na própria linha"): abrem o modal e, ao
-  confirmar, desabilitam todos os controles da widget (`bloquearTelaEtiqueta`), sem `linhaCarregando`. Só Imprimir e Histórico da linha
-  seguem a regra. Corrigir o código ou o texto.
-- Falta: usuário comum (precisa de outro login).
+- Ação de etiqueta em lote não mostrava o loading global: corrigido em 26/10 (`enviandoAcaoEmLote`, ver `decisoes.md`) e aprovado
+  ao vivo na v0.1.16: Receber em lote 147 + 149 (Impressa → Em estoque) com overlay e toast "Carregando..." de 0,3 s a 14,6 s, Buscar
+  desabilitado no período, overlay e modal saindo juntos.
+- Receber/Estornar/Inutilizar/Perda **clicados na linha** travavam a widget inteira em vez de só a linha: corrigido em 26/10 na v0.1.17
+  (ver `decisoes.md`) e aprovado ao vivo: Estornar 143 (8 → 10, 9,6 s), Inutilizar 145 e estorno (volta a Não impressa) pela linha; o modal
+  fecha no Confirmar, só a linha carrega (spinner no botão, botões dela desabilitados), sem overlay, filtros/Buscar/outras linhas liberados,
+  Buscar durante a ação não dispara a busca, toast "Estornar/Inutilizar: 1 embalagem(ns) confirmada(s)." no fim.
+- **Usuário comum** (26/10, v0.1.17, **simulado**: sem login de comum, a página foi recarregada com um script do DevTools que troca o
+  usuário só na consulta do `colleagueGroup` por um inexistente; a API real devolveu grupos vazios): `nivelAcesso = comum`; Ação em lote
+  sem Transferir e Devolução (option escondida/desabilitada e fora do Select2); nenhuma linha com botão Transferir/Devolver (Em estoque,
+  Impressa e Não impressa com as demais ações normais); `aplicarAcao('transferir'|'devolver')` forçado → aviso "Seu nível de acesso não
+  permite esta ação.", nenhum modal. Não coberto: login real de um usuário comum (grupos dele no `colleagueGroup`) e a autorização no
+  backend (as escritas continuam saindo como o usuário logado).
 
 ## Fora do widget
 - Transferência, Remessa e Devolução: o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa. Remessa testada ao vivo em 22/10 (natureza 5949im, destino 11301, emitente 112267, etiqueta 135): aceita, documento de trabalho 493080, operação 211; usuário confirmou no Datasul que deu certo. Destino 10913 recusado ("Estabelecimento nao autorizado para esta acao"): o Dataset só autoriza 10904 e 11301; ajuste do Dataset fica com o usuário/Cheli. Devolução não testada.

@@ -4718,7 +4718,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   abrirAcaoEtiqueta(acao, linhas, linhaOrigem) {
     var etiquetas = this.etiquetasDasLinhas(linhas);
     if (this.recusarEtiquetasIndisponiveis(acao, etiquetas)) return;
-    this.acaoEtiquetaAtual = { acao: acao, etiquetas: etiquetas, indice: 0, concluidas: 0, enviando: false, incerta: false, emLote: !linhaOrigem };
+    this.acaoEtiquetaAtual = { acao: acao, etiquetas: etiquetas, indice: 0, concluidas: 0, enviando: false, incerta: false, daLinha: !!linhaOrigem, linhaOrigem: linhaOrigem || null };
     if (acao === "imprimir") return this.iniciarImpressao(linhaOrigem);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-titulo]").text(NWM_ACOES[acao].rotulo);
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-resumo]").text(etiquetas.length + " embalagem(ns). " + (acao === "estornar" ? "Informe o saldo final de cada embalagem, não a diferença." : "Informe a justificativa."));
@@ -4994,13 +4994,28 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     try { operacao.campos = this.camposAcaoEtiqueta(); }
     catch (erro) { return this.recusarCamposAcaoEtiqueta(erro); }
     operacao.enviando = true;
-    this.bloquearTelaEtiqueta(true);
+    if (operacao.daLinha) this.iniciarAcaoDaLinha(operacao);
+    else this.bloquearTelaEtiqueta(true);
     this.mostrarCarregamentoAcaoEmLote(operacao, true);
     this.enviarProximaEtiqueta(operacao);
   },
 
+  iniciarAcaoDaLinha(operacao) {
+    this.fechar(this.$modalAcaoEtiqueta);
+    this.marcarLinhaCarregando(operacao.linhaOrigem, operacao.acao);
+  },
+
+  finalizarAcaoDaLinha(operacao) {
+    if (operacao.acao === "imprimir" || !operacao.daLinha) return;
+    this.desmarcarLinhaCarregando();
+    if (operacao.incerta) return this.avisar("warning", "Resultado incerto. Não reenviado. Consulte situação e histórico. Chave: " + operacao.comando.parametros.chaveIdempotente);
+    if (!operacao.erro) return;
+    this.fecharAcaoEtiqueta();
+    this.avisar("danger", this.mensagemRecusaAcaoEtiqueta(operacao));
+  },
+
   mostrarCarregamentoAcaoEmLote(operacao, carregando) {
-    if (!operacao.emLote) return;
+    if (operacao.daLinha) return;
     this.enviandoAcaoEmLote = carregando;
     this.atualizarCarregandoGlobal();
   },
@@ -5050,8 +5065,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   recusarAcaoEtiqueta(operacao, erro) {
     operacao.finalizada = true;
     operacao.erro = erro;
-    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text((erro.codigoErro ? erro.codigoErro + ": " : "") + erro.message + " Confirmadas: " + operacao.concluidas + ". Nenhuma repetição automática.");
+    this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").text(this.mensagemRecusaAcaoEtiqueta(operacao));
     this.terminarAtualizacaoEtiqueta(operacao);
+  },
+
+  mensagemRecusaAcaoEtiqueta(operacao) {
+    var erro = operacao.erro;
+    return (erro.codigoErro ? erro.codigoErro + ": " : "") + erro.message + " Confirmadas: " + operacao.concluidas + ". Nenhuma repetição automática.";
   },
 
   incertaAcaoEtiqueta(operacao, erro) {
@@ -5074,7 +5094,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }, function () {
       operacao.atualizacaoFalhou = true;
       self.$modalAcaoEtiqueta.find("[data-acao-etiqueta-estado]").append($("<span>", { text: " A atualização da consulta falhou; clique em Buscar. Não repita comandos já confirmados." }));
-    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.mostrarCarregamentoAcaoEmLote(operacao, false); self.finalizarConfirmacaoImpressao(operacao); self.reformatarLinhasExibidas(); self.encerrarAcaoEtiquetaConcluida(operacao); });
+    }).always(function () { operacao.enviando = false; if (!operacao.daLinha) self.bloquearTelaEtiqueta(false); self.mostrarCarregamentoAcaoEmLote(operacao, false); self.finalizarAcaoDaLinha(operacao); self.finalizarConfirmacaoImpressao(operacao); self.reformatarLinhasExibidas(); self.encerrarAcaoEtiquetaConcluida(operacao); });
     if (operacao.ultimaEtiqueta) this.consultarDataset("consultarHistoricoEtiqueta", { codEstabel: operacao.ultimaEtiqueta.codEstabel, idEtiqueta: operacao.ultimaEtiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA }, "historico:apos-acao");
   },
 
