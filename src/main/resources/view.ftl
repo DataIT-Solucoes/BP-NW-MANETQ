@@ -214,10 +214,7 @@
             <div class="nwm-operacao-campos">
                 <div class="nwm-campo">
                     <label class="nwm-campo-rotulo" for="nwm-natureza-${instanceId}">Natureza de saída</label>
-                    <div class="nwm-acoplado">
-                        <input id="nwm-natureza-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="natureza">
-                        <button type="button" class="nwm-btn nwm-btn-contorno" data-classificar-natureza>Validar natureza</button>
-                    </div>
+                    <input id="nwm-natureza-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" aria-label="Natureza de saída" data-operacao-campo="natureza">
                 </div>
             </div>
             <div class="nwm-operacao-campos">
@@ -251,7 +248,7 @@
                     </div>
                     <div class="nwm-campo">
                         <label class="nwm-campo-rotulo" for="nwm-natureza-origem-${instanceId}">Natureza de entrada</label>
-                        <input id="nwm-natureza-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="naturezaOrigem">
+                        <input id="nwm-natureza-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" aria-label="Natureza de entrada" data-operacao-campo="naturezaOrigem">
                     </div>
                 </div>
                 <button type="button" class="nwm-btn nwm-btn-contorno" data-carregar-origem>Carregar embalagens da origem</button>

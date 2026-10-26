@@ -96,13 +96,17 @@ var NWM_APOIOS_FILTROS = {
 var NWM_APOIO_DOCUMENTOS = "apoiarDocumentosEntrada";
 var NWM_APOIO_EMBALAGENS = "apoiarEmbalagens";
 var NWM_APOIO_SERIES = "apoiarSeries";
+var NWM_APOIO_NATUREZAS = "apoiarNaturezas";
 var NWM_TAMANHO_CODIGO_BARRAS = 10;
 var NWM_CAMPO_DESTINO_OPERACAO = "codEstabelDestino";
 var NWM_CAMPO_SERIE_OPERACAO = "serie";
 var NWM_CAMPO_SERIE_ORIGEM = "serieOrigem";
 var NWM_CAMPOS_SERIE = [NWM_CAMPO_SERIE_OPERACAO, NWM_CAMPO_SERIE_ORIGEM];
 var NWM_CAMPO_NOTA_ORIGEM = "numeroOrigem";
-var NWM_CAMPOS_APOIO_OPERACAO = NWM_CAMPOS_SERIE.concat([NWM_CAMPO_NOTA_ORIGEM]);
+var NWM_CAMPO_NATUREZA_OPERACAO = "natureza";
+var NWM_CAMPO_NATUREZA_ORIGEM = "naturezaOrigem";
+var NWM_CAMPOS_NATUREZA = [NWM_CAMPO_NATUREZA_OPERACAO, NWM_CAMPO_NATUREZA_ORIGEM];
+var NWM_CAMPOS_APOIO_OPERACAO = NWM_CAMPOS_SERIE.concat([NWM_CAMPO_NOTA_ORIGEM], NWM_CAMPOS_NATUREZA);
 
 var NWM_RESTRICOES_APOIO = {
   apoiarItens: { tipoControleEstoque: "3" },
@@ -623,6 +627,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       NWM_APOIO_DOCUMENTOS,
       this.campoApoioOperacao(NWM_CAMPO_NOTA_ORIGEM),
     );
+    $.each(NWM_CAMPOS_NATUREZA, function (indice, campo) {
+      self.prepararApoioFiltro(campo, NWM_APOIO_NATUREZAS, self.campoApoioOperacao(campo));
+    });
     $("[data-documentos-selecionados]", this.DOM).on(
       "click.nwm",
       "[data-remover-documento]",
@@ -799,6 +806,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return apoio.acao === NWM_APOIO_SERIES;
   },
 
+  apoioDeNaturezas(apoio) {
+    return apoio.acao === NWM_APOIO_NATUREZAS;
+  },
+
   valorSelecionadoApoio(apoio, registro) {
     return this.apoioDeDocumentos(apoio) ? registro.numero : registro.codigo;
   },
@@ -905,7 +916,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       this.agendarApoioCodigoBarras(apoio);
       return;
     }
-    if (this.apoioDeSeries(apoio)) {
+    if (this.apoioDeSeries(apoio) || this.apoioDeNaturezas(apoio)) {
       this.agendarApoioSerie(apoio);
       return;
     }
@@ -1086,6 +1097,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       if (!self.sugestaoValida(registro)) validas = false;
       if (self.apoioDeDocumentos(apoio) && !self.documentoValido(registro))
         validas = false;
+      if (self.apoioDeNaturezas(apoio) && typeof registro.descricaoExibicao !== "string")
+        validas = false;
     });
     return validas;
   },
@@ -1148,6 +1161,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   textosOpcaoApoio(apoio, registro) {
     if (this.apoioDeSeries(apoio))
       return { principal: registro.codigo, complemento: "" };
+    if (this.apoioDeNaturezas(apoio))
+      return { principal: registro.codigo, complemento: this.complementoNatureza(registro) };
     if (!this.apoioDeDocumentos(apoio))
       return { principal: registro.codigo, complemento: registro.descricao };
     return {
@@ -1160,6 +1175,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         " · natureza " +
         registro.natureza,
     };
+  },
+
+  complementoNatureza(registro) {
+    return registro.descricaoExibicao
+      .replace(registro.codigo + " - ", "")
+      .replace(/\s+/g, " ")
+      .trim();
   },
 
   montarAvisoApoio(apoio) {
@@ -1203,6 +1225,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       .data("registro", registro);
     this.cancelarApoioFiltro(apoio);
     this.mostrarSelecionado(apoio, registro);
+    if (apoio.campo === NWM_CAMPO_NATUREZA_OPERACAO) this.classificarOperacao();
   },
 
   teclaApoioFiltro(apoio, evento) {
@@ -3413,12 +3436,16 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.ligarBotaoOperacao("[data-fechar-operacao]", function () {
       self.fecharOperacao();
     });
-    this.ligarBotaoOperacao("[data-classificar-natureza]", function () {
-      self.classificarOperacao();
-    });
     this.ligarBotaoOperacao("[data-carregar-origem]", function () {
       self.carregarOrigemOperacao();
     });
+    this.campoApoioOperacao(NWM_CAMPO_NATUREZA_OPERACAO)
+      .on("change.nwm", function () {
+        self.classificarOperacao();
+      })
+      .on("keydown.nwm", function (evento) {
+        self.classificarNaturezaDigitada(evento);
+      });
     $("[data-origem-todos]", this.DOM).on("change.nwm", function () {
       self.alterarSelecaoTodaOrigem($(this).prop("checked"));
     });
@@ -3658,10 +3685,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   campoOperacao(campo) {
-    return this.valorFiltroInformado(
-      campo,
-      $('[data-operacao-campo="' + campo + '"]', this.DOM),
-    );
+    var $campo = $('[data-operacao-campo="' + campo + '"]', this.DOM);
+    if (NWM_CAMPOS_NATUREZA.indexOf(campo) >= 0)
+      return String($campo.val() || "").trim();
+    return this.valorFiltroInformado(campo, $campo);
   },
 
   textoOperacaoValido(valor) {
@@ -3741,7 +3768,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.atualizarCheckTodosOrigem(null);
     this.esconderRamosOperacao();
     $("[data-operacao-classificacao]", this.DOM).text(
-      "Informe a natureza e clique em Validar natureza.",
+      "Digite ou escolha a natureza de saída.",
     );
   },
 
@@ -3850,10 +3877,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.travarApoioOperacao(NWM_CAMPO_NOTA_ORIGEM, travada);
     this.travarEmitenteDestinoOperacao(operacao, travada);
     $("[data-operacao-serie]", this.DOM).prop("hidden", semClassificacao);
-    $("[data-classificar-natureza]", this.DOM).prop(
-      "disabled",
-      travada || operacao.estado === NWM_ESTADOS_OPERACAO.CLASSIFICANDO,
-    );
+    this.travarApoioOperacao(NWM_CAMPO_NATUREZA_OPERACAO, travada);
+    this.travarApoioOperacao(NWM_CAMPO_NATUREZA_ORIGEM, travada);
     $("[data-carregar-origem]", this.DOM).prop(
       "disabled",
       travada ||
@@ -3920,6 +3945,17 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     );
   },
 
+  classificarNaturezaDigitada(evento) {
+    if (evento.key !== "Enter") return;
+    evento.preventDefault();
+    this.cancelarApoioFiltro(this.apoiosFiltros[NWM_CAMPO_NATUREZA_OPERACAO]);
+    this.classificarOperacao();
+  },
+
+  naturezaJaClassificada(operacao, natureza) {
+    return !!operacao.classificacao && operacao.classificacao.natureza === natureza;
+  },
+
   classificarOperacao() {
     var self = this;
     var operacao = this.operacaoAtual;
@@ -3930,9 +3966,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     )
       return;
     var natureza = this.campoOperacao("natureza");
+    if (this.naturezaJaClassificada(operacao, natureza)) return;
     if (!this.textoOperacaoValido(natureza)) {
       this.mostrarEstadoOperacao(
-        "Informe o código exato da natureza, com até 100 caracteres.",
+        "Digite ou escolha a natureza de saída.",
       );
       return;
     }

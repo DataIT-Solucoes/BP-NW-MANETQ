@@ -65,7 +65,9 @@
 - **Busca** (`buscar` → `carregarEtiquetas`): pagina por cursor, valida ordem dos ids e cada registro (`registroEtiquetaValido`), mapeia
   (`mapearEtiqueta`), descreve itens (`apoiarItens`) e estabelecimentos (Fazenda) e só então exibe (`concluirCargaEtiquetas`).
 - **Operação** (Transferir/Devolver, modal Movimentar; título por ação em `NWM_TITULOS_OPERACAO`, ex.: "Transferir embalagens"): `classificarNatureza` define o fluxo (`NWM_ROTULOS_FLUXO`): Transferência e
-  Remessa (destino por autocomplete `apoiarEstabelecimentos` reaproveitando `prepararApoioFiltro` — `NWM_CAMPO_DESTINO_OPERACAO`, só vale
+  Remessa (natureza de saída por autocomplete `apoiarNaturezas` — `NWM_CAMPOS_NATUREZA`; escolher na lista chama o `classificarNatureza`
+  pelo `selecionarApoioFiltro`, sem botão; digitado também vale, validado no Enter ou ao sair do campo — `classificarNaturezaDigitada`,
+  `naturezaJaClassificada` —; destino por autocomplete `apoiarEstabelecimentos` reaproveitando `prepararApoioFiltro` — `NWM_CAMPO_DESTINO_OPERACAO`, só vale
   escolhido —, série num input com o mesmo autocomplete — `NWM_CAMPO_SERIE_OPERACAO`, `apoiarSeries` a partir de 1 caractere com o
   `codEstabel` da operação (`agendarApoioSerie`), sugestão e selo só com o código, só vale a escolhida (`serieOperacaoInformada`);
   campo "Emitente de destino" desabilitado (fundo cinza) e limpo fora da Remessa (`travarEmitenteDestinoOperacao`, 26/10);
