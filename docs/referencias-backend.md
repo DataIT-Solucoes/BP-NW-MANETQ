@@ -48,6 +48,9 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
   (1xxx/2xxx: 1551, 1101IS, 1907CI, 1949DO…). O código não filtra por tipo (lê a `natur-oper-amigavel`, `contr-emb-autocompletes.i:137`);
   a tabela é que só tem entrada: prefixos "1" (20) e "2" (12) trazem, "3", "5", "6" e "7" voltam vazios. As de saída serão
   cadastradas nela (decisão de 26/10). A tela usa esse apoio nas duas naturezas do modal.
+- `apoiarEmitentes` provado no TESTE em 26/10 (10904): registro `codigo`/`descricao` (nome), cursor `proximoCodigo` = código. Acha pelo
+  começo do código ou parte do nome ("1145" → 1145, 11450…; "GT SOL" → 8926, 114563…); nome com 1 caractere → `FILTRO_INVALIDO`
+  "Digite dois caracteres ou um codigo.". O `codEstabel` é obrigatório mas o fonte não filtra emitente por estabelecimento.
 - `apoiarEmbalagens` (fonte `docs/contr-emb-autocompletes.i.txt`, cópia local fora do git, modo `EMBALAGEM`, passado pelo usuário em 23/10): lê
   `contr_emb_etiqueta` do `codEstabel` com `tipo-controle = "EMBALAGEM"`, em ordem de `id-etiqueta`, sem filtrar situação. Compara
   `cod-etiqueta` (`acCorresponde`): igual → acha; filtro começando com 0 → exato sem zeros à esquerda; sem zero → começo do código sem zeros.

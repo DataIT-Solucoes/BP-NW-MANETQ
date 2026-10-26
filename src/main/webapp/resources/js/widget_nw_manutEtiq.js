@@ -97,6 +97,8 @@ var NWM_APOIO_DOCUMENTOS = "apoiarDocumentosEntrada";
 var NWM_APOIO_EMBALAGENS = "apoiarEmbalagens";
 var NWM_APOIO_SERIES = "apoiarSeries";
 var NWM_APOIO_NATUREZAS = "apoiarNaturezas";
+var NWM_APOIO_EMITENTES = "apoiarEmitentes";
+var NWM_MINIMO_NOME_EMITENTE = 2;
 var NWM_TAMANHO_CODIGO_BARRAS = 10;
 var NWM_CAMPO_DESTINO_OPERACAO = "codEstabelDestino";
 var NWM_CAMPO_SERIE_OPERACAO = "serie";
@@ -106,7 +108,10 @@ var NWM_CAMPO_NOTA_ORIGEM = "numeroOrigem";
 var NWM_CAMPO_NATUREZA_OPERACAO = "natureza";
 var NWM_CAMPO_NATUREZA_ORIGEM = "naturezaOrigem";
 var NWM_CAMPOS_NATUREZA = [NWM_CAMPO_NATUREZA_OPERACAO, NWM_CAMPO_NATUREZA_ORIGEM];
-var NWM_CAMPOS_APOIO_OPERACAO = NWM_CAMPOS_SERIE.concat([NWM_CAMPO_NOTA_ORIGEM], NWM_CAMPOS_NATUREZA);
+var NWM_CAMPO_EMITENTE_DESTINO = "emitenteDestino";
+var NWM_CAMPO_EMITENTE_ORIGEM = "emitenteOrigem";
+var NWM_CAMPOS_EMITENTE = [NWM_CAMPO_EMITENTE_DESTINO, NWM_CAMPO_EMITENTE_ORIGEM];
+var NWM_CAMPOS_APOIO_OPERACAO = NWM_CAMPOS_SERIE.concat([NWM_CAMPO_NOTA_ORIGEM], NWM_CAMPOS_NATUREZA, NWM_CAMPOS_EMITENTE);
 
 var NWM_RESTRICOES_APOIO = {
   apoiarItens: { tipoControleEstoque: "3" },
@@ -630,6 +635,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     $.each(NWM_CAMPOS_NATUREZA, function (indice, campo) {
       self.prepararApoioFiltro(campo, NWM_APOIO_NATUREZAS, self.campoApoioOperacao(campo));
     });
+    $.each(NWM_CAMPOS_EMITENTE, function (indice, campo) {
+      self.prepararApoioFiltro(campo, NWM_APOIO_EMITENTES, self.campoApoioOperacao(campo));
+    });
     $("[data-documentos-selecionados]", this.DOM).on(
       "click.nwm",
       "[data-remover-documento]",
@@ -810,6 +818,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return apoio.acao === NWM_APOIO_NATUREZAS;
   },
 
+  apoioDeEmitentes(apoio) {
+    return apoio.acao === NWM_APOIO_EMITENTES;
+  },
+
+  termoEmitentePesquisavel(termo) {
+    return NWM_SOMENTE_DIGITOS.test(termo) || termo.length >= NWM_MINIMO_NOME_EMITENTE;
+  },
+
   valorSelecionadoApoio(apoio, registro) {
     return this.apoioDeDocumentos(apoio) ? registro.numero : registro.codigo;
   },
@@ -918,6 +934,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }
     if (this.apoioDeSeries(apoio) || this.apoioDeNaturezas(apoio)) {
       this.agendarApoioSerie(apoio);
+      return;
+    }
+    if (this.apoioDeEmitentes(apoio)) {
+      if (this.termoEmitentePesquisavel(apoio.termo)) this.agendarApoioSerie(apoio);
       return;
     }
     if (apoio.termo.length < 2) return;
@@ -3812,12 +3832,16 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   limparSerieOperacao() {
     var self = this;
     $.each(NWM_CAMPOS_APOIO_OPERACAO, function (indice, campo) {
-      var apoio = (self.apoiosFiltros || {})[campo];
-      if (!apoio) return;
-      self.cancelarApoioFiltro(apoio);
-      apoio.$input.removeData("registro");
-      self.esconderSelecionado(apoio);
+      self.limparApoioOperacao(campo);
     });
+  },
+
+  limparApoioOperacao(campo) {
+    var apoio = (this.apoiosFiltros || {})[campo];
+    if (!apoio) return;
+    this.cancelarApoioFiltro(apoio);
+    apoio.$input.removeData("registro");
+    this.esconderSelecionado(apoio);
   },
 
   serieOperacaoInformada() {
@@ -3879,6 +3903,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     $("[data-operacao-serie]", this.DOM).prop("hidden", semClassificacao);
     this.travarApoioOperacao(NWM_CAMPO_NATUREZA_OPERACAO, travada);
     this.travarApoioOperacao(NWM_CAMPO_NATUREZA_ORIGEM, travada);
+    this.travarApoioOperacao(NWM_CAMPO_EMITENTE_ORIGEM, travada);
     $("[data-carregar-origem]", this.DOM).prop(
       "disabled",
       travada ||
@@ -3909,9 +3934,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   travarEmitenteDestinoOperacao(operacao, travada) {
     var necessario = this.emitenteDestinoNecessario(operacao);
-    var $emitente = $('[data-operacao-campo="emitenteDestino"]', this.DOM);
-    if (operacao.classificacao && !necessario) $emitente.val("");
+    var $emitente = this.campoApoioOperacao(NWM_CAMPO_EMITENTE_DESTINO);
+    if (operacao.classificacao && !necessario) {
+      $emitente.val("");
+      this.limparApoioOperacao(NWM_CAMPO_EMITENTE_DESTINO);
+    }
     $emitente.prop("disabled", travada || !necessario);
+    this.travarApoioOperacao(NWM_CAMPO_EMITENTE_DESTINO, travada || !necessario);
   },
 
   atualizarControlesEnvioOperacao(operacao) {

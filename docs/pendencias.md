@@ -70,7 +70,13 @@ Teste ao vivo em 23/10 (JS `?v=0.1.14`, igual ao fonte; usuário totvsrp/admin; 
   - A opção aparecia "1 - 1" (o backend devolve `descricao` igual ao `codigo`): resolvido na v0.1.20, só o código (ver `decisoes.md`).
   - Impressão dada como concluída pelo usuário em 26/10 sem o teste com o aplicativo instalado (ver `decisoes.md`).
 
+- Teste ao vivo de 26/10 na **v0.1.28** (10904/357867, Cód Barras 139, Transferir pela linha; nenhuma operação enviada):
+  - Natureza de saída: "5" → 5557 TRANSF. ENTRE FLIAIS (SAIDA) (cadastro de teste); escolher já validou como Transferência (destino e
+    série). Remover o selo limpou a validação. "5949em" digitado + Enter → Retorno para terceiros, bloco de origem visível.
+  - Origem: NF "999980" → 9999800/801/802/805 ("00" → `CONSULTA_AMPLA` do backend); Série "1" e Natureza de entrada "1907" → 1907CI pelo
+    autocomplete. Carregar origem com 5949em + NF 9999805 recusado pelo backend: "Retorno exige entrada de terceiros do recorte de
+    emprestimo." Falta uma NF de empréstimo para testar ao vivo a carga da origem e o checkbox "Selecionar" do cabeçalho.
+
 ## Fora do widget
 - Transferência, Remessa e Devolução: o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa. Remessa testada ao vivo em 22/10 (natureza 5949im, destino 11301, emitente 112267, etiqueta 135): aceita, documento de trabalho 493080, operação 211; usuário confirmou no Datasul que deu certo. Destino 10913 recusado ("Estabelecimento nao autorizado para esta acao"): o Dataset só autoriza 10904 e 11301; ajuste do Dataset fica com o usuário/Cheli. Devolução não testada.
-- Autocomplete de emitente (`apoiarEmitentes`) nos campos Emitente do modal Movimentar: só uma proposta, ainda não aprovada.
 - Grupos definitivos de autorização (DT-054): por enquanto vale só `DefaultGroup-1` (decisão de 22/10); grupos definitivos e responsável a definir. Desde o Dataset `37d22b1`, o TESTE libera todos os estabelecimentos (`todosEstabelecimentosTeste`), o que deve resolver a recusa do destino 10913. Falta conferir ao vivo.

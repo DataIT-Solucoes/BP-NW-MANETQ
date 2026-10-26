@@ -224,7 +224,7 @@
                 </div>
                 <div class="nwm-campo" data-operacao-direta hidden>
                     <label class="nwm-campo-rotulo" for="nwm-emitente-destino-${instanceId}">Emitente de destino</label>
-                    <input id="nwm-emitente-destino-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="emitenteDestino" disabled>
+                    <input id="nwm-emitente-destino-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" aria-label="Emitente de destino" data-operacao-campo="emitenteDestino" disabled>
                 </div>
                 <div class="nwm-campo" data-operacao-serie hidden>
                     <label class="nwm-campo-rotulo" for="nwm-serie-${instanceId}">Série de saída</label>
@@ -236,7 +236,7 @@
                 <div class="nwm-operacao-campos">
                     <div class="nwm-campo">
                         <label class="nwm-campo-rotulo" for="nwm-emitente-origem-${instanceId}">Emitente</label>
-                        <input id="nwm-emitente-origem-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="emitenteOrigem">
+                        <input id="nwm-emitente-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" aria-label="Emitente do documento de entrada" data-operacao-campo="emitenteOrigem">
                     </div>
                     <div class="nwm-campo">
                         <label class="nwm-campo-rotulo" for="nwm-numero-origem-${instanceId}">Nota Fiscal de entrada</label>
