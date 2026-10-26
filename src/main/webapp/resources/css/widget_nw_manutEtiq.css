@@ -1346,6 +1346,15 @@
     cursor: not-allowed;
 }
 
+/* Emitente de destino fora da Remessa: fundo cinza para ficar claro que não se usa */
+.fluig-style-guide.nwm .nwm-campo-input[data-operacao-campo="emitenteDestino"]:disabled,
+.fluig-style-guide.nwm .nwm-campo-input[data-operacao-campo="emitenteDestino"]:disabled:hover {
+    opacity: 1;
+    border-color: var(--nwm-linha);
+    background-color: var(--nwm-linha);
+    color: var(--nwm-tinta-suave);
+}
+
 .fluig-style-guide.nwm [data-caixa-item-qtde] .nwm-campo-select:disabled {
     pointer-events: none;
 }
