@@ -80,12 +80,13 @@
   `mensagemRecusaAcaoEtiqueta`, incerto com a chave; sucesso em `encerrarAcaoEtiquetaConcluida`). **Do Aplicar**, o modal fica aberto,
   `bloquearTelaEtiqueta` desabilita os controles da widget e `mostrarCarregamentoAcaoEmLote` liga o loading global (`enviandoAcaoEmLote`)
   até a consulta atualizar. **Imprimir** (`iniciarImpressao`): `carregarDadosImpressao` busca `obterDadosImpressao` uma
-  etiqueta por vez (`obterEtiquetaParaImpressao`, `montarDadosEtiquetaImpressao`); `montarPaginaEtiqueta` gera uma `<section>` por
-  etiqueta (barras por `modulosCodigoBarras` + `marcacaoCodigoBarras`: JsBarcode só calcula os módulos e a tela desenha o SVG);
-  `abrirQuadroImpressao` põe tudo num iframe oculto com `NWM_ESTILO_IMPRESSAO` (`@page` 104 × 50 mm) e `dispararImpressao` chama o
-  `print()` dele (`enviarParaImpressora`: erro só avisa, não impede). Em seguida, sem perguntar, `registrarImpressao` envia
-  `CONFIRMAR_IMPRESSAO` com `NWM_JUSTIFICATIVA_IMPRESSAO`. O iframe fica até a próxima impressão (`removerQuadroImpressao`). Falha
-  ao buscar dados ou montar a etiqueta → `falharPreparacaoImpressao` (aviso, nada impresso). Depois da confirmação, atualiza as linhas. **Após ação de etiqueta** (`terminarAtualizacaoEtiqueta` → `atualizarAposAcaoEtiqueta`): limpa a seleção e
+  etiqueta por vez (`obterEtiquetaParaImpressao`; `montarDadosEtiquetaImpressao` monta `PRODUTO CODIGO LOTE DATAVAL CBARRA QTD UN`,
+  QTD sem separador de milhar). Desde 26/10 (v0.1.19), como na tela antiga, `enviarEtiquetasAoAplicativo` manda ao aplicativo local
+  (`NWM_APLICATIVO_IMPRESSAO`): impressora do `localStorage` ou, sem escolha, a `impressorapadrao` de `GET /impressoras` (e grava);
+  modelo 423 do GED (`obterTemplateEtiqueta`, baixado uma vez); um `POST /imprimir` por etiqueta, em sequência, parando na primeira
+  falha. Falha do aplicativo (fechado, modelo ausente, recusa) só avisa (`mensagemFalhaAplicativo` + "A impressão será registrada
+  mesmo assim."). Em seguida, sem perguntar, `registrarImpressao` envia `CONFIRMAR_IMPRESSAO` com `NWM_JUSTIFICATIVA_IMPRESSAO`.
+  Falha ao buscar dados → `falharPreparacaoImpressao` (aviso, nada impresso, nada registrado). Depois da confirmação, atualiza as linhas. **Após ação de etiqueta** (`terminarAtualizacaoEtiqueta` → `atualizarAposAcaoEtiqueta`): limpa a seleção e
   reconsulta cada embalagem envolvida (`etiquetasEnvolvidas`: até a que falhou) com os filtros da busca + `codEstabel`/`codEtiqueta`
   (`atualizarLinhaEtiqueta`); `aplicarEtiquetaAtualizada` faz `row.update` (mantém `descItem`/`fazenda`) e atualiza `carga.dados`, ou
   remove a linha se ela saiu do recorte (sem `temMais`). Acima de `NWM_LIMITE_ATUALIZACAO_LINHAS` (10), recarrega a grade
@@ -105,7 +106,7 @@
   no padrão da tabela principal (`.nwm-historico-paginacao`): "Mostrando X–Y eventos" à esquerda e ‹ página › à direita (cursor, sem
   total nem primeira/última). O rodapé do modal tem só Fechar.
 - **Impressora**: modal com lista do aplicativo local (`NWM_APLICATIVO_IMPRESSAO`), salvar no `localStorage`, imprimir teste
-  (`NWM_ETIQUETA_TESTE`, template do GED). Não é usado pelo botão Imprimir (linha e lote), que imprime pelo navegador.
+  (`NWM_ETIQUETA_TESTE`, template do GED). A impressora salva aqui é a usada pelo botão Imprimir (linha e lote).
 - **Avisos**: `avisar(tipo, mensagem, duracao)` via `FLUIGC.toast`.
 
 ## Mapa do fonte (`widget_nw_manutEtiq.js`)

@@ -128,8 +128,9 @@ acrescenta; `chaveIdempotente` a tela gera. Todos: `codEstabel`, `natureza`, **`
 - Template 423 (`etiqueta.txt`, EPL2, 370 bytes, cópia em `evidencias/impressao/`): marcadores `##PRODUTO## ##CODIGO## ##LOTE## ##DATAVAL##
   ##CBARRA## ##QTD## ##UN##`. Aplicativo local: `GET /` (status), `GET /impressoras` (`impressoras`, `impressorapadrao`),
   `POST /imprimir` (`impressora`, `template`, `dados`) → `message`. A tela antiga (`pagina_antiga_manutencao_etiquetas/`) usa esse fluxo.
-  Conclusão: impressão real não exige API nova. Implementado em 22/10 **sem** o aplicativo local: `obterDadosImpressao` → etiqueta HTML
-  (mesmos campos do modelo 423) → `print()` do navegador → `CONFIRMAR_IMPRESSAO` (sem pergunta). Envelope real de `obterDadosImpressao`
+  Conclusão: impressão real não exige API nova. Implementado em 22/10 pelo `print()` do navegador; desde 26/10 volta ao aplicativo local,
+  como a tela antiga: `obterDadosImpressao` → `POST /imprimir` com o modelo 423 → `CONFIRMAR_IMPRESSAO` (sem pergunta). Backend sem
+  mudança; o registro continua pelo `confirmarEtiqueta` REST (nada do `dsGetExecBO`/`pi-registra-log` da tela antiga). Envelope real de `obterDadosImpressao`
   conferido no TESTE em 22/10 (etiqueta 139: `sucesso`, `total` 1, `temMais` false, `campoCursor` `proximoId`).
 
 ### Decisões de projeto (DT)

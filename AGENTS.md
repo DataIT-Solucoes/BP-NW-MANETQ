@@ -35,7 +35,7 @@ embalagem (visão ADM, aba única).
 | 1 | js | `/resources/js/widget_nw_manutEtiq.js` |
 | 2 | css | `/resources/css/widget_nw_manutEtiq.css` |
 
-Próximo índice livre: 3. CDN no `view.ftl` (com SRI): Bootstrap Icons 1.11.3, Mulish, Tabulator 6.4.0, Select2 4.0.13 (pt-BR), JsBarcode 3.11.6 (só Code 128).
+Próximo índice livre: 3. CDN no `view.ftl` (com SRI): Bootstrap Icons 1.11.3, Mulish, Tabulator 6.4.0, Select2 4.0.13 (pt-BR).
 
 ## Parâmetros de configuração (`edit.ftl`)
 Nenhum (só identificação).
@@ -51,8 +51,9 @@ Nenhum (só identificação).
 
 ## Regras de negócio e de tela (ativas)
 - Status = `situacaoApresentada`/`descricaoSituacao`; `situacao` é o estado técnico. Ações por status em `NWM_ACOES_POR_STATUS`.
-- Imprimir (22/10): busca os dados de cada etiqueta (`obterDadosImpressao`), monta a etiqueta em HTML num iframe e chama a impressão do
-  navegador e já registra `CONFIRMAR_IMPRESSAO`, sem perguntar: clicar em Imprimir vale como impresso (erro de impressora não impede o registro). Não usa o aplicativo local (`localhost:32478`). Depois de ação de etiqueta, só as linhas envolvidas são reconsultadas no backend e
+- Imprimir (26/10, como na tela antiga): busca os dados de cada etiqueta (`obterDadosImpressao`), envia ao aplicativo de impressão local
+  (`localhost:32478/imprimir`, modelo 423 do GED, impressora do botão Impressora) e já registra `CONFIRMAR_IMPRESSAO`, sem perguntar:
+  clicar em Imprimir vale como impresso (erro do aplicativo só avisa, não impede o registro). Nada da rota antiga (`dsGetExecBO`). Depois de ação de etiqueta, só as linhas envolvidas são reconsultadas no backend e
   atualizadas (`row.update`), sem recriar a tabela; a tela nunca muda status ou saldo localmente.
 - Resultado incerto (operação ou ação de etiqueta) bloqueia novas escritas; não reenviar automaticamente nem gerar chave nova para a mesma intenção.
 - **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando só a widget. Não usar `FLUIGC.loading(window)` nem
@@ -82,7 +83,7 @@ Vale para todo código novo ou alterado em `widget_nw_manutEtiq.js`. Modelo: o p
 - **Testes**: rodar `node testes/rodar-testes.cjs` antes e depois; ele roda as 5 suítes (`testar-apoios-filtros.cjs`, `testar-confirmacao-impressao.cjs`,
   `testar-consulta-etiquetas.cjs`, `testar-funcoes-manutencao.cjs`, `testar-transporte-dataset.cjs`) e tem de terminar com `FALHARAM=0`. O ambiente (`testes/ambiente.cjs`) usa jsdom e as **bibliotecas reais** nas versões do Fluig/CDN
   (jQuery 3.6.3, Tabulator 6.4.0, Select2 4.0.13, em `testes/package.json`) com o markup do `view.ftl`; só simula o que é do Fluig, da rede ou do
-  layout: `$.ajax`, timers com atraso, `FLUIGC.toast`, `WCMAPI`, medidas dos elementos, `<dialog>` e o `print()` (cada chamada fica em `impressoes`). Teste novo usa as coisas reais, não mock. Alguns testes leem `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
+  layout: `$.ajax` (inclusive o aplicativo de impressão local), timers com atraso, `FLUIGC.toast`, `WCMAPI`, medidas dos elementos, `<dialog>` e o `print()` (cada chamada fica em `impressoes`). Teste novo usa as coisas reais, não mock. Alguns testes leem `evidencias/etapa1-20261008/resultado-dataset.json` (fora do git).
 - Encoding: JS em CRLF (`.gitattributes` com `eol=crlf`); medir antes e manter.
 
 ## Forma de trabalho (pedidos do usuário)

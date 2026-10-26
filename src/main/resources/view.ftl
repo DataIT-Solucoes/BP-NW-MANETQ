@@ -5,7 +5,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.4.0/js/tabulator.min.js" integrity="sha384-pYxmWRni6PTDEhE3EUFDBSQ4KQcsBHtS3N+syMWwrtxs9QRtJkxkphTVQMXEdVjT" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha384-JnbsSLBmv2/R0fUmF2XYIcAEMPHEAO51Gitn9IjL4l89uFTIgtLF1+jqIqqd9FSk" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/pt-BR.js" integrity="sha384-ukGBtXgWlWvAnvqBKFZnHi6C8eJqbLdnBc5ry6vVybVVjK4ExBTxUwn9tjJO8boy" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/barcodes/JsBarcode.code128.min.js" integrity="sha384-7XguhfRLAUmvSGmJn2K+BQDpX0gf5NMsj79jcgd7TVtV87euzdySNZqTjOQxgIiB" crossorigin="anonymous"></script>
 
 <div id="widget_nw_manutEtiq_${instanceId}" class="super-widget wcm-widget-class fluig-style-guide nwm" data-params="widget_nw_manutEtiq.instance()">
     <div class="nwm-cabecalho">
