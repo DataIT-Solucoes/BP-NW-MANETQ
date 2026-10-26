@@ -70,7 +70,10 @@
   `codEstabel` da operação (`agendarApoioSerie`), sugestão e selo só com o código, só vale a escolhida (`serieOperacaoInformada`);
   campo "Emitente de destino" desabilitado (fundo cinza) e limpo fora da Remessa (`travarEmitenteDestinoOperacao`, 26/10);
   sem valor por item desde 21/10) → `criarTransferencia`/`criarRemessa`; Devolução de compra e Retorno para terceiros (documento de
-  origem, `consultarEmbalagensOrigem`, sem passar do saldo) → `criarDevolucao`. 1 a 100 embalagens; chave idempotente por tentativa
+  origem: Emitente, Nota Fiscal de entrada — `NWM_CAMPO_NOTA_ORIGEM`, `apoiarDocumentosEntrada` no estabelecimento da operação
+  (`filtrosDoApoio`) —, Série — mesmo autocomplete da série de saída, `NWM_CAMPOS_SERIE` — e Natureza de entrada; `campoOperacao` só devolve a escolhida;
+  `consultarEmbalagensOrigem`, sem passar do saldo; checkbox do cabeçalho marca/desmarca as disponíveis — `alterarSelecaoTodaOrigem`,
+  `atualizarCheckTodosOrigem`) → `criarDevolucao`. 1 a 100 embalagens; chave idempotente por tentativa
   no `sessionStorage` (`guardarOperacaoPendente`/`restaurarOperacaoPendente`); resultado por `consultarResultadoOperacao`.
   Estados em `NWM_ESTADOS_OPERACAO`. A tela nunca muda status ou saldo localmente.
 - **Ação de etiqueta** (imprimir, receber, estornar, inutilizar, perda; `NWM_COMANDOS_ETIQUETA`): uma etiqueta por vez; consulta

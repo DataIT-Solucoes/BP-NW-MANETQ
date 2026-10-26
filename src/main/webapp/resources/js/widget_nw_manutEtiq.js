@@ -99,6 +99,10 @@ var NWM_APOIO_SERIES = "apoiarSeries";
 var NWM_TAMANHO_CODIGO_BARRAS = 10;
 var NWM_CAMPO_DESTINO_OPERACAO = "codEstabelDestino";
 var NWM_CAMPO_SERIE_OPERACAO = "serie";
+var NWM_CAMPO_SERIE_ORIGEM = "serieOrigem";
+var NWM_CAMPOS_SERIE = [NWM_CAMPO_SERIE_OPERACAO, NWM_CAMPO_SERIE_ORIGEM];
+var NWM_CAMPO_NOTA_ORIGEM = "numeroOrigem";
+var NWM_CAMPOS_APOIO_OPERACAO = NWM_CAMPOS_SERIE.concat([NWM_CAMPO_NOTA_ORIGEM]);
 
 var NWM_RESTRICOES_APOIO = {
   apoiarItens: { tipoControleEstoque: "3" },
@@ -611,10 +615,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       NWM_APOIOS_FILTROS.est,
       this.campoDestinoOperacao(),
     );
+    $.each(NWM_CAMPOS_SERIE, function (indice, campo) {
+      self.prepararApoioFiltro(campo, NWM_APOIO_SERIES, self.campoApoioOperacao(campo));
+    });
     this.prepararApoioFiltro(
-      NWM_CAMPO_SERIE_OPERACAO,
-      NWM_APOIO_SERIES,
-      this.campoSerieOperacao(),
+      NWM_CAMPO_NOTA_ORIGEM,
+      NWM_APOIO_DOCUMENTOS,
+      this.campoApoioOperacao(NWM_CAMPO_NOTA_ORIGEM),
     );
     $("[data-documentos-selecionados]", this.DOM).on(
       "click.nwm",
@@ -903,7 +910,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       return;
     }
     if (apoio.termo.length < 2) return;
-    if (this.faltaEstabelecimentoParaDocumentos(apoio)) {
+    var filtros = this.filtrosDoApoio(apoio);
+    if (this.faltaEstabelecimentoParaDocumentos(apoio, filtros)) {
       apoio.erro = this.erroDataset(
         "CONTEXTO_OBRIGATORIO",
         "Preencha o estabelecimento antes de buscar Notas Fiscais",
@@ -915,7 +923,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     apoio.parametros = this.montarParametrosApoio(
       apoio.acao,
       apoio.termo,
-      this.lerFiltros(),
+      filtros,
     );
     var sequencia = apoio.sequencia;
     apoio.temporizador = setTimeout(function () {
@@ -984,10 +992,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return null;
   },
 
-  faltaEstabelecimentoParaDocumentos(apoio) {
+  faltaEstabelecimentoParaDocumentos(apoio, filtros) {
     if (!this.apoioDeDocumentos(apoio)) return false;
-    var filtros = this.lerFiltros();
     return !filtros.estDe || !filtros.estAte;
+  },
+
+  filtrosDoApoio(apoio) {
+    if (apoio.campo !== NWM_CAMPO_NOTA_ORIGEM) return this.lerFiltros();
+    var estabelecimento = (this.operacaoAtual || {}).codEstabel || "";
+    return { estDe: estabelecimento, estAte: estabelecimento };
   },
 
   consultarPaginaApoio(apoio, continuar) {
@@ -3406,6 +3419,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.ligarBotaoOperacao("[data-carregar-origem]", function () {
       self.carregarOrigemOperacao();
     });
+    $("[data-origem-todos]", this.DOM).on("change.nwm", function () {
+      self.alterarSelecaoTodaOrigem($(this).prop("checked"));
+    });
     this.ligarBotaoOperacao("[data-preparar-operacao]", function () {
       self.prepararEnvioOperacao();
     });
@@ -3642,9 +3658,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   campoOperacao(campo) {
-    return String(
-      $('[data-operacao-campo="' + campo + '"]', this.DOM).val() || "",
-    ).trim();
+    return this.valorFiltroInformado(
+      campo,
+      $('[data-operacao-campo="' + campo + '"]', this.DOM),
+    );
   },
 
   textoOperacaoValido(valor) {
@@ -3721,6 +3738,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.limparSerieOperacao();
     $("[data-operacao-estabelecimento]", this.DOM).text(estabelecimento);
     $("[data-origem-corpo]", this.DOM).empty();
+    this.atualizarCheckTodosOrigem(null);
     this.esconderRamosOperacao();
     $("[data-operacao-classificacao]", this.DOM).text(
       "Informe a natureza e clique em Validar natureza.",
@@ -3752,8 +3770,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (apoio && apoio.$selecionadoRemover) apoio.$selecionadoRemover.prop("disabled", travada);
   },
 
+  campoApoioOperacao(campo) {
+    return $('[data-operacao-campo="' + campo + '"]', this.DOM);
+  },
+
   campoSerieOperacao() {
-    return $('[data-operacao-campo="' + NWM_CAMPO_SERIE_OPERACAO + '"]', this.DOM);
+    return this.campoApoioOperacao(NWM_CAMPO_SERIE_OPERACAO);
   },
 
   apoioSerieOperacao() {
@@ -3761,11 +3783,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   limparSerieOperacao() {
-    var apoio = this.apoioSerieOperacao();
-    if (!apoio) return;
-    this.cancelarApoioFiltro(apoio);
-    apoio.$input.removeData("registro");
-    this.esconderSelecionado(apoio);
+    var self = this;
+    $.each(NWM_CAMPOS_APOIO_OPERACAO, function (indice, campo) {
+      var apoio = (self.apoiosFiltros || {})[campo];
+      if (!apoio) return;
+      self.cancelarApoioFiltro(apoio);
+      apoio.$input.removeData("registro");
+      self.esconderSelecionado(apoio);
+    });
   },
 
   serieOperacaoInformada() {
@@ -3773,7 +3798,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   travarSerieOperacao(travada) {
-    var apoio = this.apoioSerieOperacao();
+    this.travarApoioOperacao(NWM_CAMPO_SERIE_OPERACAO, travada);
+  },
+
+  travarApoioOperacao(campo, travada) {
+    var apoio = (this.apoiosFiltros || {})[campo];
     if (apoio && apoio.$selecionadoRemover) apoio.$selecionadoRemover.prop("disabled", travada);
   },
 
@@ -3798,6 +3827,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var operacao = this.operacaoAtual;
     if (!operacao) return;
     $("[data-operacao-mensagem]", this.DOM).text(mensagem);
+    this.atualizarCheckTodosOrigem(operacao);
     this.atualizarControlesEdicaoOperacao(operacao);
     this.atualizarControlesEnvioOperacao(operacao);
     $("[data-operacao-chave]", this.DOM).text(
@@ -3816,6 +3846,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       travada || semClassificacao,
     );
     this.travarSerieOperacao(travada || semClassificacao);
+    this.travarApoioOperacao(NWM_CAMPO_SERIE_ORIGEM, travada);
+    this.travarApoioOperacao(NWM_CAMPO_NOTA_ORIGEM, travada);
     this.travarEmitenteDestinoOperacao(operacao, travada);
     $("[data-operacao-serie]", this.DOM).prop("hidden", semClassificacao);
     $("[data-classificar-natureza]", this.DOM).prop(
@@ -4254,6 +4286,49 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.mostrarEstadoOperacao(
       "Seleção alterada. Revise e confirme a preparação.",
     );
+  },
+
+  alterarSelecaoTodaOrigem(marcado) {
+    var operacao = this.operacaoAtual;
+    if (!this.origemSelecionavel(operacao)) return;
+    $.each(this.registrosOrigemDisponiveis(operacao), function (indice, registro) {
+      if (marcado) operacao.selecaoOrigem[registro.idEtiqueta] = true;
+      else delete operacao.selecaoOrigem[registro.idEtiqueta];
+    });
+    operacao.comando = null;
+    operacao.estado = NWM_ESTADOS_OPERACAO.EDICAO;
+    this.mostrarEstadoOperacao(
+      "Seleção alterada. Revise e confirme a preparação.",
+    );
+  },
+
+  origemSelecionavel(operacao) {
+    return (
+      !!operacao &&
+      !!operacao.origem &&
+      operacao.origem.completa === true &&
+      !this.operacaoTravada(operacao)
+    );
+  },
+
+  registrosOrigemDisponiveis(operacao) {
+    return $.grep(operacao.origem.dados, function (registro) {
+      return registro.podeSelecionar;
+    });
+  },
+
+  atualizarCheckTodosOrigem(operacao) {
+    var $todos = $("[data-origem-todos]", this.DOM);
+    var disponiveis = this.origemSelecionavel(operacao)
+      ? this.registrosOrigemDisponiveis(operacao)
+      : [];
+    var marcados = $.grep(disponiveis, function (registro) {
+      return !!operacao.selecaoOrigem[registro.idEtiqueta];
+    }).length;
+    $todos
+      .prop("disabled", !disponiveis.length)
+      .prop("checked", !!disponiveis.length && marcados === disponiveis.length)
+      .prop("indeterminate", marcados > 0 && marcados < disponiveis.length);
   },
 
   valoresLinhaOrigem(registro) {

@@ -242,12 +242,12 @@
                         <input id="nwm-emitente-origem-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="emitenteOrigem">
                     </div>
                     <div class="nwm-campo">
-                        <label class="nwm-campo-rotulo" for="nwm-serie-origem-${instanceId}">Série</label>
-                        <input id="nwm-serie-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="serieOrigem">
+                        <label class="nwm-campo-rotulo" for="nwm-numero-origem-${instanceId}">Nota Fiscal de entrada</label>
+                        <input id="nwm-numero-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" aria-label="Nota Fiscal de entrada" data-operacao-campo="numeroOrigem">
                     </div>
                     <div class="nwm-campo">
-                        <label class="nwm-campo-rotulo" for="nwm-numero-origem-${instanceId}">Número</label>
-                        <input id="nwm-numero-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" data-operacao-campo="numeroOrigem">
+                        <label class="nwm-campo-rotulo" for="nwm-serie-origem-${instanceId}">Série</label>
+                        <input id="nwm-serie-origem-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" aria-label="Série do documento de entrada" data-operacao-campo="serieOrigem">
                     </div>
                     <div class="nwm-campo">
                         <label class="nwm-campo-rotulo" for="nwm-natureza-origem-${instanceId}">Natureza de entrada</label>
@@ -257,7 +257,7 @@
                 <button type="button" class="nwm-btn nwm-btn-contorno" data-carregar-origem>Carregar embalagens da origem</button>
                 <div class="nwm-origem-rolagem">
                     <table class="nwm-tabelinha">
-                        <thead><tr><th scope="col">Selecionar</th><th scope="col">Etiqueta</th><th scope="col">Item</th><th scope="col">Lote</th><th scope="col">Saldo</th><th scope="col">Disponível na linha</th><th scope="col">Situação</th></tr></thead>
+                        <thead><tr><th scope="col"><label class="nwm-origem-todos"><input type="checkbox" aria-label="Selecionar todas as embalagens disponíveis da origem" data-origem-todos disabled>Selecionar</label></th><th scope="col">Etiqueta</th><th scope="col">Item</th><th scope="col">Lote</th><th scope="col">Saldo</th><th scope="col">Disponível na linha</th><th scope="col">Situação</th></tr></thead>
                         <tbody data-origem-corpo></tbody>
                     </table>
                 </div>

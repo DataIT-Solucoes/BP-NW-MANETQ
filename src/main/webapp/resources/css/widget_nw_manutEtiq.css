@@ -1952,6 +1952,27 @@
     margin-top: 16px;
 }
 
+.fluig-style-guide.nwm .nwm-origem-todos {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: inherit;
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-origem-todos input {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    accent-color: var(--nwm-verde);
+    cursor: pointer;
+}
+
+.fluig-style-guide.nwm .nwm-origem-todos input:disabled {
+    cursor: not-allowed;
+}
+
 .fluig-style-guide.nwm .nwm-operacao-mensagem,
 .fluig-style-guide.nwm .nwm-impressora-mensagem {
     padding: 12px;

@@ -42,6 +42,10 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
   `LEIA-ME.md` para naturezas (código, nome, contexto `MESMO_ESTADO`/`OUTRO_ESTADO`, `descricaoExibicao`, `exibeRecebimento`). O LEIA-ME
   diz que o REST e a prova real pelo Dataset ainda estão pendentes. A tela usa o `apoiarEmbalagens` (Cód Barras, 23/10) e o `apoiarSeries`
   (série de saída do modal Movimentar, 26/10; resposta `codigo`/`descricao`, provada no TESTE pelo `wdgt_monitor_nw_novo`).
+- `apoiarNaturezas` provado no TESTE em 26/10 (10904): registro `codigo`, `descricao` (pode trazer TAB), `descricaoExibicao`
+  ("1551 - COMPRA DE IMOBILIZADO - mesmo estado"), `contexto` (`MESMO_ESTADO`/`OUTRO_ESTADO`), `naturezaMesmoEstado`, `naturezaOutroEstado`,
+  `exibeRecebimento`; cursor `proximoCodigo` (ex.: `COMPRA DE INSUMOS|1`). Acha por código ou descrição, mas **só traz naturezas de entrada**
+  (1xxx/2xxx: 1551, 1101IS, 1907CI, 1949DO…). "5", "5949", "5949im", "REMESSA", "SAIDA" e "VENDA" voltam vazios: não serve para a natureza de saída.
 - `apoiarEmbalagens` (fonte `docs/contr-emb-autocompletes.i.txt`, cópia local fora do git, modo `EMBALAGEM`, passado pelo usuário em 23/10): lê
   `contr_emb_etiqueta` do `codEstabel` com `tipo-controle = "EMBALAGEM"`, em ordem de `id-etiqueta`, sem filtrar situação. Compara
   `cod-etiqueta` (`acCorresponde`): igual → acha; filtro começando com 0 → exato sem zeros à esquerda; sem zero → começo do código sem zeros.
