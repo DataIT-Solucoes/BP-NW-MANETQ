@@ -98,6 +98,7 @@ var NWM_APOIO_EMBALAGENS = "apoiarEmbalagens";
 var NWM_APOIO_SERIES = "apoiarSeries";
 var NWM_TAMANHO_CODIGO_BARRAS = 10;
 var NWM_CAMPO_DESTINO_OPERACAO = "codEstabelDestino";
+var NWM_CAMPO_SERIE_OPERACAO = "serie";
 
 var NWM_RESTRICOES_APOIO = {
   apoiarItens: { tipoControleEstoque: "3" },
@@ -610,6 +611,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       NWM_APOIOS_FILTROS.est,
       this.campoDestinoOperacao(),
     );
+    this.prepararApoioFiltro(
+      NWM_CAMPO_SERIE_OPERACAO,
+      NWM_APOIO_SERIES,
+      this.campoSerieOperacao(),
+    );
     $("[data-documentos-selecionados]", this.DOM).on(
       "click.nwm",
       "[data-remover-documento]",
@@ -722,6 +728,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   descricaoSelecionada(apoio, registro) {
+    if (this.apoioDeSeries(apoio)) return "";
     if (!this.apoioDeDocumentos(apoio))
       return String(registro.descricao || "").trim();
     var emitente = String(registro.descricaoEmitente || "").trim();
@@ -732,6 +739,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   textoTituloSelecionado(apoio, registro) {
+    if (this.apoioDeSeries(apoio)) return registro.codigo;
     var textos = this.textosOpcaoApoio(apoio, registro);
     return textos.principal + " — " + textos.complemento;
   },
@@ -778,6 +786,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   apoioDeDocumentos(apoio) {
     return apoio.acao === NWM_APOIO_DOCUMENTOS;
+  },
+
+  apoioDeSeries(apoio) {
+    return apoio.acao === NWM_APOIO_SERIES;
   },
 
   valorSelecionadoApoio(apoio, registro) {
@@ -886,6 +898,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       this.agendarApoioCodigoBarras(apoio);
       return;
     }
+    if (this.apoioDeSeries(apoio)) {
+      this.agendarApoioSerie(apoio);
+      return;
+    }
     if (apoio.termo.length < 2) return;
     if (this.faltaEstabelecimentoParaDocumentos(apoio)) {
       apoio.erro = this.erroDataset(
@@ -928,6 +944,22 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       return;
     }
     apoio.parametros = this.montarParametrosCodigoBarras(apoio.termo, filtros);
+    var sequencia = apoio.sequencia;
+    apoio.temporizador = setTimeout(function () {
+      apoio.temporizador = null;
+      if (apoio.sequencia === sequencia)
+        self.consultarPaginaApoio(apoio, false);
+    }, NWM_ATRASO_APOIO_MS);
+  },
+
+  agendarApoioSerie(apoio) {
+    var self = this;
+    if (!apoio.termo) return;
+    apoio.parametros = {
+      codEstabel: (this.operacaoAtual || {}).codEstabel || "",
+      filtro: apoio.termo,
+      limite: NWM_LIMITE_SUGESTOES,
+    };
     var sequencia = apoio.sequencia;
     apoio.temporizador = setTimeout(function () {
       apoio.temporizador = null;
@@ -1101,6 +1133,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   textosOpcaoApoio(apoio, registro) {
+    if (this.apoioDeSeries(apoio))
+      return { principal: registro.codigo, complemento: "" };
     if (!this.apoioDeDocumentos(apoio))
       return { principal: registro.codigo, complemento: registro.descricao };
     return {
@@ -3387,9 +3421,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.$modalOperacao.on("input.nwm", "[data-operacao-campo]", function () {
       self.reagirAlteracaoCampoOperacao($(this).attr("data-operacao-campo"));
     });
-    this.$modalOperacao.on("change.nwm", "select[data-operacao-campo]", function () {
-      self.reagirAlteracaoCampoOperacao($(this).attr("data-operacao-campo"));
-    });
   },
 
   ligarBotaoOperacao(seletor, acao) {
@@ -3686,8 +3717,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   prepararFormularioOperacao(estabelecimento) {
     $("[data-operacao-campo]", this.DOM).val("").prop("disabled", false);
-    $("select[data-operacao-campo]", this.DOM).trigger("change.select2");
     this.limparDestinoOperacao();
+    this.limparSerieOperacao();
     $("[data-operacao-estabelecimento]", this.DOM).text(estabelecimento);
     $("[data-origem-corpo]", this.DOM).empty();
     this.esconderRamosOperacao();
@@ -3718,6 +3749,31 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   travarDestinoOperacao(travada) {
     var apoio = this.apoioDestinoOperacao();
+    if (apoio && apoio.$selecionadoRemover) apoio.$selecionadoRemover.prop("disabled", travada);
+  },
+
+  campoSerieOperacao() {
+    return $('[data-operacao-campo="' + NWM_CAMPO_SERIE_OPERACAO + '"]', this.DOM);
+  },
+
+  apoioSerieOperacao() {
+    return (this.apoiosFiltros || {})[NWM_CAMPO_SERIE_OPERACAO];
+  },
+
+  limparSerieOperacao() {
+    var apoio = this.apoioSerieOperacao();
+    if (!apoio) return;
+    this.cancelarApoioFiltro(apoio);
+    apoio.$input.removeData("registro");
+    this.esconderSelecionado(apoio);
+  },
+
+  serieOperacaoInformada() {
+    return this.valorFiltroInformado(NWM_CAMPO_SERIE_OPERACAO, this.campoSerieOperacao());
+  },
+
+  travarSerieOperacao(travada) {
+    var apoio = this.apoioSerieOperacao();
     if (apoio && apoio.$selecionadoRemover) apoio.$selecionadoRemover.prop("disabled", travada);
   },
 
@@ -3759,6 +3815,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       "disabled",
       travada || semClassificacao,
     );
+    this.travarSerieOperacao(travada || semClassificacao);
     $("[data-operacao-serie]", this.DOM).prop("hidden", semClassificacao);
     $("[data-classificar-natureza]", this.DOM).prop(
       "disabled",
@@ -4207,7 +4264,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var parametros = {
       codEstabel: operacao.codEstabel,
       natureza: classificacao.natureza,
-      serie: this.campoOperacao("serie"),
+      serie: this.serieOperacaoInformada(),
       selecao: [],
     };
     if (
@@ -5360,94 +5417,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       }),
     );
     $("[data-item-qtde]", this.DOM).select2(configuracao);
-    $('[data-operacao-campo="serie"]', this.DOM).select2(
-      this.configuracaoSelect2Serie(configuracao),
-    );
-    $('[data-acao-lote], [data-item-qtde], [data-operacao-campo="serie"]', this.DOM)
+    $("[data-acao-lote], [data-item-qtde]", this.DOM)
       .closest(".nwm-campo-caixa-select")
       .addClass("is-select2");
-  },
-
-  configuracaoSelect2Serie(configuracao) {
-    var self = this;
-    return $.extend({}, configuracao, {
-      dropdownParent: $("[data-modal-operacao]", this.DOM),
-      minimumInputLength: 1,
-      ajax: {
-        delay: NWM_ATRASO_APOIO_MS,
-        transport: function (opcoes, sucesso, falha) {
-          return self.consultarSeriesOperacao(opcoes.data, sucesso, falha);
-        },
-        processResults: function (resultado) {
-          return self.resultadosSeriesOperacao(resultado);
-        },
-      },
-    });
-  },
-
-  consultarSeriesOperacao(pesquisa, sucesso, falha) {
-    var self = this;
-    var parametros = this.parametrosSeriesOperacao(pesquisa);
-    var requisicao = this.chamarEmbalagens(NWM_APOIO_SERIES, parametros);
-    requisicao.then(
-      function (resultado) {
-        self.receberSeriesOperacao(parametros, resultado, sucesso, falha);
-      },
-      function (erro) {
-        if (!erro || erro.tipo !== NWM_TIPOS_ERRO.CANCELAMENTO) falha();
-      },
-    );
-    return requisicao;
-  },
-
-  parametrosSeriesOperacao(pesquisa) {
-    var parametros = {
-      codEstabel: (this.operacaoAtual || {}).codEstabel || "",
-      filtro: String(pesquisa.term || "").trim(),
-      limite: NWM_LIMITE_SUGESTOES,
-    };
-    var paginacao = this.paginacaoSerie;
-    if (pesquisa.page > 1 && paginacao && paginacao.filtro === parametros.filtro)
-      parametros.aposCodigo = paginacao.cursor;
-    return parametros;
-  },
-
-  receberSeriesOperacao(parametros, resultado, sucesso, falha) {
-    if (!this.seriesOperacaoValidas(parametros, resultado)) return falha();
-    this.paginacaoSerie = {
-      filtro: parametros.filtro,
-      cursor: resultado.proximoCodigo,
-    };
-    sucesso(resultado);
-  },
-
-  seriesOperacaoValidas(parametros, resultado) {
-    var self = this;
-    if (!resultado.sucesso || typeof resultado.proximoCodigo !== "string")
-      return false;
-    if (resultado.temMais && resultado.proximoCodigo === parametros.aposCodigo)
-      return false;
-    var invalidas = $.grep(resultado.dados, function (registro) {
-      return !self.serieSugeridaValida(registro);
-    });
-    return !invalidas.length && resultado.dados.length <= NWM_LIMITE_SUGESTOES;
-  },
-
-  serieSugeridaValida(registro) {
-    return (
-      this.sugestaoValida(registro) &&
-      this.textoPreenchido(registro.codigo) &&
-      !NWM_CARACTERE_CONTROLE.test(registro.codigo)
-    );
-  },
-
-  resultadosSeriesOperacao(resultado) {
-    return {
-      results: $.map(resultado.dados, function (registro) {
-        return { id: registro.codigo, text: registro.codigo };
-      }),
-      pagination: { more: resultado.temMais },
-    };
   },
 
   montarLegenda() {
