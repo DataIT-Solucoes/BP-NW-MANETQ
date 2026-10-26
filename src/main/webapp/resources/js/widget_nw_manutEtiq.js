@@ -3812,9 +3812,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return this.valorFiltroInformado(NWM_CAMPO_DESTINO_OPERACAO, this.campoDestinoOperacao());
   },
 
-  travarDestinoOperacao(travada) {
-    var apoio = this.apoioDestinoOperacao();
-    if (apoio && apoio.$selecionadoRemover) apoio.$selecionadoRemover.prop("disabled", travada);
+  travarDestinoOperacao(operacao, travada) {
+    var naRemessa = this.remessaParaTerceiros(operacao);
+    var $destino = this.campoDestinoOperacao();
+    if (naRemessa) {
+      $destino.val("");
+      this.limparDestinoOperacao();
+    }
+    $destino.prop("disabled", travada || naRemessa);
+    this.travarApoioOperacao(NWM_CAMPO_DESTINO_OPERACAO, travada || naRemessa);
   },
 
   campoApoioOperacao(campo) {
@@ -3891,7 +3897,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var travada = this.operacaoTravada(operacao);
     var semClassificacao = !operacao.classificacao;
     $("[data-operacao-campo]", this.DOM).prop("disabled", travada);
-    this.travarDestinoOperacao(travada);
+    this.travarDestinoOperacao(operacao, travada);
     $('[data-operacao-campo="serie"]', this.DOM).prop(
       "disabled",
       travada || semClassificacao,
@@ -3926,6 +3932,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   emitenteDestinoNecessario(operacao) {
+    return this.remessaParaTerceiros(operacao);
+  },
+
+  remessaParaTerceiros(operacao) {
     return (
       !!operacao.classificacao &&
       operacao.classificacao.fluxo === "REMESSA_TERCEIROS"
@@ -4537,7 +4547,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       !parametros.codEstabelDestino &&
       !emitente
     )
-      throw new Error("Informe o estabelecimento ou o emitente de destino.");
+      throw new Error("Informe o emitente de destino.");
     if (
       parametros.codEstabelDestino &&
       !this.destinoDiferenteValido(parametros)

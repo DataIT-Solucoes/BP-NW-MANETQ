@@ -77,6 +77,11 @@ Teste ao vivo em 23/10 (JS `?v=0.1.14`, igual ao fonte; usuário totvsrp/admin; 
     autocomplete. Carregar origem com 5949em + NF 9999805 recusado pelo backend: "Retorno exige entrada de terceiros do recorte de
     emprestimo." Falta uma NF de empréstimo para testar ao vivo a carga da origem e o checkbox "Selecionar" do cabeçalho.
 
+- Teste ao vivo de 26/10 na **v0.1.29** (10904, etiqueta 141, lote 0112026-1; a 139 já estava Reservada): Transferir pela linha,
+  natureza 5949im digitada + Enter → Remessa para terceiros; Emitente de destino "112267" pelo `apoiarEmitentes` → 112267 RAFAEL
+  BRANCO PERES E OUTROS (selo); Estabelecimento de destino vazio (pedido do usuário); Série "1" escolhida. `criarRemessa` aceito em ~9 s:
+  documento de trabalho 493096, operação 226. Linha 141 atualizada para "Reservada para operacao fiscal", sem recriar a tabela.
+
 ## Fora do widget
 - Transferência, Remessa e Devolução: o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa. Remessa testada ao vivo em 22/10 (natureza 5949im, destino 11301, emitente 112267, etiqueta 135): aceita, documento de trabalho 493080, operação 211; usuário confirmou no Datasul que deu certo. Destino 10913 recusado ("Estabelecimento nao autorizado para esta acao"): o Dataset só autoriza 10904 e 11301; ajuste do Dataset fica com o usuário/Cheli. Devolução não testada.
 - Grupos definitivos de autorização (DT-054): por enquanto vale só `DefaultGroup-1` (decisão de 22/10); grupos definitivos e responsável a definir. Desde o Dataset `37d22b1`, o TESTE libera todos os estabelecimentos (`todosEstabelecimentosTeste`), o que deve resolver a recusa do destino 10913. Falta conferir ao vivo.

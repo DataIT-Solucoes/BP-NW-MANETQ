@@ -1346,9 +1346,11 @@
     cursor: not-allowed;
 }
 
-/* Emitente de destino fora da Remessa: fundo cinza para ficar claro que não se usa */
+/* Emitente de destino fora da Remessa e Estabelecimento de destino na Remessa: fundo cinza para ficar claro que não se usa */
 .fluig-style-guide.nwm .nwm-campo-input[data-operacao-campo="emitenteDestino"]:disabled,
-.fluig-style-guide.nwm .nwm-campo-input[data-operacao-campo="emitenteDestino"]:disabled:hover {
+.fluig-style-guide.nwm .nwm-campo-input[data-operacao-campo="emitenteDestino"]:disabled:hover,
+.fluig-style-guide.nwm .nwm-campo-input[data-operacao-campo="codEstabelDestino"]:disabled,
+.fluig-style-guide.nwm .nwm-campo-input[data-operacao-campo="codEstabelDestino"]:disabled:hover {
     opacity: 1;
     border-color: var(--nwm-linha);
     background-color: var(--nwm-linha);
