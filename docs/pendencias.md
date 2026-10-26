@@ -55,8 +55,22 @@ Teste ao vivo em 23/10 (JS `?v=0.1.14`, igual ao fonte; usuário totvsrp/admin; 
   permite esta ação.", nenhum modal. Não coberto: login real de um usuário comum (grupos dele no `colleagueGroup`) e a autorização no
   backend (as escritas continuam saindo como o usuário logado).
 
+- Bateria de 26/10 na **v0.1.19** (10904/357867, Cód Barras 139–149, lote 0112026-1; lote do Cheli fora da busca). Aplicativo de
+  impressão **não instalado** neste computador (nada na porta 32478), então só o caminho "aplicativo fechado" foi testado:
+  - Imprimir da linha na 145 (Não impressa → Impressa, 9,5 s): só a linha carregou, sem overlay; chamadas `obterDadosImpressao` →
+    `GET localhost:32478/impressoras` (falhou) → `consultarSituacaoEtiqueta` → `confirmarEtiqueta` com a justificativa nova; toast
+    warning "O aplicativo de impressão não imprimiu: verifique se ele está instalado e aberto neste computador. A impressão será
+    registrada mesmo assim." e success "1 embalagem(ns)". Nenhuma rota antiga chamada.
+  - Imprimir em lote 143 + 145 pela Ação em lote (20,2 s): overlay e Buscar desabilitado durante, um único aviso de aplicativo, duas
+    confirmações, "2 embalagem(ns)". 143 continua Em estoque e 145 Impressa (o backend não muda situação na reimpressão).
+  - Série de saída (modal Transferir na 139, natureza 5949im): escondida/desabilitada até validar; "Digite 1 ou mais caracteres";
+    "1" → `apoiarSeries {codEstabel 10904, filtro "1", limite 20}` em 3,4 s → opção "1 - 1", selecionada (valor `1`); "ZZ" → "Nenhum
+    resultado encontrado"; Esc fecha só a lista; trocar a natureza esconde de novo; reabrir o modal volta a "Selecione". Nenhuma
+    operação enviada. Console sem erro do widget (só Fluig Realtime/socket e a conexão recusada no `localhost:32478`).
+  - A opção aparecia "1 - 1" (o backend devolve `descricao` igual ao `codigo`): resolvido na v0.1.20, só o código (ver `decisoes.md`).
+  - Impressão dada como concluída pelo usuário em 26/10 sem o teste com o aplicativo instalado (ver `decisoes.md`).
+
 ## Fora do widget
 - Transferência, Remessa e Devolução: o Cheli (dev Progress) está mudando a API. Fora do escopo até a nova API; só o `valorItem` vai fixo em 10 (provisório) em Transferência e Remessa. Remessa testada ao vivo em 22/10 (natureza 5949im, destino 11301, emitente 112267, etiqueta 135): aceita, documento de trabalho 493080, operação 211; usuário confirmou no Datasul que deu certo. Destino 10913 recusado ("Estabelecimento nao autorizado para esta acao"): o Dataset só autoriza 10904 e 11301; ajuste do Dataset fica com o usuário/Cheli. Devolução não testada.
 - Autocompletes novos do Dataset (`apoiarNaturezas`, `apoiarEmitentes`, `apoiarEmbalagens`, `apoiarBags`): podem substituir os campos de texto livre do modal Movimentar (natureza, emitente). É só uma proposta, ainda não aprovada.
 - Grupos definitivos de autorização (DT-054): por enquanto vale só `DefaultGroup-1` (decisão de 22/10); grupos definitivos e responsável a definir. Desde o Dataset `37d22b1`, o TESTE libera todos os estabelecimentos (`todosEstabelecimentosTeste`), o que deve resolver a recusa do destino 10913. Falta conferir ao vivo.
-- Impressão pelo aplicativo local (26/10, v0.1.19, ver `decisoes.md`): falta testar ao vivo num computador com o aplicativo de impressão instalado e uma impressora térmica (linha, lote, aplicativo fechado).

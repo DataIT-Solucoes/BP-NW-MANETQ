@@ -5444,11 +5444,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   resultadosSeriesOperacao(resultado) {
     return {
       results: $.map(resultado.dados, function (registro) {
-        var descricao = registro.descricao.trim();
-        return {
-          id: registro.codigo,
-          text: descricao ? registro.codigo + " - " + descricao : registro.codigo,
-        };
+        return { id: registro.codigo, text: registro.codigo };
       }),
       pagination: { more: resultado.temMais },
     };
