@@ -68,6 +68,7 @@
   Remessa (destino por autocomplete `apoiarEstabelecimentos` reaproveitando `prepararApoioFiltro` — `NWM_CAMPO_DESTINO_OPERACAO`, só vale
   escolhido —, série num input com o mesmo autocomplete — `NWM_CAMPO_SERIE_OPERACAO`, `apoiarSeries` a partir de 1 caractere com o
   `codEstabel` da operação (`agendarApoioSerie`), sugestão e selo só com o código, só vale a escolhida (`serieOperacaoInformada`);
+  campo "Emitente de destino" desabilitado e limpo fora da Remessa (`travarEmitenteDestinoOperacao`, 26/10);
   sem valor por item desde 21/10) → `criarTransferencia`/`criarRemessa`; Devolução de compra e Retorno para terceiros (documento de
   origem, `consultarEmbalagensOrigem`, sem passar do saldo) → `criarDevolucao`. 1 a 100 embalagens; chave idempotente por tentativa
   no `sessionStorage` (`guardarOperacaoPendente`/`restaurarOperacaoPendente`); resultado por `consultarResultadoOperacao`.

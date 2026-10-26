@@ -226,8 +226,8 @@
                     <input id="nwm-destino-${instanceId}" type="text" maxlength="100" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="codEstabelDestino">
                 </div>
                 <div class="nwm-campo" data-operacao-direta hidden>
-                    <label class="nwm-campo-rotulo" for="nwm-emitente-destino-${instanceId}">Emitente de destino (se externo)</label>
-                    <input id="nwm-emitente-destino-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="emitenteDestino">
+                    <label class="nwm-campo-rotulo" for="nwm-emitente-destino-${instanceId}">Emitente de destino</label>
+                    <input id="nwm-emitente-destino-${instanceId}" type="text" maxlength="100" inputmode="numeric" class="nwm-campo-input nwm-campo-input-simples" autocomplete="off" data-operacao-campo="emitenteDestino" disabled>
                 </div>
                 <div class="nwm-campo" data-operacao-serie hidden>
                     <label class="nwm-campo-rotulo" for="nwm-serie-${instanceId}">Série de saída</label>

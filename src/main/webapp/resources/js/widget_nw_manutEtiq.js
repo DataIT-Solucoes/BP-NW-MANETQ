@@ -3816,6 +3816,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       travada || semClassificacao,
     );
     this.travarSerieOperacao(travada || semClassificacao);
+    this.travarEmitenteDestinoOperacao(operacao, travada);
     $("[data-operacao-serie]", this.DOM).prop("hidden", semClassificacao);
     $("[data-classificar-natureza]", this.DOM).prop(
       "disabled",
@@ -3840,6 +3841,20 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       "disabled",
       this.operacaoEmComunicacao(operacao),
     );
+  },
+
+  emitenteDestinoNecessario(operacao) {
+    return (
+      !!operacao.classificacao &&
+      operacao.classificacao.fluxo === "REMESSA_TERCEIROS"
+    );
+  },
+
+  travarEmitenteDestinoOperacao(operacao, travada) {
+    var necessario = this.emitenteDestinoNecessario(operacao);
+    var $emitente = $('[data-operacao-campo="emitenteDestino"]', this.DOM);
+    if (operacao.classificacao && !necessario) $emitente.val("");
+    $emitente.prop("disabled", travada || !necessario);
   },
 
   atualizarControlesEnvioOperacao(operacao) {
