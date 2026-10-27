@@ -4,6 +4,7 @@
 > Pendência registrada não autoriza execução. Conferir o contrato vigente antes de planejar integração.
 
 ## Esperando decisão do usuário
+- Detalhes (27/10): Nota fiscal e WT saem só das páginas do histórico já carregadas (20 eventos por página). Etiqueta com mais de 20 eventos pode mostrar NF/WT antigos até avançar as páginas, se a ordem do backend for do mais antigo para o mais novo (na 137 é). Falta conferir ao vivo uma etiqueta com mais de 20 eventos e decidir se vale buscar as demais páginas ou pedir a NF/WT ao backend na consulta de etiquetas.
 - Níveis de acesso: regra implementada em 22/10 (ver `decisoes.md`). Falta só testar ao vivo com um usuário comum (leitura do `colleagueGroup` pela API REST e telas sem Transferir/Devolver); o teste local cobre admin e comum.
 - Visão não-ADM: a decisão vigente mantém a tela ADM de aba única.
 

@@ -5,6 +5,8 @@ var NWM_FECHAMENTO_MODAIS = {
   "[data-modal-operacao]": "fecharOperacao",
   "[data-modal-acao-etiqueta]": "fecharAcaoEtiqueta",
 };
+var NWM_TIPO_DOCUMENTO_NOTA = "NOTA_FISCAL";
+var NWM_TIPO_DOCUMENTO_WT = "WT";
 var NWM_DATA_HORA_HISTORICO = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/;
 var NWM_STATUS = {
   ATIVA: { rotulo: "Ativa" },
@@ -3480,8 +3482,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   abrirDetalhes(linha) {
     if (this.historicoAtual && this.historicoAtual.carregando) return;
     var self = this;
+    this.historicoAtual = { etiqueta: linha.getData(), cursor: "", anteriores: [], proximo: "", carregando: false, ultimaNota: "", dataUltimaNota: "", ultimoWt: "", dataUltimoWt: "" };
     this.preencherDetalhes(linha.getData());
-    this.historicoAtual = { etiqueta: linha.getData(), cursor: "", anteriores: [], proximo: "", carregando: false };
     var historico = this.historicoAtual;
     this.marcarLinhaCarregando(linha, "detalhes");
     return this.carregarHistoricoEtiqueta().always(function () {
@@ -3582,9 +3584,14 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       },
       { rotulo: "Família", valor: "—" },
       { rotulo: "Código de barras", valor: etiqueta.codBarras },
-      { rotulo: "Nota fiscal", valor: "—" },
-      { rotulo: "WT Docto - FT4003", valor: this.wtReservaDaEtiqueta(etiqueta) || "—" },
+      { rotulo: "Nota fiscal", valor: this.documentoHistoricoDetalhes(etiqueta, "ultimaNota") || "—" },
+      { rotulo: "WT Docto - FT4003", valor: this.wtReservaDaEtiqueta(etiqueta) || this.documentoHistoricoDetalhes(etiqueta, "ultimoWt") || "—" },
     ];
+  },
+
+  documentoHistoricoDetalhes(etiqueta, campo) {
+    var historico = this.historicoAtual;
+    return historico && historico.etiqueta.id === etiqueta.id ? historico[campo] : "";
   },
 
   textoConfirmacao(valor) {
@@ -5415,6 +5422,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       historico.proximo = resultado.temMais ? resultado.proximoRegistro : "";
       historico.quantidade = resultado.dados.length;
       self.renderizarHistoricoEtiqueta(resultado.dados);
+      self.registrarDocumentosHistorico(historico, resultado.dados);
+      self.preencherDetalhes(historico.etiqueta);
       $("[data-historico-estado]", self.DOM).text(resultado.dados.length ? "" : "Nenhum evento encontrado.");
     }, function (erro) {
       if (self.historicoAtual === historico) { historico.erro = erro; historico.proximo = ""; historico.quantidade = 0; $("[data-historico-corpo]", self.DOM).empty(); $("[data-historico-estado]", self.DOM).text(erro.message); }
@@ -5423,6 +5432,31 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   wtReservaDaEtiqueta(etiqueta) {
     return String(((etiqueta || {}).dadosOriginais || {}).wtReserva || "").trim();
+  },
+
+  registrarDocumentosHistorico(historico, registros) {
+    var self = this;
+    $.each(registros, function (indice, registro) {
+      var data = String(registro.dataEvento || registro.dataRegistro || "");
+      var nota = self.notaFiscalDoRegistro(registro);
+      var wt = self.wtDoRegistro(registro);
+      if (nota && data >= historico.dataUltimaNota) $.extend(historico, { ultimaNota: nota, dataUltimaNota: data });
+      if (wt && data >= historico.dataUltimoWt) $.extend(historico, { ultimoWt: wt, dataUltimoWt: data });
+    });
+  },
+
+  notaFiscalDoRegistro(registro) {
+    var documento = registro.documentoPrincipal;
+    if (!$.isPlainObject(documento) || documento.tipo !== NWM_TIPO_DOCUMENTO_NOTA) return "";
+    var numero = String(documento.numero == null ? "" : documento.numero).trim();
+    var serie = String(documento.serie == null ? "" : documento.serie).trim();
+    return numero && serie ? numero + "/" + serie : numero;
+  },
+
+  wtDoRegistro(registro) {
+    var documento = registro.documentoPrincipal;
+    var wt = registro.wt != null ? registro.wt : $.isPlainObject(documento) && documento.tipo === NWM_TIPO_DOCUMENTO_WT ? documento.numero : "";
+    return String(wt == null ? "" : wt).trim();
   },
 
   renderizarHistoricoEtiqueta(registros) {
