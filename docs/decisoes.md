@@ -18,10 +18,11 @@
 ## Textos e mensagens
 | Data | Decisão | Origem |
 |---|---|---|
+| 27/10 | Histórico da embalagem no contrato novo do backend (`versaoHistorico: 2`): coluna Ocorrência só com `tituloOcorrencia` e, embaixo, `descricaoOcorrencia`, como texto e **sem badge** (opção 2; substitui as badges de 20/10 e 23/10, inclusive "Vinculada/Desvinculada - Doc. FT4003"). Anterior/Atual de `conteudoHistorico.anterior`/`.atual` com `unidade` (ex.: "10 LT"); `null` → "—", zero aparece; sem completar com o saldo atual. Detalhes extras (origem, destino, documentos, posição) fora da tela | Pedido do usuário |
 | 20/10 | Remover a mensagem inicial "Em lote, cada embalagem..." dos modais; manter campo para andamento/resultado | Pedido do usuário |
-| 20/10 | Ocorrências do Histórico da embalagem em badges iguais às de Bags, com os códigos conferidos nos fontes `.p` e na página publicada | Pedido do usuário |
-| 23/10 | Novas ocorrências no Histórico: `VINCULACAO_RESERVA_WT` = "Vinculada - Doc. FT4003", `LIBERACAO_RESERVA_WT` = "Desvinculada - Doc. FT4003" | Pedido do usuário |
-| 23/10 | As duas badges FT4003 terminam com ": <wt>" (ex.: "Vinculada - Doc. FT4003: 999999"); o número é o campo `wt` do próprio registro do histórico (corrigido no mesmo dia: antes usava o `wtReserva` da etiqueta); sem ele, só o rótulo | Pedido do usuário |
+| 20/10 | ~~Ocorrências do Histórico da embalagem em badges iguais às de Bags, com os códigos conferidos nos fontes `.p` e na página publicada~~ (superado em 27/10) | Pedido do usuário |
+| 23/10 | ~~Novas ocorrências no Histórico: `VINCULACAO_RESERVA_WT` = "Vinculada - Doc. FT4003", `LIBERACAO_RESERVA_WT` = "Desvinculada - Doc. FT4003"~~ (superado em 27/10) | Pedido do usuário |
+| 23/10 | ~~As duas badges FT4003 terminam com ": <wt>" (ex.: "Vinculada - Doc. FT4003: 999999"); o número é o campo `wt` do próprio registro do histórico (corrigido no mesmo dia: antes usava o `wtReserva` da etiqueta); sem ele, só o rótulo~~ (superado em 27/10) | Pedido do usuário |
 | 23/10 | Detalhes da etiqueta: campo "WT Docto - FT4003" logo abaixo de "Nota fiscal", com o mesmo `wtReserva` (vazio → "—") | Pedido do usuário |
 | 20/10 | Campo Data do Histórico da embalagem no formato `DD/MM/AAAA - HH:MM` | Pedido do usuário |
 | 02/10 | Nome exibido "Manutenção Embalagens"; `application.code` continua `widget_nw_manutEtiq` | `HISTORICO.md` |

@@ -1551,6 +1551,25 @@
     overflow-wrap: anywhere;
 }
 
+.fluig-style-guide.nwm .nwm-modal-historico .nwm-tabelinha td.nwm-historico-ocorrencia {
+    min-width: 280px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.fluig-style-guide.nwm .nwm-historico-titulo {
+    display: block;
+    font-weight: 700;
+    color: var(--nwm-tinta);
+}
+
+.fluig-style-guide.nwm .nwm-historico-descricao {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--nwm-tinta-suave);
+}
+
 .fluig-style-guide.nwm .nwm-modal-historico .nwm-origem-rolagem {
     max-height: max(280px, calc(100vh - 320px));
     margin-top: 0;
@@ -2022,70 +2041,4 @@
     .fluig-style-guide.nwm .nwm-selecao-linha:first-child .nwm-selecao-acoes {
         padding-bottom: 25px;
     }
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 10px;
-    border: 1px solid var(--nwm-linha);
-    border-radius: 999px;
-    background-color: var(--nwm-marfim);
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1.4;
-    color: var(--nwm-tinta);
-    white-space: nowrap;
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge::before {
-    content: '';
-    flex: 0 0 auto;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background-color: currentColor;
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge.is-verde {
-    border-color: rgba(0, 107, 53, 0.35);
-    background-color: rgba(0, 107, 53, 0.12);
-    color: var(--nwm-verde);
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge.is-amarelo {
-    border-color: rgba(255, 210, 0, 0.75);
-    background-color: rgba(255, 210, 0, 0.22);
-    color: #7A5C00;
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge.is-azul {
-    border-color: rgba(31, 111, 181, 0.35);
-    background-color: rgba(31, 111, 181, 0.12);
-    color: #1F6FB5;
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge.is-laranja {
-    border-color: rgba(194, 65, 12, 0.35);
-    background-color: rgba(194, 65, 12, 0.10);
-    color: #C2410C;
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge.is-petroleo {
-    border-color: rgba(15, 118, 110, 0.35);
-    background-color: rgba(15, 118, 110, 0.12);
-    color: #0F766E;
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge.is-cinza {
-    border-color: rgba(71, 85, 105, 0.35);
-    background-color: rgba(71, 85, 105, 0.10);
-    color: #475569;
-}
-
-.fluig-style-guide.nwm .nwm-evento-badge.is-vermelho {
-    border-color: rgba(237, 28, 36, 0.35);
-    background-color: rgba(237, 28, 36, 0.10);
-    color: #C4161C;
 }

@@ -109,8 +109,9 @@
   Imprimir da linha não bloqueia a tela; a linha sai do carregamento só depois de atualizada. Se cair na recarga completa (lote
   grande), ela é silenciosa (`atualizarGradeMantendoRecorte(true)` → `carregarEtiquetas(parametros, true)`).
 - **Histórico**: `abrirHistorico(linha)` carrega com o carregamento na linha e só abre o modal após sucesso; paginação por `aposRegistro`;
-  badge por código exato (`NWM_EVENTOS_HISTORICO`) ou raiz (`NWM_RAIZES_EVENTOS_HISTORICO`); sem correspondência, o código em badge
-  neutra. Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico` (23/10): até 1600px de largura (Justificativa quebra linha, mínimo 240px)
+  Ocorrência (27/10) = `tituloOcorrencia` (`.nwm-historico-titulo`) e `descricaoOcorrencia` embaixo (`.nwm-historico-descricao`), como texto, sem
+  badge; sem título, o código `ocorrencia`/`acao`. Anterior/Atual por `quantidadesHistorico`: `conteudoHistorico` com unidade ("10 LT"); sem o objeto,
+  `quantidadeAnterior`/`quantidadeAtual`; `null` → "—". Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico` (23/10): até 1600px de largura (Justificativa quebra linha, mínimo 240px)
   e a tabela rola a partir da altura da tela menos 320px (mínimo 280px). Tabela e paginação num quadro com borda; rodapé da paginação
   no padrão da tabela principal (`.nwm-historico-paginacao`): "Mostrando X–Y eventos" à esquerda e ‹ página › à direita (cursor, sem
   total nem primeira/última). O rodapé do modal tem só Fechar.
@@ -140,7 +141,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Modais e Detalhes (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |
 | Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarImpressao`, `carregarDadosImpressao`, `montarPaginaEtiqueta`, `marcacaoCodigoBarras`, `abrirQuadroImpressao`, `enviarParaImpressora`, `registrarImpressao`, `camposAcaoEtiqueta`, `recusarCamposAcaoEtiqueta`, `limparErroAcaoEtiqueta`, `enviarAcaoEtiqueta`, `iniciarAcaoDaLinha`, `finalizarAcaoDaLinha`, `mostrarCarregamentoAcaoEmLote`, `mensagemRecusaAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
-| Histórico e loading (4489–4614) | `abrirHistorico`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `montarBadgeEventoHistorico`, `renderizarHistoricoEtiqueta` |
+| Histórico e loading (4489–4614) | `abrirHistorico`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `renderizarHistoricoEtiqueta`, `montarLinhaHistorico`, `montarOcorrenciaHistorico`, `quantidadesHistorico`, `textoQuantidadeHistorico` |
 | Impressão, Select2 e legenda (4615–4690) | `obterDadosImpressaoEtiqueta`, `validarRespostaIndividual`, `prepararSelect2`, `montarLegenda`, `abrirLegenda` |
 | Impressora (4692–4882) | `abrirImpressora`, `carregarImpressoras`, `chamarAplicativoImpressao`, `salvarImpressora`, `testarImpressora`, `obterTemplateEtiqueta` |
 | Utilidades (4883–fim) | `avisar`, `formatarDataHoraHistorico`, `formatarData`, `formatarQuantidade` |

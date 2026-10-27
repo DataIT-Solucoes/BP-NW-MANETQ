@@ -6,48 +6,6 @@ var NWM_FECHAMENTO_MODAIS = {
   "[data-modal-acao-etiqueta]": "fecharAcaoEtiqueta",
   "[data-modal-historico]": "fecharHistorico",
 };
-var NWM_EVENTOS_HISTORICO = {
-  NASCIMENTO_RECEBIMENTO: { rotulo: "Recebimento", cor: "verde" },
-  RECEBIMENTO_FISICO: { rotulo: "Recebimento físico", cor: "verde" },
-  INUTILIZACAO_EMBALAGEM: { rotulo: "Inutilização", cor: "vermelho" },
-  CORRECAO_INUTILIZACAO: { rotulo: "Correção da inutilização", cor: "cinza" },
-  NASCIMENTO_TESTE: { rotulo: "Nascimento (teste)", cor: "cinza" },
-  ESVAZIAMENTO_TESTE: { rotulo: "Esvaziamento (teste)", cor: "cinza" },
-  SAIDA_TRANSFERENCIA: { rotulo: "Transferência", cor: "azul" },
-  SAIDA_DEVOLUCAO_COMPRA: { rotulo: "Devolução de compra", cor: "laranja" },
-  DESATUALIZACAO_SAIDA: { rotulo: "Desatualização de saída", cor: "cinza" },
-  CONFIRMACAO_IMPRESSAO: { rotulo: "Confirmação de impressão", cor: "petroleo" },
-  AJUSTE_SALDO_MANUAL: { rotulo: "Ajuste manual de saldo", cor: "amarelo" },
-  CANCELAMENTO_RECEBIMENTO: {
-    rotulo: "Cancelamento do recebimento",
-    cor: "vermelho",
-  },
-  ENTRADA_TRANSFERENCIA: { rotulo: "Entrada por transferência", cor: "azul" },
-  ENTRADA_EMPRESTIMO: { rotulo: "Entrada por empréstimo", cor: "verde" },
-  ENTRADA_RETORNO_EMPRESTIMO: { rotulo: "Retorno de empréstimo", cor: "verde" },
-  ENTRADA_RETORNO_TERCEIROS: { rotulo: "Retorno de terceiros", cor: "verde" },
-  DESATUALIZACAO_ENTRADA: { rotulo: "Desatualização de entrada", cor: "cinza" },
-  SAIDA_REMESSA_TERCEIROS: { rotulo: "Remessa para terceiros", cor: "laranja" },
-  SAIDA_RETORNO_TERCEIROS: { rotulo: "Retorno para terceiros", cor: "laranja" },
-  PERDA_EXTRAVIO_EMBALAGEM: { rotulo: "Perda/extravio", cor: "vermelho" },
-  CORRECAO_PERDA_EXTRAVIO: {
-    rotulo: "Correção da perda/extravio",
-    cor: "cinza",
-  },
-  DESCARTE_ENVIO_BAG: { rotulo: "Envio para descarte", cor: "petroleo" },
-  VINCULACAO_RESERVA_WT: { rotulo: "Vinculada - Doc. FT4003", cor: "petroleo", mostraWt: true },
-  LIBERACAO_RESERVA_WT: { rotulo: "Desvinculada - Doc. FT4003", cor: "cinza", mostraWt: true },
-};
-var NWM_RAIZES_EVENTOS_HISTORICO = [
-  { raiz: /REABERTURA|REABRIR/, rotulo: "Reabertura", cor: "verde" },
-  { raiz: /ABERTURA|ABRIR/, rotulo: "Abertura", cor: "verde" },
-  { raiz: /INCLUSAO|INCLUIR/, rotulo: "Inclusão", cor: "petroleo" },
-  { raiz: /RETIRADA|RETIRAR/, rotulo: "Retirada", cor: "laranja" },
-  { raiz: /LACR/, rotulo: "Fechamento", cor: "amarelo" },
-  { raiz: /ENVIO|ENVIAR/, rotulo: "Envio", cor: "azul" },
-  { raiz: /CANCEL/, rotulo: "Cancelamento", cor: "vermelho" },
-  { raiz: /ALTERACAO|ALTERAR|EDICAO|EDITAR/, rotulo: "Alteração", cor: "cinza" },
-];
 var NWM_DATA_HORA_HISTORICO = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/;
 var NWM_STATUS = {
   ATIVA: { rotulo: "Ativa" },
@@ -5492,22 +5450,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }).always(function () { historico.carregando = false; self.botoesHistorico(); });
   },
 
-  montarBadgeEventoHistorico(evento, wt) {
-    var codigo = String(evento || "").toUpperCase();
-    var tipo = NWM_EVENTOS_HISTORICO[codigo] || $.grep(NWM_RAIZES_EVENTOS_HISTORICO, function (registro) {
-      return registro.raiz.test(codigo);
-    })[0];
-    return $("<span>", {
-      class: "nwm-evento-badge" + (tipo ? " is-" + tipo.cor : ""),
-      text: tipo ? this.rotuloEventoHistorico(tipo, wt) : codigo || "—",
-    });
-  },
-
-  rotuloEventoHistorico(tipo, wt) {
-    var numero = String(wt == null ? "" : wt).trim();
-    return tipo.mostraWt && numero ? tipo.rotulo + ": " + numero : tipo.rotulo;
-  },
-
   wtReservaDaEtiqueta(etiqueta) {
     return String(((etiqueta || {}).dadosOriginais || {}).wtReserva || "").trim();
   },
@@ -5516,11 +5458,40 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var self = this;
     var $corpo = $("[data-historico-corpo]", this.DOM).empty();
     $.each(registros, function (indice, registro) {
-      var $linha = $("<tr>").appendTo($corpo);
-      $("<td>", { text: self.formatarDataHoraHistorico(registro.dataEvento || registro.dataRegistro) }).appendTo($linha);
-      $("<td>").append(self.montarBadgeEventoHistorico(registro.ocorrencia || registro.acao, registro.wt)).appendTo($linha);
-      $.each([registro.usuario, registro.quantidadeAnterior, registro.quantidadeAtual, registro.justificativa], function (posicao, valor) { $("<td>", { text: valor == null ? "—" : String(valor) }).appendTo($linha); });
+      self.montarLinhaHistorico(registro).appendTo($corpo);
     });
+  },
+
+  montarLinhaHistorico(registro) {
+    var $linha = $("<tr>");
+    var quantidades = this.quantidadesHistorico(registro);
+    $("<td>", { text: this.formatarDataHoraHistorico(registro.dataEvento || registro.dataRegistro) }).appendTo($linha);
+    this.montarOcorrenciaHistorico(registro).appendTo($linha);
+    $.each([registro.usuario, quantidades.anterior, quantidades.atual, registro.justificativa], function (posicao, valor) { $("<td>", { text: valor == null ? "—" : String(valor) }).appendTo($linha); });
+    return $linha;
+  },
+
+  montarOcorrenciaHistorico(registro) {
+    var titulo = String(registro.tituloOcorrencia || registro.ocorrencia || registro.acao || "").trim();
+    var descricao = String(registro.descricaoOcorrencia || "").trim();
+    var $celula = $("<td>", { class: "nwm-historico-ocorrencia" });
+    $("<span>", { class: "nwm-historico-titulo", text: titulo || "—" }).appendTo($celula);
+    if (descricao) $("<span>", { class: "nwm-historico-descricao", text: descricao }).appendTo($celula);
+    return $celula;
+  },
+
+  quantidadesHistorico(registro) {
+    var conteudo = registro.conteudoHistorico;
+    if (!$.isPlainObject(conteudo)) return { anterior: registro.quantidadeAnterior, atual: registro.quantidadeAtual };
+    return {
+      anterior: this.textoQuantidadeHistorico(conteudo.anterior, conteudo.unidade),
+      atual: this.textoQuantidadeHistorico(conteudo.atual, conteudo.unidade),
+    };
+  },
+
+  textoQuantidadeHistorico(quantidade, unidade) {
+    if (quantidade == null) return null;
+    return (this.formatarQuantidade(quantidade) + " " + String(unidade || "").trim()).trim();
   },
 
   botoesHistorico() {
