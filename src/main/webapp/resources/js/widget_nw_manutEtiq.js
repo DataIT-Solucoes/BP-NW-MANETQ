@@ -157,6 +157,7 @@ var NWM_RAMOS_DEVOLUCAO = {
 };
 
 var NWM_LIMITE_SUGESTOES = 20;
+var NWM_TIPOS_TODOS = "todos";
 var NWM_LIMITE_DOCUMENTOS = 20;
 var NWM_LIMITE_PAGINA = 100;
 var NWM_LIMITE_EMBALAGENS_OPERACAO = 100;
@@ -1923,7 +1924,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         widthGrow: NWM_CRESCIMENTO_DESCRICAO,
         minWidth: NWM_LARGURAS_COLUNAS.descricaoMinima,
       }),
-      this.colunaTexto("Tipo de Embalagem", "codTipo", {
+      this.colunaTexto("Tipo de Embalagem", "tipoEmbalagem", {
         width: NWM_LARGURAS_COLUNAS.tipoEmbalagem,
       }),
       this.colunaTexto("Fazenda", "fazenda", {
@@ -2788,7 +2789,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   descreverProximoEstabelecimento(descricao) {
     if (!this.cargaEtiquetasAtual(descricao.carga)) return;
-    if (descricao.indice === descricao.codigos.length) return this.concluirCargaEtiquetas(descricao.carga);
+    if (descricao.indice === descricao.codigos.length) return this.descreverTiposCarga(descricao.carga);
     descricao.codigo = descricao.codigos[descricao.indice++];
     descricao.cursores = Object.create(null);
     var nome = this.descricaoEstabelecimentoFiltro(descricao.codigo);
@@ -2831,6 +2832,55 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       if (etiqueta.codEstabel === descricao.codigo) etiqueta.fazenda = etiqueta.codEstabel + " - " + nome;
     });
     this.descreverProximoEstabelecimento(descricao);
+  },
+
+  descreverTiposCarga(carga) {
+    if (!this.cargaEtiquetasAtual(carga)) return;
+    var tipos = Object.create(null);
+    $.each(carga.dados, function (indice, etiqueta) {
+      if (etiqueta.codTipo.length >= 2) tipos[etiqueta.codTipo] = true;
+    });
+    this.descreverProximoTipo({ carga: carga, codigos: Object.keys(tipos), indice: 0 });
+  },
+
+  descreverProximoTipo(descricao) {
+    if (!this.cargaEtiquetasAtual(descricao.carga)) return;
+    if (descricao.indice === descricao.codigos.length) return this.concluirCargaEtiquetas(descricao.carga);
+    descricao.codigo = descricao.codigos[descricao.indice++];
+    descricao.cursores = Object.create(null);
+    this.consultarDescricaoTipo(descricao, "");
+  },
+
+  consultarDescricaoTipo(descricao, cursor) {
+    var self = this;
+    var parametros = { filtro: descricao.codigo, ativo: NWM_TIPOS_TODOS, limite: NWM_LIMITE_SUGESTOES };
+    if (cursor) parametros.aposCodigo = cursor;
+    this.consultarDataset("apoiarTipos", parametros, "descricao:tipos").then(
+      function (resultado) {
+        if (self.cargaEtiquetasAtual(descricao.carga)) self.receberDescricaoTipo(descricao, cursor, resultado);
+      },
+      function (erro) {
+        if (self.cargaEtiquetasAtual(descricao.carga) && erro.tipo !== NWM_TIPOS_ERRO.CANCELAMENTO) self.descreverProximoTipo(descricao);
+      },
+    );
+  },
+
+  receberDescricaoTipo(descricao, cursor, resultado) {
+    var registro = this.registroDoItem(resultado.dados, descricao.codigo);
+    if (registro && registro.descricao) return this.aplicarDescricaoTipo(descricao, registro.descricao);
+    var proximo = resultado.proximoCodigo;
+    if (resultado.temMais && typeof proximo === "string" && proximo && proximo !== cursor && !descricao.cursores[proximo]) {
+      descricao.cursores[proximo] = true;
+      return this.consultarDescricaoTipo(descricao, proximo);
+    }
+    this.descreverProximoTipo(descricao);
+  },
+
+  aplicarDescricaoTipo(descricao, nome) {
+    $.each(descricao.carga.dados, function (indice, etiqueta) {
+      if (etiqueta.codTipo === descricao.codigo) etiqueta.tipoEmbalagem = etiqueta.codTipo + " - " + nome;
+    });
+    this.descreverProximoTipo(descricao);
   },
 
   concluirCargaEtiquetas(carga) {
@@ -2917,6 +2967,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       codEstabel: registro.codEstabel,
       fazenda: registro.codEstabel,
       codTipo: registro.codTipo || "",
+      tipoEmbalagem: registro.codTipo || "",
       etiqueta: registro.codEtiqueta,
       codBarras: registro.codEtiqueta,
       lote: registro.lote || "",
@@ -5296,7 +5347,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (!registro && resultado.temMais)
       throw this.erroDataset("RESPOSTA_INVALIDA", "Não foi possível localizar a embalagem atualizada.", NWM_TIPOS_ERRO.TECNICO);
     if (!registro) return this.removerEtiquetaDaCarga(carga, anterior.id);
-    var atualizada = $.extend(this.mapearEtiqueta(registro), { descItem: anterior.descItem, fazenda: anterior.fazenda });
+    var atualizada = $.extend(this.mapearEtiqueta(registro), { descItem: anterior.descItem, fazenda: anterior.fazenda, tipoEmbalagem: anterior.tipoEmbalagem });
     this.substituirEtiquetaNaCarga(carga, atualizada);
     var linha = this.tabela.getRow(anterior.id);
     if (linha) linha.update(atualizada);

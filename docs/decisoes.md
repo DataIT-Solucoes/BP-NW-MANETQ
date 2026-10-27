@@ -101,6 +101,7 @@
 | 20/10 | Imprimir habilitado quando a situação permitir; ao clicar, registra a confirmação (`CONFIRMAR_IMPRESSAO`) para atualizar o status, mesmo sem impressão física, para teste do usuário. Substitui o Imprimir desabilitado por falta de modelo | Pedido do usuário |
 | 20/10 | Botões da coluna Ações alinhados à esquerda | Correção do usuário |
 | 20/10 | Imprimir visível como **primeiro** botão em Não impressa; só reordenar o mapa não atende se a coluna cortar o botão | Correção do usuário |
+| 27/10 | Coluna "Tipo de Embalagem" em `código - descrição` (ex.: "PL - PLASTICO"), descrição pelo `apoiarTipos` na busca | Pedido do usuário |
 | 27/10 | Detalhes: "Nota fiscal" = NF (`documentoPrincipal` tipo `NOTA_FISCAL`, "numero/serie") do evento mais recente do histórico; "WT Docto - FT4003" = reserva atual (`wtReserva`) ou, sem ela, o WT do evento mais recente (`wt` ou `documentoPrincipal` tipo `WT`). Sem nenhum: "—" (ex.: 137 → 0019563/1 e 493078) | Pedido do usuário |
 | 27/10 | Sem botão Histórico na linha: o Detalhes vira modal largo como era o do Histórico (até 1600px), com os dados atuais em cima e o Histórico da embalagem embaixo (mesma tabela e paginação). O Detalhes carrega o histórico com o carregamento na linha e abre depois da consulta | Pedido do usuário |
 | 27/10 | Em `EM_TERCEIRO` (Em terceiro): só Detalhes, ~~Histórico~~ e Imprimir (saem Devolver e Perda), na linha e no lote | Pedido do usuário |

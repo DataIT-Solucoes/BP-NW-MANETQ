@@ -25,7 +25,7 @@
   **Código de barras** (Enter: localiza o número entre as linhas carregadas, marca e vai à página; `lerCodigoBarras`) ·
   **Ação em lote** (Imprimir, Receber, Estornar, Transferir, Devolução, Inutilizar, Registrar perda/extravio) + Aplicar ·
   **Código de barras** (`data-leitor-cod-barras`, sem comportamento). Selects com Select2 4.0.13 (pt-BR).
-- **Tabela** (Tabulator): marcação | Código | Descrição | Tipo de Embalagem (`codTipo`) | Fazenda (`código - descrição`) | Etiqueta | Lote |
+- **Tabela** (Tabulator): marcação | Código | Descrição | Tipo de Embalagem (`tipoEmbalagem` = `código - descrição`) | Fazenda (`código - descrição`) | Etiqueta | Lote |
   Data Val. | Qtde Emb | Qtde Saldo | UN | Status | Ações. Larguras em `NWM_LARGURAS_COLUNAS` (Ações 320px, alinhada à esquerda).
   - A busca lê **todas** as páginas do Dataset (100 por chamada) e só então mostra; grade com 20 por página, sem altura própria (cresce com a página);
     cabeçalho fixo ao descer a página (`prepararCabecalhoFixo`, `NWM_TOPO_CABECALHO_FIXO`, como no `widget_nw_bags`): cópia do
@@ -63,7 +63,8 @@
   `envelopeComandoValido`, `envelopePaginadoValido`…); consultas por canal (`consultasDataset`), resposta antiga é descartada;
   erros classificados em `NWM_TIPOS_ERRO` (técnico, funcional, autorização, cancelamento). Tempo limite 90 s.
 - **Busca** (`buscar` → `carregarEtiquetas`): pagina por cursor, valida ordem dos ids e cada registro (`registroEtiquetaValido`), mapeia
-  (`mapearEtiqueta`), descreve itens (`apoiarItens`) e estabelecimentos (Fazenda) e só então exibe (`concluirCargaEtiquetas`).
+  (`mapearEtiqueta`), descreve itens (`apoiarItens`), estabelecimentos (Fazenda) e tipos de embalagem
+  (`apoiarTipos` com `ativo: "todos"`, um por código; sem descrição fica só o código) e só então exibe (`concluirCargaEtiquetas`).
 - **Operação** (Transferir/Devolver, modal Movimentar; título por ação em `NWM_TITULOS_OPERACAO`, ex.: "Transferir embalagens"): `classificarNatureza` define o fluxo (`NWM_ROTULOS_FLUXO`): Transferência e
   Remessa (natureza de saída por autocomplete `apoiarNaturezas` — `NWM_CAMPOS_NATUREZA`; escolher na lista chama o `classificarNatureza`
   pelo `selecionarApoioFiltro`, sem botão; digitado também vale, validado no Enter ou ao sair do campo — `classificarNaturezaDigitada`,
@@ -139,7 +140,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Transporte Dataset (1163–1512) | `erroDataset`, `chamarEmbalagens`, `tratarRespostaDataset`, `extrairEnvelopeDataset`, `consultarDataset`, `cancelarConsultaDataset`, `mostrarErroConsulta` |
 | Tabela (1515–1870) | `montarTabela`, `opcoesTabela`, `montarColunasTabela`, `coluna*`, `montarChipStatus`, `montarBotoesAcoes`, `acoesDaEtiqueta`, `acaoDisponivel`, `textoMotivoIndisponivel` |
 | Seleção (1871–2069) | `montarCheckTodos`, `marcarLinha`, `marcarTodos`, `limparSelecao`, `atualizarSelecao`, `renderizarItensSelecionados`, `linhasSelecionadas` |
-| Busca e carga (2070–2650) | `buscar`, `montarParametrosEtiquetas`, `carregarEtiquetas`, `consultarPaginaEtiquetas`, `descreverItensCarga`, `descreverEstabelecimentosCarga`, `concluirCargaEtiquetas`, `mapearEtiqueta`, `registroEtiquetaValido` |
+| Busca e carga (2070–2650) | `buscar`, `montarParametrosEtiquetas`, `carregarEtiquetas`, `consultarPaginaEtiquetas`, `descreverItensCarga`, `descreverEstabelecimentosCarga`, `descreverTiposCarga`, `concluirCargaEtiquetas`, `mapearEtiqueta`, `registroEtiquetaValido` |
 | Validação dos filtros (2649–2796) | `lerFiltros`, `valorFiltroInformado`, `validarFiltros`, `verificarFiltrosObrigatorios`, `verificarOrdemFaixas`, `verificarTextoFiltros`, `marcarInvalidos` |
 | Ações da linha, lote e quantidade (2797–2950) | `acaoNaLinha`, `aplicarLote`, `executarQuantidade`, `escolherEmbalagensDoItem` |
 | Modais e Detalhes (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `preencherDetalhes`, `concluirAberturaDetalhes`, `aplicarAcao` |
