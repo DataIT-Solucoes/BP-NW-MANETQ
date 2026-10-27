@@ -101,6 +101,8 @@
 | 20/10 | Imprimir habilitado quando a situação permitir; ao clicar, registra a confirmação (`CONFIRMAR_IMPRESSAO`) para atualizar o status, mesmo sem impressão física, para teste do usuário. Substitui o Imprimir desabilitado por falta de modelo | Pedido do usuário |
 | 20/10 | Botões da coluna Ações alinhados à esquerda | Correção do usuário |
 | 20/10 | Imprimir visível como **primeiro** botão em Não impressa; só reordenar o mapa não atende se a coluna cortar o botão | Correção do usuário |
+| 27/10 | Sem botão Histórico na linha: o Detalhes vira modal largo como era o do Histórico (até 1600px), com os dados atuais em cima e o Histórico da embalagem embaixo (mesma tabela e paginação). O Detalhes carrega o histórico com o carregamento na linha e abre depois da consulta | Pedido do usuário |
+| 27/10 | Em `EM_TERCEIRO` (Em terceiro): só Detalhes, ~~Histórico~~ e Imprimir (saem Devolver e Perda), na linha e no lote | Pedido do usuário |
 | 20/10 | Em `NAO_IMPRESSA`: Imprimir, Detalhes, Histórico, Inutilizar e Perda. Demais status preservados | Pedido do usuário |
 | 20/10 | Hover dos botões de ações no padrão de Bags: fundo/borda coloridos e ícone contrastante por ação | Pedido do usuário |
 | 20/10 | Botões de ações da grade com a borda verde de Bags, inclusive em repouso | Pedido do usuário |

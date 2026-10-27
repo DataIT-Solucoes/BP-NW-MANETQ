@@ -33,27 +33,27 @@
     ordem inicial Código → Etiqueta. Marcar todos vale para todas as páginas da busca (todas as linhas ativas, não só as 20 visíveis); só `EMBALAGEM` de busca concluída pode ser marcada.
   - Status = chip colorido (`montarChipStatus`, classe `nwm-chip-<codigo>`); texto = `situacaoFacilitada(situacaoApresentada)` (rótulo de
     `NWM_LEGENDA_STATUS`; código fora da legenda vira texto legível) e `descricaoSituacao` do backend no `title`; botão no título abre a Legenda.
-- **Ações por linha** (`NWM_ACOES_POR_STATUS`, botões só-ícone com `title`/`aria-label`, borda verde e hover colorido por ação):
+- **Ações por linha** (`NWM_ACOES_POR_STATUS`; sem botão Histórico desde 27/10, ele fica dentro do Detalhes; botões só-ícone com `title`/`aria-label`, borda verde e hover colorido por ação):
 
 | `situacaoApresentada` | Botões (na ordem) |
 |---|---|
-| `NAO_IMPRESSA` | imprimir, detalhes, historico, inutilizar, perda |
-| `IMPRESSA` | detalhes, historico, imprimir, receber, transferir, devolver, inutilizar, perda |
-| `EM_ESTOQUE` | detalhes, historico, imprimir, estornar, transferir, devolver, inutilizar, perda |
-| `EM_CAMPO`, `AGUARDANDO_RECEBIMENTO`, `EM_BAG` | detalhes, historico, imprimir, perda |
-| `EM_TERCEIRO` | detalhes, historico, imprimir, devolver, perda |
-| `ZERADA` | detalhes, historico, imprimir, estornar, inutilizar, perda |
-| `INUTILIZADA` | detalhes, historico, imprimir, estornar, perda |
-| `DESCARTADA` | detalhes, historico, imprimir |
-| `ENCERRADA` | detalhes, historico, imprimir, estornar |
-| `CANCELADA`, desconhecido | detalhes, historico (`NWM_ACOES_PADRAO`) |
+| `NAO_IMPRESSA` | imprimir, detalhes, inutilizar, perda |
+| `IMPRESSA` | detalhes, imprimir, receber, transferir, devolver, inutilizar, perda |
+| `EM_ESTOQUE` | detalhes, imprimir, estornar, transferir, devolver, inutilizar, perda |
+| `EM_CAMPO`, `AGUARDANDO_RECEBIMENTO`, `EM_BAG` | detalhes, imprimir, perda |
+| `EM_TERCEIRO` | detalhes, imprimir (27/10) |
+| `ZERADA` | detalhes, imprimir, estornar, inutilizar, perda |
+| `INUTILIZADA` | detalhes, imprimir, estornar, perda |
+| `DESCARTADA` | detalhes, imprimir |
+| `ENCERRADA` | detalhes, imprimir, estornar |
+| `CANCELADA`, desconhecido | detalhes (`NWM_ACOES_PADRAO`) |
 
-  Disponibilidade (`acaoDisponivel`): Detalhes/Histórico sempre; demais só para `tipoControle = EMBALAGEM` e sem escrita bloqueada;
+  Disponibilidade (`acaoDisponivel`): Detalhes sempre; demais só para `tipoControle = EMBALAGEM` e sem escrita bloqueada;
   Imprimir exige `situacao` ATIVA; com Bag, só Imprimir; Receber/Transferir exigem `ESTAB`, impressão confirmada e saldo. Ação não permitida
   pela regra da embalagem (`acaoPermitidaNaEtiqueta`: status, Bag, local, saldo) **não aparece**; bloqueio temporário (escrita em
   andamento/incerta, linha carregando) deixa o botão desabilitado com o motivo no `title` (`textoMotivoIndisponivel`).
-- **Modais** (sete `<dialog>`, fecham pelo fundo — `NWM_FECHAMENTO_MODAIS`/`cliqueForaModal`): Detalhes · Movimentar embalagens
-  (operação) · Legenda dos status · Impressora · Ação de etiqueta · Histórico da embalagem.
+- **Modais** (`<dialog>`, fecham pelo fundo — `NWM_FECHAMENTO_MODAIS`/`cliqueForaModal`): Detalhes · Movimentar embalagens
+  (operação) · Legenda dos status · Impressora · Ação de etiqueta (o Histórico da embalagem fica dentro do Detalhes).
 
 ## Arquitetura do JS
 - **Nível de acesso** (`identificarNivelAcesso`, no `init`): `WCMAPI.getUserCode()` + dataset `colleagueGroup` (`consultarGruposUsuario`);
@@ -108,10 +108,12 @@
   desabilitados e o clicado mostra spinner (`iconeBotaoAcao`). Enquanto houver, `aguardarAcaoDaLinha` recusa nova ação na tabela e Buscar.
   Imprimir da linha não bloqueia a tela; a linha sai do carregamento só depois de atualizada. Se cair na recarga completa (lote
   grande), ela é silenciosa (`atualizarGradeMantendoRecorte(true)` → `carregarEtiquetas(parametros, true)`).
-- **Histórico**: `abrirHistorico(linha)` carrega com o carregamento na linha e só abre o modal após sucesso; paginação por `aposRegistro`;
+- **Detalhes + Histórico** (27/10): `abrirDetalhes(linha)` preenche os dados atuais (`preencherDetalhes`, grade em colunas automáticas de 220px)
+  e carrega o histórico com o carregamento na linha; o modal abre depois da consulta (`concluirAberturaDetalhes`), também se ela falhar
+  (o erro aparece no lugar do histórico; cancelada não abre). Seção "Histórico da embalagem" embaixo; paginação por `aposRegistro`;
   Ocorrência (27/10) = `tituloOcorrencia` (`.nwm-historico-titulo`) e `descricaoOcorrencia` embaixo (`.nwm-historico-descricao`), como texto, sem
   badge; sem título, o código `ocorrencia`/`acao`. Anterior/Atual por `quantidadesHistorico`: `conteudoHistorico` com unidade ("10 LT"); sem o objeto,
-  `quantidadeAnterior`/`quantidadeAtual`; `null` → "—". Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico` (23/10): até 1600px de largura (Justificativa quebra linha, mínimo 240px)
+  `quantidadeAnterior`/`quantidadeAtual`; `null` → "—". Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico.nwm-modal-detalhes`: até 1600px de largura (Justificativa quebra linha, mínimo 240px)
   e a tabela rola a partir da altura da tela menos 320px (mínimo 280px). Tabela e paginação num quadro com borda; rodapé da paginação
   no padrão da tabela principal (`.nwm-historico-paginacao`): "Mostrando X–Y eventos" à esquerda e ‹ página › à direita (cursor, sem
   total nem primeira/última). O rodapé do modal tem só Fechar.
@@ -138,10 +140,10 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Busca e carga (2070–2650) | `buscar`, `montarParametrosEtiquetas`, `carregarEtiquetas`, `consultarPaginaEtiquetas`, `descreverItensCarga`, `descreverEstabelecimentosCarga`, `concluirCargaEtiquetas`, `mapearEtiqueta`, `registroEtiquetaValido` |
 | Validação dos filtros (2649–2796) | `lerFiltros`, `valorFiltroInformado`, `validarFiltros`, `verificarFiltrosObrigatorios`, `verificarOrdemFaixas`, `verificarTextoFiltros`, `marcarInvalidos` |
 | Ações da linha, lote e quantidade (2797–2950) | `acaoNaLinha`, `aplicarLote`, `executarQuantidade`, `escolherEmbalagensDoItem` |
-| Modais e Detalhes (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `aplicarAcao` |
+| Modais e Detalhes (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `preencherDetalhes`, `concluirAberturaDetalhes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |
 | Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarImpressao`, `carregarDadosImpressao`, `montarPaginaEtiqueta`, `marcacaoCodigoBarras`, `abrirQuadroImpressao`, `enviarParaImpressora`, `registrarImpressao`, `camposAcaoEtiqueta`, `recusarCamposAcaoEtiqueta`, `limparErroAcaoEtiqueta`, `enviarAcaoEtiqueta`, `iniciarAcaoDaLinha`, `finalizarAcaoDaLinha`, `mostrarCarregamentoAcaoEmLote`, `mensagemRecusaAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
-| Histórico e loading (4489–4614) | `abrirHistorico`, `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `renderizarHistoricoEtiqueta`, `montarLinhaHistorico`, `montarOcorrenciaHistorico`, `quantidadesHistorico`, `textoQuantidadeHistorico` |
+| Histórico e loading (4489–4614) | `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `renderizarHistoricoEtiqueta`, `montarLinhaHistorico`, `montarOcorrenciaHistorico`, `quantidadesHistorico`, `textoQuantidadeHistorico` |
 | Impressão, Select2 e legenda (4615–4690) | `obterDadosImpressaoEtiqueta`, `validarRespostaIndividual`, `prepararSelect2`, `montarLegenda`, `abrirLegenda` |
 | Impressora (4692–4882) | `abrirImpressora`, `carregarImpressoras`, `chamarAplicativoImpressao`, `salvarImpressora`, `testarImpressora`, `obterTemplateEtiqueta` |
 | Utilidades (4883–fim) | `avisar`, `formatarDataHoraHistorico`, `formatarData`, `formatarQuantidade` |

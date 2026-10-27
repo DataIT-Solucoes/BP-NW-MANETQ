@@ -1740,6 +1740,23 @@
     grid-column: 1 / -1;
 }
 
+.fluig-style-guide.nwm .nwm-modal-detalhes .nwm-detalhes-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.fluig-style-guide.nwm .nwm-detalhes-secao {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--nwm-linha);
+}
+
+.fluig-style-guide.nwm .nwm-detalhes-secao-titulo {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--nwm-tinta);
+}
+
 /* legenda dos status */
 .fluig-style-guide.nwm .nwm-legenda {
     margin: 0;
@@ -1871,7 +1888,8 @@
         min-width: 0;
     }
 
-    .fluig-style-guide.nwm .nwm-detalhes-grid {
+    .fluig-style-guide.nwm .nwm-detalhes-grid,
+    .fluig-style-guide.nwm .nwm-modal-detalhes .nwm-detalhes-grid {
         grid-template-columns: minmax(0, 1fr);
     }
 

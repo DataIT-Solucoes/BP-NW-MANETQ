@@ -4,7 +4,6 @@ var NWM_FECHAMENTO_MODAIS = {
   "[data-modal-impressora]": "fecharImpressora",
   "[data-modal-operacao]": "fecharOperacao",
   "[data-modal-acao-etiqueta]": "fecharAcaoEtiqueta",
-  "[data-modal-historico]": "fecharHistorico",
 };
 var NWM_DATA_HORA_HISTORICO = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/;
 var NWM_STATUS = {
@@ -22,7 +21,6 @@ var NWM_POSICOES = {
 
 var NWM_ACOES = {
   detalhes: { rotulo: "Detalhes", icone: "bi-eye" },
-  historico: { rotulo: "Histórico", icone: "bi-clock-history" },
   imprimir: { rotulo: "Imprimir", icone: "bi-printer" },
   receber: {
     rotulo: "Receber",
@@ -300,13 +298,11 @@ var NWM_ACOES_POR_STATUS = {
   "NAO_IMPRESSA": [
     "imprimir",
     "detalhes",
-    "historico",
     "inutilizar",
     "perda"
   ],
   "IMPRESSA": [
     "detalhes",
-    "historico",
     "imprimir",
     "receber",
     "transferir",
@@ -316,7 +312,6 @@ var NWM_ACOES_POR_STATUS = {
   ],
   "EM_ESTOQUE": [
     "detalhes",
-    "historico",
     "imprimir",
     "estornar",
     "transferir",
@@ -326,26 +321,20 @@ var NWM_ACOES_POR_STATUS = {
   ],
   "EM_CAMPO": [
     "detalhes",
-    "historico",
     "imprimir",
     "perda"
   ],
   "AGUARDANDO_RECEBIMENTO": [
     "detalhes",
-    "historico",
     "imprimir",
     "perda"
   ],
   "EM_TERCEIRO": [
     "detalhes",
-    "historico",
-    "imprimir",
-    "devolver",
-    "perda"
+    "imprimir"
   ],
   "ZERADA": [
     "detalhes",
-    "historico",
     "imprimir",
     "estornar",
     "inutilizar",
@@ -353,31 +342,26 @@ var NWM_ACOES_POR_STATUS = {
   ],
   "INUTILIZADA": [
     "detalhes",
-    "historico",
     "imprimir",
     "estornar",
     "perda"
   ],
   "EM_BAG": [
     "detalhes",
-    "historico",
     "imprimir",
     "perda"
   ],
   "DESCARTADA": [
     "detalhes",
-    "historico",
     "imprimir"
   ],
   "ENCERRADA": [
     "detalhes",
-    "historico",
     "imprimir",
     "estornar"
   ],
   "CANCELADA": [
-    "detalhes",
-    "historico"
+    "detalhes"
   ]
 };
 
@@ -392,7 +376,7 @@ var NWM_COMANDOS_ETIQUETA = {
   perda: { dataset: "registrarPerdaExtravio", acao: "REGISTRAR_PERDA_EXTRAVIO" }
 };
 
-var NWM_ACOES_PADRAO = ["detalhes", "historico"];
+var NWM_ACOES_PADRAO = ["detalhes"];
 
 var widget_nw_manutEtiq = SuperWidget.extend({
   tabela: null,
@@ -2200,11 +2184,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   acaoDisponivel(acao, etiqueta) {
     if (!this.acaoPermitidaNaEtiqueta(acao, etiqueta)) return false;
-    return acao === "detalhes" || acao === "historico" || !this.escritaEtiquetaBloqueada();
+    return acao === "detalhes" || !this.escritaEtiquetaBloqueada();
   },
 
   acaoPermitidaNaEtiqueta(acao, etiqueta) {
-    if (acao === "detalhes" || acao === "historico") return true;
+    if (acao === "detalhes") return true;
     if (!this.acaoPermitidaNoNivel(acao)) return false;
     if (etiqueta.tipoControle !== "EMBALAGEM") return false;
     if (acao === "imprimir") return etiqueta.situacao === "ATIVA" && this.acoesDaEtiqueta(etiqueta).indexOf(acao) >= 0;
@@ -2498,7 +2482,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (!this.validarFiltros(filtros)) return;
     if (!this.tabela) return;
     this.limparSelecao();
-    this.fechar(this.$modalDetalhes);
+    this.fecharDetalhes();
     return this.carregarEtiquetas(this.montarParametrosEtiquetas(filtros));
   },
 
@@ -3251,12 +3235,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   acaoNaLinha(acao, linha) {
-    if (acao === "detalhes") {
-      this.abrirDetalhes(linha);
-      return;
-    }
     if (this.aguardarAcaoDaLinha()) return;
-    if (acao === "historico") return this.abrirHistorico(linha);
+    if (acao === "detalhes") return this.abrirDetalhes(linha);
     if (!this.podeSelecionarEtiqueta(linha.getData())) {
       this.avisar(
         "warning",
@@ -3498,7 +3478,19 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   abrirDetalhes(linha) {
-    var etiqueta = linha.getData();
+    if (this.historicoAtual && this.historicoAtual.carregando) return;
+    var self = this;
+    this.preencherDetalhes(linha.getData());
+    this.historicoAtual = { etiqueta: linha.getData(), cursor: "", anteriores: [], proximo: "", carregando: false };
+    var historico = this.historicoAtual;
+    this.marcarLinhaCarregando(linha, "detalhes");
+    return this.carregarHistoricoEtiqueta().always(function () {
+      self.desmarcarLinhaCarregando();
+      self.concluirAberturaDetalhes(historico);
+    });
+  },
+
+  preencherDetalhes(etiqueta) {
     $("[data-detalhes-subtitulo]", this.DOM).text(
       "Etiqueta " +
         etiqueta.etiqueta +
@@ -3515,6 +3507,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         .append($("<dd>").text(campo.valor))
         .appendTo($grade);
     });
+  },
+
+  concluirAberturaDetalhes(historico) {
+    if (this.historicoAtual !== historico) return;
+    if (historico.erro && historico.erro.tipo === NWM_TIPOS_ERRO.CANCELAMENTO) return;
     this.abrir(this.$modalDetalhes);
   },
 
@@ -3602,6 +3599,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   fecharDetalhes(htmlElement, event) {
     this.fechar(this.$modalDetalhes);
+    this.cancelarConsultaDataset("historico");
   },
 
   aplicarAcao(acao, linhas, linhaOrigem) {
@@ -4870,13 +4868,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   prepararAcaoEtiqueta() {
     var self = this;
     this.$modalAcaoEtiqueta = $("[data-modal-acao-etiqueta]", this.DOM);
-    this.$modalHistorico = $("[data-modal-historico]", this.DOM);
     this.$modalAcaoEtiqueta.find("form").on("submit", function (evento) { evento.preventDefault(); self.enviarAcaoEtiqueta(); });
     this.$modalAcaoEtiqueta.on("cancel", function (evento) { if (self.acaoEtiquetaAtual && self.acaoEtiquetaAtual.enviando) evento.preventDefault(); });
     $("[data-fechar-acao-etiqueta]", this.DOM).on("click", function () { self.fecharAcaoEtiqueta(); });
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").on("input", function () { self.filtrarQuantidadeDigitada($(this)); self.limparErroAcaoEtiqueta(); });
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-motivo]").on("input", function () { self.limparErroAcaoEtiqueta(); });
-    $("[data-fechar-historico]", this.DOM).on("click", function () { self.fecharHistorico(); });
     $("[data-historico-proximo]", this.DOM).on("click", function () { self.proximaPaginaHistorico(); });
     $("[data-historico-anterior]", this.DOM).on("click", function () { self.paginaAnteriorHistorico(); });
     this.restaurarEtiquetaIncerta();
@@ -5368,24 +5364,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     });
   },
 
-  fecharHistorico() {
-    this.fechar(this.$modalHistorico);
-    this.cancelarConsultaDataset("historico");
-  },
-
-  abrirHistorico(linha) {
-    if (this.historicoAtual && this.historicoAtual.carregando) return;
-    var self = this;
-    this.historicoAtual = { etiqueta: linha.getData(), cursor: "", anteriores: [], proximo: "", carregando: false };
-    var historico = this.historicoAtual;
-    this.marcarLinhaCarregando(linha, "historico");
-    return this.carregarHistoricoEtiqueta().always(function () {
-      self.desmarcarLinhaCarregando();
-    }).then(function () {
-      self.concluirAberturaHistorico(historico);
-    });
-  },
-
   atualizarCarregandoGlobal() {
     var carregando = !!(this.carregandoTela || this.confirmandoImpressao || this.enviandoAcaoEmLote);
     if (!this.$carregandoGlobal) {
@@ -5422,13 +5400,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       $aviso.stop(true).fadeOut(NWM_DURACAO_SAIDA_AVISO_MS, function () { $aviso.remove(); });
   },
 
-  concluirAberturaHistorico(historico) {
-    if (this.historicoAtual !== historico) return;
-    if (!historico.erro) return this.abrir(this.$modalHistorico);
-    if (historico.erro.tipo !== NWM_TIPOS_ERRO.CANCELAMENTO)
-      this.avisar("danger", historico.erro.message);
-  },
-
   carregarHistoricoEtiqueta() {
     var self = this, historico = this.historicoAtual;
     if (!historico || historico.carregando) return;
@@ -5444,7 +5415,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       historico.proximo = resultado.temMais ? resultado.proximoRegistro : "";
       historico.quantidade = resultado.dados.length;
       self.renderizarHistoricoEtiqueta(resultado.dados);
-      $("[data-historico-estado]", self.DOM).text(resultado.dados.length ? "Etiqueta " + historico.etiqueta.etiqueta : "Nenhum evento encontrado.");
+      $("[data-historico-estado]", self.DOM).text(resultado.dados.length ? "" : "Nenhum evento encontrado.");
     }, function (erro) {
       if (self.historicoAtual === historico) { historico.erro = erro; historico.proximo = ""; historico.quantidade = 0; $("[data-historico-corpo]", self.DOM).empty(); $("[data-historico-estado]", self.DOM).text(erro.message); }
     }).always(function () { historico.carregando = false; self.botoesHistorico(); });
