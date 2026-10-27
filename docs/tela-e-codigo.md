@@ -112,11 +112,11 @@
   e carrega o histórico com o carregamento na linha; o modal abre depois da consulta (`concluirAberturaDetalhes`), também se ela falhar
   (o erro aparece no lugar do histórico; cancelada não abre). Foco inicial no X do cabeçalho (`autofocus`), para abrir no topo. Nota fiscal e WT
   da grade: `registrarDocumentosHistorico` guarda em `historicoAtual` a NF e o WT do evento mais recente das páginas já carregadas
-  (`notaFiscalDoRegistro`, `wtDoRegistro`) e `preencherDetalhes` redesenha (`documentoHistoricoDetalhes`). Seção "Histórico da embalagem" embaixo (título com o mesmo `.nwm-modal-titulo` de "Detalhes da etiqueta"; `thead` fixo na rolagem da tabela); paginação por `aposRegistro`;
+  (`notaFiscalDoRegistro`, `wtDoRegistro`) e `preencherDetalhes` redesenha (`documentoHistoricoDetalhes`). Seção "Histórico da embalagem" embaixo (título com o mesmo `.nwm-modal-titulo` de "Detalhes da etiqueta"; `thead` fixo no topo do modal, com uma rolagem só, a do modal); paginação por `aposRegistro`;
   Ocorrência (27/10) = `tituloOcorrencia` (`.nwm-historico-titulo`) e `descricaoOcorrencia` embaixo (`.nwm-historico-descricao`), como texto, sem
   badge; sem título, o código `ocorrencia`/`acao`. Anterior/Atual por `quantidadesHistorico`: `conteudoHistorico` com unidade ("10 LT"); sem o objeto,
   `quantidadeAnterior`/`quantidadeAtual`; `null` → "—". Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico.nwm-modal-detalhes`: até 1600px de largura (Justificativa quebra linha, mínimo 240px)
-  e a tabela rola a partir da altura da tela menos 320px (mínimo 280px). Tabela e paginação num quadro com borda; rodapé da paginação
+  sem rolagem própria na tabela (27/10: com zoom o cabeçalho fixo saía da tela). Tabela e paginação num quadro com borda; rodapé da paginação
   no padrão da tabela principal (`.nwm-historico-paginacao`): "Mostrando X–Y eventos" à esquerda e ‹ página › à direita (cursor, sem
   total nem primeira/última). O rodapé do modal tem só Fechar.
 - **Impressora**: modal com lista do aplicativo local (`NWM_APLICATIVO_IMPRESSAO`), salvar no `localStorage`, imprimir teste

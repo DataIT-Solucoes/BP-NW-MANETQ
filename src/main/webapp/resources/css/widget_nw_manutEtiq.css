@@ -1570,17 +1570,36 @@
     color: var(--nwm-tinta-suave);
 }
 
+/* uma rolagem só, a do modal: com rolagem própria na tabela, o cabeçalho fixo saía da tela com zoom */
 .fluig-style-guide.nwm .nwm-modal-historico .nwm-origem-rolagem {
-    max-height: max(280px, calc(100vh - 320px));
+    max-height: none;
     margin-top: 0;
+    overflow: visible;
 }
 
-/* cabeçalho fixo: com border-collapse a borda inferior some no sticky, por isso a sombra */
+.fluig-style-guide.nwm .nwm-modal-historico .nwm-historico-quadro {
+    overflow: visible;
+}
+
+/* cabeçalho fixo no topo do modal: com border-collapse a borda inferior some no sticky, por isso a sombra */
 .fluig-style-guide.nwm .nwm-modal-historico .nwm-origem-rolagem thead th {
     position: sticky;
     top: 0;
     z-index: 1;
     box-shadow: inset 0 -1px 0 var(--nwm-linha);
+}
+
+/* sem o overflow do quadro, os cantos arredondados ficam nas próprias células */
+.fluig-style-guide.nwm .nwm-modal-historico .nwm-tabelinha thead th:first-child {
+    border-top-left-radius: 13px;
+}
+
+.fluig-style-guide.nwm .nwm-modal-historico .nwm-tabelinha thead th:last-child {
+    border-top-right-radius: 13px;
+}
+
+.fluig-style-guide.nwm .nwm-modal-historico .nwm-historico-paginacao {
+    border-radius: 0 0 13px 13px;
 }
 
 /* rodapé da paginação igual ao da tabela principal (.tabulator-footer / .tabulator-page) */
