@@ -192,7 +192,7 @@
                 <h3 class="nwm-modal-titulo" id="nwm-detalhes-titulo-${instanceId}">Detalhes da etiqueta</h3>
                 <p class="nwm-modal-subtitulo" data-detalhes-subtitulo></p>
             </div>
-            <button type="button" class="nwm-modal-fechar" aria-label="Fechar" data-fechar-detalhes><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+            <button type="button" class="nwm-modal-fechar" aria-label="Fechar" autofocus data-fechar-detalhes><i class="bi bi-x-lg" aria-hidden="true"></i></button>
         </div>
         <div class="nwm-modal-corpo">
             <dl class="nwm-detalhes-grid" data-detalhes-grid></dl>
@@ -215,7 +215,7 @@
             </div>
         </div>
         <div class="nwm-modal-rodape">
-            <button type="button" class="nwm-btn nwm-btn-contorno" autofocus data-fechar-detalhes>Fechar</button>
+            <button type="button" class="nwm-btn nwm-btn-contorno" data-fechar-detalhes>Fechar</button>
         </div>
     </dialog>
 
