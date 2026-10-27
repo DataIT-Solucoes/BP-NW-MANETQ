@@ -1575,6 +1575,14 @@
     margin-top: 0;
 }
 
+/* cabeçalho fixo: com border-collapse a borda inferior some no sticky, por isso a sombra */
+.fluig-style-guide.nwm .nwm-modal-historico .nwm-origem-rolagem thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-shadow: inset 0 -1px 0 var(--nwm-linha);
+}
+
 /* rodapé da paginação igual ao da tabela principal (.tabulator-footer / .tabulator-page) */
 .fluig-style-guide.nwm .nwm-historico-quadro {
     margin-top: 16px;
@@ -1748,13 +1756,6 @@
     margin-top: 28px;
     padding-top: 20px;
     border-top: 1px solid var(--nwm-linha);
-}
-
-.fluig-style-guide.nwm .nwm-detalhes-secao-titulo {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--nwm-tinta);
 }
 
 /* legenda dos status */

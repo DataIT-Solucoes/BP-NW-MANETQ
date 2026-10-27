@@ -197,7 +197,7 @@
         <div class="nwm-modal-corpo">
             <dl class="nwm-detalhes-grid" data-detalhes-grid></dl>
             <div class="nwm-detalhes-secao">
-                <h4 class="nwm-detalhes-secao-titulo">Histórico da embalagem</h4>
+                <h3 class="nwm-modal-titulo">Histórico da embalagem</h3>
                 <p class="nwm-modal-subtitulo" role="status" data-historico-estado></p>
             </div>
             <div class="nwm-historico-quadro"><div class="nwm-origem-rolagem"><table class="nwm-tabelinha">

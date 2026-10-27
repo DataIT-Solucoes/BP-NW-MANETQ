@@ -112,7 +112,7 @@
   e carrega o histórico com o carregamento na linha; o modal abre depois da consulta (`concluirAberturaDetalhes`), também se ela falhar
   (o erro aparece no lugar do histórico; cancelada não abre). Foco inicial no X do cabeçalho (`autofocus`), para abrir no topo. Nota fiscal e WT
   da grade: `registrarDocumentosHistorico` guarda em `historicoAtual` a NF e o WT do evento mais recente das páginas já carregadas
-  (`notaFiscalDoRegistro`, `wtDoRegistro`) e `preencherDetalhes` redesenha (`documentoHistoricoDetalhes`). Seção "Histórico da embalagem" embaixo; paginação por `aposRegistro`;
+  (`notaFiscalDoRegistro`, `wtDoRegistro`) e `preencherDetalhes` redesenha (`documentoHistoricoDetalhes`). Seção "Histórico da embalagem" embaixo (título com o mesmo `.nwm-modal-titulo` de "Detalhes da etiqueta"; `thead` fixo na rolagem da tabela); paginação por `aposRegistro`;
   Ocorrência (27/10) = `tituloOcorrencia` (`.nwm-historico-titulo`) e `descricaoOcorrencia` embaixo (`.nwm-historico-descricao`), como texto, sem
   badge; sem título, o código `ocorrencia`/`acao`. Anterior/Atual por `quantidadesHistorico`: `conteudoHistorico` com unidade ("10 LT"); sem o objeto,
   `quantidadeAnterior`/`quantidadeAtual`; `null` → "—". Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico.nwm-modal-detalhes`: até 1600px de largura (Justificativa quebra linha, mínimo 240px)
