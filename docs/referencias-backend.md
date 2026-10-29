@@ -75,7 +75,7 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
 - Faixas De/Até: `estabelDe/Ate`, `itemDe/Ate`, `depositoDe/Ate`, `etiquetaDe/Ate`, `loteDe/Ate`, `validadeDe/Ate` (`YYYY-MM-DD`), `familiaDe/Ate`.
 - Nota Fiscal: `modoNotas` = `INTERVALO` (`notaDe/notaAte` = número da nota) ou `ESPECIFICAS` (`documento` repetido, 1 a 20 códigos opacos;
   OR entre notas, sem duplicar etiqueta). Demais filtros em AND; códigos comparados como texto.
-- Cursor `aposId`/`proximoId` exclusivo, 1 a 100 por chamada (padrão 20); `total` = tamanho da página, não contagem global. Mudar filtro
+- Cursor `aposId`/`proximoId` exclusivo, 1 a 1000 por chamada (padrão 20; teto 1000 no Dataset e na API desde 29/10); `total` = tamanho da página, não contagem global. Mudar filtro
   reinicia o cursor. O retorno não traz família nem número da nota.
 
 ### Apoios

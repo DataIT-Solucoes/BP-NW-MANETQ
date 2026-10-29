@@ -160,6 +160,7 @@ var NWM_LIMITE_SUGESTOES = 20;
 var NWM_TIPOS_TODOS = "todos";
 var NWM_LIMITE_DOCUMENTOS = 20;
 var NWM_LIMITE_PAGINA = 100;
+var NWM_LIMITE_PAGINA_ETIQUETAS = 1000;
 var NWM_LIMITE_EMBALAGENS_OPERACAO = 100;
 var NWM_LIMITE_TEXTO = 100;
 var NWM_ATRASO_APOIO_MS = 350;
@@ -2492,7 +2493,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   montarParametrosEtiquetas(filtros) {
     var especificas = filtros.modoNf === "especificas";
     var parametros = {
-      limite: NWM_LIMITE_PAGINA,
+      limite: NWM_LIMITE_PAGINA_ETIQUETAS,
       modoNotas: especificas ? "ESPECIFICAS" : "INTERVALO",
     };
     $.each(NWM_PARAMETROS_ETIQUETAS, function (campo, parametro) {
