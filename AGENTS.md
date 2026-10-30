@@ -51,10 +51,11 @@ Nenhum (só identificação).
 
 ## Regras de negócio e de tela (ativas)
 - Status = `situacaoApresentada`/`descricaoSituacao`; `situacao` é o estado técnico. Ações por status em `NWM_ACOES_POR_STATUS`.
-- Imprimir (26/10, como na tela antiga): busca os dados de cada etiqueta (`obterDadosImpressao`), envia ao aplicativo de impressão local
-  (`localhost:32478/imprimir`, modelo 423 do GED, impressora do botão Impressora) e já registra `CONFIRMAR_IMPRESSAO`, sem perguntar:
-  clicar em Imprimir vale como impresso (erro do aplicativo só avisa, não impede o registro). Nada da rota antiga (`dsGetExecBO`). Depois de ação de etiqueta, só as linhas envolvidas são reconsultadas no backend e
-  atualizadas (`row.update`), sem recriar a tabela; a tela nunca muda status ou saldo localmente.
+- Imprimir (30/10): primeiro registra `CONFIRMAR_IMPRESSAO`, sem perguntar, atualiza a linha e libera a tela; só depois, em segundo
+  plano, busca os dados de cada etiqueta registrada (`obterDadosImpressao`) e envia ao aplicativo de impressão local
+  (`localhost:32478/imprimir`, modelo 423 do GED, impressora do botão Impressora): uma tentativa por etiqueta, falha ignorada sem aviso. Nada da rota antiga (`dsGetExecBO`). Depois de ação de etiqueta, só as linhas envolvidas são reconsultadas no backend e
+  atualizadas (`row.update`), sem recriar a tabela; a tela não inventa status nem saldo. Exceção (30/10): no Imprimir a linha é atualizada
+  pela resposta do `confirmarEtiqueta` (`situacaoApresentada` e `versao` calculadas pelo backend), sem reconsultar; sem esse campo, reconsulta.
 - Resultado incerto (operação ou ação de etiqueta) bloqueia novas escritas; não reenviar automaticamente nem gerar chave nova para a mesma intenção.
 - **Loading global é o padrão de Bags: overlay absoluto dentro da widget, bloqueando só a widget. Não usar `FLUIGC.loading(window)` nem
   bloquear a página.** Referência: `widget_nw_bags`, `$carregandoGlobal` e `.nwb-carregando-global`. Buscar mostra também

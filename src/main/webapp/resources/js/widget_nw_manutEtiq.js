@@ -300,7 +300,6 @@ var NWM_ETIQUETA_TESTE = {
 };
 var NWM_SEM_DESCRICAO = "—";
 var NWM_CASAS_QUANTIDADE_ETIQUETA = 4;
-var NWM_PONTUACAO_FINAL = /[.!?]$/;
 
 var NWM_ACOES_POR_STATUS = {
   "NAO_IMPRESSA": [
@@ -4980,20 +4979,12 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   iniciarImpressao(linhaOrigem) {
-    var self = this;
     var operacao = this.acaoEtiquetaAtual;
     operacao.enviando = true;
     operacao.daLinha = !!linhaOrigem;
     operacao.linhaOrigem = linhaOrigem || null;
     this.mostrarCarregamentoImpressao(operacao);
-    this.carregarDadosImpressao(operacao.etiquetas).then(
-      function (etiquetas) {
-        self.imprimirEtiquetas(operacao, etiquetas);
-      },
-      function (erro) {
-        self.falharPreparacaoImpressao(operacao, erro);
-      },
-    );
+    this.registrarImpressao(operacao);
   },
 
   mostrarCarregamentoImpressao(operacao) {
@@ -5001,43 +4992,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     else this.bloquearTelaImpressao();
   },
 
-  liberarCarregamentoImpressao(operacao) {
-    if (operacao.daLinha) return this.desmarcarLinhaCarregando();
-    this.confirmandoImpressao = false;
-    this.bloquearTelaEtiqueta(false);
-    this.atualizarCarregandoGlobal();
-  },
-
-  carregarDadosImpressao(etiquetas) {
-    var self = this;
-    var dados = [];
-    var cadeia = $.Deferred().resolve().promise();
-    $.each(etiquetas, function (indice, etiqueta) {
-      cadeia = cadeia.then(function () {
-        return self.obterEtiquetaParaImpressao(etiqueta).then(function (etiquetaImpressao) {
-          dados.push(etiquetaImpressao);
-        });
-      });
-    });
-    return cadeia.then(function () {
-      return dados;
-    });
-  },
-
   obterEtiquetaParaImpressao(etiqueta) {
     var self = this;
-    return this.obterDadosImpressaoEtiqueta(etiqueta)
-      .then(function (resultado) {
-        if (!resultado.sucesso) throw self.erroRecusaDataset(resultado);
-        var registro = resultado.dados[0];
-        if (!registro || registro.idEtiqueta !== etiqueta.idEtiqueta)
-          throw new Error("A consulta de impressão retornou outra etiqueta.");
-        return self.montarDadosEtiquetaImpressao(etiqueta, registro);
-      })
-      .then(null, function (erro) {
-        erro.etiqueta = etiqueta.etiqueta;
-        throw erro;
-      });
+    return this.obterDadosImpressaoEtiqueta(etiqueta).then(function (resultado) {
+      if (!resultado.sucesso) throw self.erroRecusaDataset(resultado);
+      var registro = resultado.dados[0];
+      if (!registro || registro.idEtiqueta !== etiqueta.idEtiqueta)
+        throw new Error("A consulta de impressão retornou outra etiqueta.");
+      return self.montarDadosEtiquetaImpressao(etiqueta, registro);
+    });
   },
 
   montarDadosEtiquetaImpressao(etiqueta, registro) {
@@ -5059,15 +5022,15 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     });
   },
 
-  imprimirEtiquetas(operacao, etiquetas) {
+  imprimirEmSegundoPlano(etiquetas) {
     var self = this;
-    this.enviarEtiquetasAoAplicativo(etiquetas).then(function (falha) {
-      if (falha) self.avisar("warning", falha + " A impressão será registrada mesmo assim.");
-      self.registrarImpressao(operacao);
+    if (!etiquetas.length) return;
+    this.prepararEnvioImpressao().then(function (envio) {
+      self.enviarEtiquetasEmSequencia(envio, etiquetas);
     });
   },
 
-  enviarEtiquetasAoAplicativo(etiquetas) {
+  prepararEnvioImpressao() {
     var self = this;
     var envio = {};
     return this.obterImpressoraParaImpressao()
@@ -5077,16 +5040,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       })
       .then(function (template) {
         envio.template = template;
-        return self.enviarEtiquetasEmSequencia(envio, etiquetas);
-      })
-      .then(
-        function () {
-          return "";
-        },
-        function (falha) {
-          return self.mensagemFalhaAplicativo(falha);
-        },
-      );
+        return envio;
+      });
   },
 
   obterImpressoraParaImpressao() {
@@ -5105,12 +5060,23 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   enviarEtiquetasEmSequencia(envio, etiquetas) {
     var self = this;
     var cadeia = $.Deferred().resolve().promise();
-    $.each(etiquetas, function (indice, dados) {
+    $.each(etiquetas, function (indice, etiqueta) {
       cadeia = cadeia.then(function () {
-        return self.enviarEtiquetaAoAplicativo(envio, dados);
+        return self.imprimirEtiqueta(envio, etiqueta);
       });
     });
     return cadeia;
+  },
+
+  imprimirEtiqueta(envio, etiqueta) {
+    var self = this;
+    return this.obterEtiquetaParaImpressao(etiqueta)
+      .then(function (dados) {
+        return self.enviarEtiquetaAoAplicativo(envio, dados);
+      })
+      .then(null, function () {
+        return $.Deferred().resolve().promise();
+      });
   },
 
   enviarEtiquetaAoAplicativo(envio, dados) {
@@ -5118,27 +5084,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       impressora: envio.impressora,
       template: envio.template,
       dados: dados,
-    }).then(null, function (xhr) {
-      return $.Deferred().reject({ xhr: xhr, etiqueta: dados.CBARRA }).promise();
     });
-  },
-
-  mensagemFalhaAplicativo(falha) {
-    if (falha && falha.templateAusente)
-      return "Template de etiqueta não foi encontrado, entre em contato com a TI para resolver.";
-    if (falha && falha.semImpressora)
-      return "O aplicativo de impressão não informou uma impressora. Escolha uma no botão Impressora.";
-    var xhr = (falha && falha.xhr) || falha;
-    var detalhe = xhr && xhr.responseJSON && xhr.responseJSON.message;
-    var etiqueta = falha && falha.etiqueta ? " a etiqueta " + falha.etiqueta : "";
-    return this.terminarFrase(
-      "O aplicativo de impressão não imprimiu" + etiqueta + ": " +
-        (detalhe || "verifique se ele está instalado e aberto neste computador"),
-    );
-  },
-
-  terminarFrase(texto) {
-    return NWM_PONTUACAO_FINAL.test(texto) ? texto : texto + ".";
   },
 
   registrarImpressao(operacao) {
@@ -5146,19 +5092,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.enviarProximaEtiqueta(operacao);
   },
 
-  falharPreparacaoImpressao(operacao, erro) {
-    this.liberarCarregamentoImpressao(operacao);
-    operacao.enviando = false;
-    operacao.finalizada = true;
-    operacao.erro = erro;
-    this.reformatarLinhasExibidas();
-    this.avisar("danger", this.mensagemFalhaPreparacaoImpressao(erro));
-  },
-
-  mensagemFalhaPreparacaoImpressao(erro) {
-    var detalhe = (erro && erro.message) || "Falha inesperada.";
-    var etiqueta = erro && erro.etiqueta ? " da etiqueta " + erro.etiqueta : "";
-    return "Não foi possível preparar a impressão" + etiqueta + ": " + detalhe + " Nada foi impresso.";
+  etiquetasRegistradas(operacao) {
+    return operacao.etiquetas.slice(0, operacao.concluidas);
   },
 
   bloquearTelaImpressao() {
@@ -5172,6 +5107,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.confirmandoImpressao = false;
     this.desmarcarLinhaCarregando();
     this.atualizarCarregandoGlobal();
+    this.imprimirEmSegundoPlano(this.etiquetasRegistradas(operacao));
     if (operacao.incerta) return this.avisar("warning", "Resultado da impressão incerto. Não reenviado. Consulte situação e histórico. Chave: " + operacao.comando.parametros.chaveIdempotente);
     if (operacao.erro) return this.avisar("danger", operacao.erro.message + " Confirmadas: " + operacao.concluidas + ".");
     if (operacao.atualizacaoFalhou) return this.avisar("warning", "Impressão confirmada, mas a consulta não foi atualizada. Clique em Buscar.");
@@ -5292,6 +5228,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       if (resultado.idEtiqueta !== parametros.idEtiqueta) return self.incertaAcaoEtiqueta(operacao, new Error("Resposta de outra etiqueta."));
       operacao.concluidas++; operacao.indice++;
       operacao.ultimaEtiqueta = etiqueta;
+      if (operacao.acao === "imprimir") self.aplicarImpressaoRegistrada(operacao, etiqueta, resultado);
       self.guardarEtiquetaIncerta(null);
       self.enviarProximaEtiqueta(operacao);
     }, function (erro) { self.incertaAcaoEtiqueta(operacao, erro); });
@@ -5340,9 +5277,32 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (operacao.ultimaEtiqueta) this.consultarDataset("consultarHistoricoEtiqueta", { codEstabel: operacao.ultimaEtiqueta.codEstabel, idEtiqueta: operacao.ultimaEtiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA }, "historico:apos-acao");
   },
 
+  aplicarImpressaoRegistrada(operacao, anterior, resultado) {
+    var carga = this.consultaEtiquetas;
+    if (!carga || !this.textoPreenchido(resultado.situacaoApresentada)) return;
+    var atualizada = $.extend({}, anterior, {
+      situacaoApresentada: resultado.situacaoApresentada,
+      descricaoSituacao: this.situacaoFacilitada(resultado.situacaoApresentada),
+      impressaoConfirmada: true,
+      versao: resultado.versao,
+    });
+    this.substituirEtiquetaNaCarga(carga, atualizada);
+    var linha = this.tabela.getRow(anterior.id);
+    if (linha) linha.update(atualizada);
+    operacao.aplicadas = operacao.aplicadas || Object.create(null);
+    operacao.aplicadas[anterior.id] = true;
+  },
+
+  etiquetasParaReconsultar(operacao) {
+    var aplicadas = operacao.aplicadas || {};
+    return $.grep(this.etiquetasEnvolvidas(operacao), function (etiqueta) {
+      return !aplicadas[etiqueta.id];
+    });
+  },
+
   atualizarAposAcaoEtiqueta(operacao) {
     var self = this;
-    var etiquetas = this.etiquetasEnvolvidas(operacao);
+    var etiquetas = this.etiquetasParaReconsultar(operacao);
     this.limparSelecao();
     if (etiquetas.length > NWM_LIMITE_ATUALIZACAO_LINHAS)
       return this.atualizarGradeMantendoRecorte(operacao.daLinha);

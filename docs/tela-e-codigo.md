@@ -92,14 +92,17 @@
   `iniciarAcaoDaLinha` fecha o modal e marca `linhaCarregando`; `finalizarAcaoDaLinha` desmarca e avisa por toast (recusa com
   `mensagemRecusaAcaoEtiqueta`, incerto com a chave; sucesso em `encerrarAcaoEtiquetaConcluida`). **Do Aplicar**, o modal fica aberto,
   `bloquearTelaEtiqueta` desabilita os controles da widget e `mostrarCarregamentoAcaoEmLote` liga o loading global (`enviandoAcaoEmLote`)
-  até a consulta atualizar. **Imprimir** (`iniciarImpressao`): `carregarDadosImpressao` busca `obterDadosImpressao` uma
-  etiqueta por vez (`obterEtiquetaParaImpressao`; `montarDadosEtiquetaImpressao` monta `PRODUTO CODIGO LOTE DATAVAL CBARRA QTD UN`,
-  QTD sem separador de milhar). Desde 26/10 (v0.1.19), como na tela antiga, `enviarEtiquetasAoAplicativo` manda ao aplicativo local
-  (`NWM_APLICATIVO_IMPRESSAO`): impressora do `localStorage` ou, sem escolha, a `impressorapadrao` de `GET /impressoras` (e grava);
-  modelo 423 do GED (`obterTemplateEtiqueta`, baixado uma vez); um `POST /imprimir` por etiqueta, em sequência, parando na primeira
-  falha. Falha do aplicativo (fechado, modelo ausente, recusa) só avisa (`mensagemFalhaAplicativo` + "A impressão será registrada
-  mesmo assim."). Em seguida, sem perguntar, `registrarImpressao` envia `CONFIRMAR_IMPRESSAO` com `NWM_JUSTIFICATIVA_IMPRESSAO`.
-  Falha ao buscar dados → `falharPreparacaoImpressao` (aviso, nada impresso, nada registrado). Depois da confirmação, atualiza as linhas. **Após ação de etiqueta** (`terminarAtualizacaoEtiqueta` → `atualizarAposAcaoEtiqueta`): limpa a seleção e
+  até a consulta atualizar. **Imprimir** (`iniciarImpressao`, desde 30/10): primeiro `registrarImpressao` envia `CONFIRMAR_IMPRESSAO`
+  com `NWM_JUSTIFICATIVA_IMPRESSAO`, sem perguntar (mesmo fluxo das outras ações: `consultarEstadoEtiqueta` + `despacharAcaoEtiqueta`,
+  uma por vez). Cada etiqueta registrada atualiza a linha na hora pela resposta (`aplicarImpressaoRegistrada`: `situacaoApresentada`,
+  `versao`, `impressaoConfirmada`, `descricaoSituacao` = rótulo da legenda), sem reconsultar; no fim só as que não vieram da resposta
+  são reconsultadas (`etiquetasParaReconsultar`: recusada, incerta ou resposta sem status). Ao terminar, `finalizarConfirmacaoImpressao` libera a linha/tela, avisa o resultado e
+  chama `imprimirEmSegundoPlano` com as etiquetas registradas (`etiquetasRegistradas`): `prepararEnvioImpressao` pega a impressora
+  (`localStorage` ou a `impressorapadrao` de `GET /impressoras`, e grava) e o modelo 423 do GED (`obterTemplateEtiqueta`, baixado uma vez);
+  `enviarEtiquetasEmSequencia` → `imprimirEtiqueta`, uma por vez: `obterDadosImpressao` (`obterEtiquetaParaImpressao`;
+  `montarDadosEtiquetaImpressao` monta `PRODUTO CODIGO LOTE DATAVAL CBARRA QTD UN`, QTD sem separador de milhar) e um
+  `POST /imprimir` (`NWM_APLICATIVO_IMPRESSAO`). Uma tentativa por etiqueta; qualquer falha (aplicativo fechado, modelo ausente,
+  impressora, dados) é ignorada sem aviso e segue para a próxima. **Após ação de etiqueta** (`terminarAtualizacaoEtiqueta` → `atualizarAposAcaoEtiqueta`): limpa a seleção e
   reconsulta cada embalagem envolvida (`etiquetasEnvolvidas`: até a que falhou) com os filtros da busca + `codEstabel`/`codEtiqueta`
   (`atualizarLinhaEtiqueta`); `aplicarEtiquetaAtualizada` faz `row.update` (mantém `descItem`/`fazenda`) e atualiza `carga.dados`, ou
   remove a linha se ela saiu do recorte (sem `temMais`). Acima de `NWM_LIMITE_ATUALIZACAO_LINHAS` (10), recarrega a grade
@@ -148,7 +151,7 @@ O arquivo tem ~4.900 linhas: **não ler inteiro**. Achar com Grep e ler só o tr
 | Ações da linha, lote e quantidade (2797–2950) | `acaoNaLinha`, `aplicarLote`, `executarQuantidade`, `escolherEmbalagensDoItem` |
 | Modais e Detalhes (2951–3225) | `prepararModais`, `ligarFechamentoPeloFundo`, `cliqueForaModal`, `abrirDetalhes`, `preencherDetalhes`, `concluirAberturaDetalhes`, `aplicarAcao` |
 | Operação (3226–4306) | `abrirOperacao`, `classificarOperacao`, `carregarOrigemOperacao`, `montarComandoOperacao`, `montarDevolucao`, `montarSaidaDireta`, `gerarChaveIdempotente`, `enviarOperacao`, `consultarResultadoAtual`, `guardarOperacaoPendente`, `restaurarOperacaoPendente` |
-| Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarImpressao`, `carregarDadosImpressao`, `montarPaginaEtiqueta`, `marcacaoCodigoBarras`, `abrirQuadroImpressao`, `enviarParaImpressora`, `registrarImpressao`, `camposAcaoEtiqueta`, `recusarCamposAcaoEtiqueta`, `limparErroAcaoEtiqueta`, `enviarAcaoEtiqueta`, `iniciarAcaoDaLinha`, `finalizarAcaoDaLinha`, `mostrarCarregamentoAcaoEmLote`, `mensagemRecusaAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
+| Ação de etiqueta (4302–4488) | `prepararAcaoEtiqueta`, `abrirAcaoEtiqueta`, `iniciarImpressao`, `registrarImpressao`, `imprimirEmSegundoPlano`, `prepararEnvioImpressao`, `enviarEtiquetasEmSequencia`, `imprimirEtiqueta`, `finalizarConfirmacaoImpressao`, `camposAcaoEtiqueta`, `recusarCamposAcaoEtiqueta`, `limparErroAcaoEtiqueta`, `enviarAcaoEtiqueta`, `iniciarAcaoDaLinha`, `finalizarAcaoDaLinha`, `mostrarCarregamentoAcaoEmLote`, `mensagemRecusaAcaoEtiqueta`, `consultarEstadoEtiqueta`, `despacharAcaoEtiqueta`, `guardarEtiquetaIncerta`, `atualizarAposAcaoEtiqueta`, `atualizarLinhaEtiqueta`, `aplicarEtiquetaAtualizada`, `atualizarGradeMantendoRecorte` |
 | Histórico e loading (4489–4614) | `atualizarCarregandoGlobal`, `atualizarAvisoCarregando`, `carregarHistoricoEtiqueta`, `renderizarHistoricoEtiqueta`, `montarLinhaHistorico`, `montarOcorrenciaHistorico`, `quantidadesHistorico`, `textoQuantidadeHistorico` |
 | Impressão, Select2 e legenda (4615–4690) | `obterDadosImpressaoEtiqueta`, `validarRespostaIndividual`, `prepararSelect2`, `montarLegenda`, `abrirLegenda` |
 | Impressora (4692–4882) | `abrirImpressora`, `carregarImpressoras`, `chamarAplicativoImpressao`, `salvarImpressora`, `testarImpressora`, `obterTemplateEtiqueta` |

@@ -20,7 +20,7 @@ param(
 
 $widget = Split-Path -Parent $PSScriptRoot
 $nome = Split-Path -Leaf $widget
-$pack = 'C:\Users\DataIt\Documents\GitHub\Auxiliares\compilar-widget-fluig-vscode\tools\pack-widget.ps1'
+$pack = 'C:\Users\DataIt\Documents\Anteriores-27.10.2026\GitHub\Auxiliares\compilar-widget-fluig-vscode\tools\pack-widget.ps1'
 Set-Location $widget
 
 function Falhar([string] $texto) {
