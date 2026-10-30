@@ -420,6 +420,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       false,
     );
     this.atualizarItensQuantidade();
+    this.montarOpcoesStatus();
     if ($.fn.select2) this.prepararSelect2();
     this.prepararModais();
     this.prepararAcaoEtiqueta();
@@ -5611,9 +5612,21 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       }),
     );
     $("[data-item-qtde]", this.DOM).select2(configuracao);
-    $("[data-acao-lote], [data-item-qtde]", this.DOM)
+    $("[data-filtro-status]", this.DOM).select2(
+      $.extend({}, configuracao, { placeholder: null }),
+    );
+    $("[data-acao-lote], [data-item-qtde], [data-filtro-status]", this.DOM)
       .closest(".nwm-campo-caixa-select")
       .addClass("is-select2");
+  },
+
+  montarOpcoesStatus() {
+    var $select = $("[data-filtro-status]", this.DOM);
+    $.each(NWM_LEGENDA_STATUS, function (indice, status) {
+      $("<option>", { value: status.codigo, text: status.rotulo }).appendTo(
+        $select,
+      );
+    });
   },
 
   montarLegenda() {

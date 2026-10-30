@@ -85,7 +85,8 @@
 /* ---------- Filtros ---------- */
 /*
  * Cartão marfim inteiro. Linha de cima: o que a busca exige (Estabelecimento; Itens ou Nota Fiscal);
- * linha de baixo: os 5 filtros de refinamento. Cada De/Até é uma caixa só, dividida ao meio.
+ * linha do meio: Depósito, Cód Barras, Lote e Status; linha de baixo: Data Validade, Família, Requisições e o Buscar.
+ * Cada De/Até é uma caixa só, dividida ao meio.
  */
 .fluig-style-guide.nwm .nwm-filtros {
     margin: 0 0 24px;
@@ -104,23 +105,49 @@
 
 .fluig-style-guide.nwm .nwm-filtros-refino {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.35fr) minmax(0, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     align-items: start;
     gap: 16px 20px;
     padding: 16px 22px 0;
 }
 
 /* refinamento é opcional: rótulo mais leve que o da faixa de cima */
-.fluig-style-guide.nwm .nwm-filtros-refino .nwm-campo-rotulo {
+.fluig-style-guide.nwm .nwm-filtros-refino .nwm-campo-rotulo,
+.fluig-style-guide.nwm .nwm-filtros-acoes .nwm-campo-rotulo {
     font-weight: 600;
     color: var(--nwm-tinta-suave);
 }
 
+/* mesmas colunas do refinamento; o Buscar fica na última, encostado à direita */
 .fluig-style-guide.nwm .nwm-filtros-acoes {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: end;
+    gap: 16px 20px;
     padding: 16px 22px 20px;
+}
+
+.fluig-style-guide.nwm .nwm-filtros-acoes .nwm-btn {
+    grid-column: -2 / -1;
+    justify-self: end;
+}
+
+/* Select2 do Status com a altura dos outros campos dos filtros */
+.fluig-style-guide.nwm .nwm-filtros .nwm-campo-caixa-select::after {
+    top: 20px;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .select2-container--default .select2-selection--single {
+    height: 40px;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .select2-container--default .select2-selection--single .select2-selection__rendered {
+    font-size: 14px;
+    line-height: 38px;
+}
+
+.fluig-style-guide.nwm .nwm-filtros .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 38px;
 }
 
 .fluig-style-guide.nwm .nwm-campo-rotulo {
@@ -1809,8 +1836,9 @@
 
 /* ---------- Telas médias ---------- */
 @media (max-width: 1199px) {
-    .fluig-style-guide.nwm .nwm-filtros-refino {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+    .fluig-style-guide.nwm .nwm-filtros-refino,
+    .fluig-style-guide.nwm .nwm-filtros-acoes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .fluig-style-guide.nwm .nwm-selecao-resumo,
@@ -1823,10 +1851,6 @@
 @media (max-width: 991px) {
     .fluig-style-guide.nwm .nwm-filtros-principais {
         grid-template-columns: minmax(0, 1fr);
-    }
-
-    .fluig-style-guide.nwm .nwm-filtros-refino {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -1844,6 +1868,7 @@
     }
 
     .fluig-style-guide.nwm .nwm-filtros-acoes {
+        grid-template-columns: minmax(0, 1fr);
         padding: 16px;
     }
 

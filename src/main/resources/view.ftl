@@ -90,6 +90,17 @@
                     <input type="text" maxlength="100" id="nwm-lote-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Lote até" autocomplete="off" data-filtro="loteAte">
                 </div>
             </div>
+            <div class="nwm-campo nwm-campo-status">
+                <label class="nwm-campo-rotulo" for="nwm-status-${instanceId}">Status</label>
+                <div class="nwm-campo-caixa nwm-campo-caixa-select">
+                    <select id="nwm-status-${instanceId}" class="nwm-campo-input nwm-campo-select" data-filtro-status>
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="nwm-filtros-acoes">
             <div class="nwm-campo nwm-faixa nwm-faixa-data">
                 <span class="nwm-campo-rotulo" id="nwm-rot-validade-${instanceId}">Data Validade</span>
                 <div class="nwm-faixa-caixa" role="group" aria-labelledby="nwm-rot-validade-${instanceId}">
@@ -106,9 +117,10 @@
                     <input type="text" maxlength="100" id="nwm-familia-ate-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Até" aria-label="Família até" autocomplete="off" data-filtro="familiaAte">
                 </div>
             </div>
-        </div>
-
-        <div class="nwm-filtros-acoes">
+            <div class="nwm-campo">
+                <label class="nwm-campo-rotulo" for="nwm-requisicao-${instanceId}">Requisições</label>
+                <input type="text" maxlength="100" id="nwm-requisicao-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" aria-label="Requisições" autocomplete="off" data-filtro="requisicao">
+            </div>
             <button type="button" class="nwm-btn nwm-btn-destaque" data-buscar><i class="bi bi-search" aria-hidden="true"></i>Buscar</button>
         </div>
     </div>

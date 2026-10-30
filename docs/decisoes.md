@@ -30,6 +30,8 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 30/10 | Campo **Requisições** (um campo só, sem De/Até), autocomplete, à direita de Família. A API ainda não existe (Cheli vai desenvolver); até lá o campo não consulta nem filtra | Pedido do usuário |
+| 30/10 | Filtros: Data Validade e Família vão para a linha do Buscar; no lugar deles, campo **Status** (Select2 com os status da legenda) | Pedido do usuário |
 | 26/10 | Na **Remessa para terceiros** o Estabelecimento de destino fica desabilitado (fundo cinza, como o Emitente de destino fora da Remessa) e limpo; a Remessa usa só o Emitente de destino ("Informe o emitente de destino."). Volta a habilitar nos outros fluxos | Pedido do usuário |
 | 26/10 | **Emitentes por autocomplete** (`apoiarEmitentes`): Emitente de destino (Remessa) e Emitente do documento de origem. Pesquisa por código (1 dígito) ou nome (2 caracteres), só vale o escolhido, selo código - nome. O Emitente de destino continua desabilitado e limpo (inclusive o selo) fora da Remessa. Antes os dois eram texto livre e não chamavam a API | Pedido do usuário |
 | 26/10 | **Naturezas por autocomplete** (`apoiarNaturezas`, tabela `natur-oper-amigavel`) nos dois campos de natureza do modal: Natureza de saída e Natureza de entrada da origem. Sai o botão **Validar natureza**: escolher a natureza de saída na lista já chama o `classificarNatureza`; remover o selo limpa a classificação. Escolher na lista **não é obrigatório** (26/10): o valor digitado vale nas duas naturezas; na de saída ele é validado ao apertar Enter ou sair do campo, sem repetir a validação da mesma natureza. As naturezas de saída ainda serão cadastradas na `natur-oper-amigavel` (hoje ela só tem 1xxx/2xxx); não cobrar isso do usuário | Pedido do usuário |
