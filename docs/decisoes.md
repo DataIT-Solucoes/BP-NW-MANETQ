@@ -30,7 +30,8 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
-| 30/10 | Campo **Requisições** (um campo só, sem De/Até), autocomplete, à direita de Família. A API ainda não existe (Cheli vai desenvolver); até lá o campo não consulta nem filtra | Pedido do usuário |
+| 30/10 | Requisições e Status entram na busca: Status → `situacaoApresentada`, Requisição escolhida → `requisicao`. Autocomplete de Requisições por `apoiarRequisicoes`, com um estabelecimento (De = Até) e 2+ caracteres; só vale a escolhida | Pedido do usuário |
+| 30/10 | Campo **Requisições** (um campo só, sem De/Até), autocomplete, à direita de Família | Pedido do usuário |
 | 30/10 | Filtros: Data Validade e Família vão para a linha do Buscar; no lugar deles, campo **Status** (Select2 com os status da legenda) | Pedido do usuário |
 | 26/10 | Na **Remessa para terceiros** o Estabelecimento de destino fica desabilitado (fundo cinza, como o Emitente de destino fora da Remessa) e limpo; a Remessa usa só o Emitente de destino ("Informe o emitente de destino."). Volta a habilitar nos outros fluxos | Pedido do usuário |
 | 26/10 | **Emitentes por autocomplete** (`apoiarEmitentes`): Emitente de destino (Remessa) e Emitente do documento de origem. Pesquisa por código (1 dígito) ou nome (2 caracteres), só vale o escolhido, selo código - nome. O Emitente de destino continua desabilitado e limpo (inclusive o selo) fora da Remessa. Antes os dois eram texto livre e não chamavam a API | Pedido do usuário |

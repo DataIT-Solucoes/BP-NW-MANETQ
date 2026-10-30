@@ -61,7 +61,7 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
 | Grupo | Ações |
 |---|---|
 | Consulta | `consultarEtiquetas`, `consultarSituacaoEtiqueta` (situação/versão antes de comando), `consultarHistoricoEtiqueta` (cursor `aposRegistro`/`proximoRegistro`) |
-| Apoios | `apoiarEstabelecimentos`, `apoiarItens`, `apoiarDepositos`, `apoiarLotes`, `apoiarFamilias`, `apoiarDocumentosEntrada` |
+| Apoios | `apoiarEstabelecimentos`, `apoiarItens`, `apoiarDepositos`, `apoiarLotes`, `apoiarFamilias`, `apoiarDocumentosEntrada`, `apoiarRequisicoes` |
 | Operação (modal Movimentar) | `classificarNatureza`, `consultarEmbalagensOrigem`, `criarTransferencia`, `criarRemessa`, `criarDevolucao`, `consultarResultadoOperacao` |
 | Ação de etiqueta (`NWM_COMANDOS_ETIQUETA`) | imprimir → `confirmarEtiqueta`/`CONFIRMAR_IMPRESSAO`; receber → `confirmarEtiqueta`/`RECEBER_FISICO`; estornar → `estornarEtiqueta`; inutilizar → `inutilizarEtiqueta`/`INUTILIZAR`; perda → `registrarPerdaExtravio` |
 | Impressão | `obterDadosImpressao` (método `obterDadosImpressaoEtiqueta`; fluxo de impressão real não confirmado) |
@@ -70,8 +70,17 @@ gh api "repos/DataIT-Solucoes/BP-NW-DATASET/contents/dsNwEmbalagens.js" -H "Acce
   opcional na impressão. `contr-emb-manutencao.p:129` distingue `CONFIRMACAO_IMPRESSAO`/`RECEBIMENTO_FISICO`; `:149–157` valida
   versão/ATIVA/geração/contexto; justificativa obrigatória só em `RECEBER_FISICO` (`:158–165`). Vínculo com Bag não impede a confirmação.
 
+### `apoiarRequisicoes` (Dataset, commit `c8c830f` de 30/10)
+- Rota `/apoios/requisicoes`; campos `codEstabel filtro aposCodigo limite`; obrigatório só `codEstabel`; cursor `aposCodigo`/`proximoCodigo`, teto 20.
+  Fora da lista dos apoios novos (`nwNovoAutocomplete`): `filtro`, se enviado, precisa de 2+ caracteres (`FILTRO_INVALIDO`).
+- **Não está em `NW_CONFIG.regras`**: no TESTE (30/10) volta `SEM_PERMISSAO` "Acao ou estabelecimento nao autorizado.".
+- Formato dos registros não confirmado (fonte Progress fora do GitHub; chamada bloqueada pela permissão). A tela supõe `codigo`/`descricao`,
+  como os outros apoios; registro diferente vira "As sugestões estão fora do contrato esperado".
+
 ### `consultarEtiquetas` (DT120 e DT124, aceitos no REST TESTE)
-- Igualdade: `codEstabel`, `codEtiqueta`, `item`, `lote`, `codTipo`, `tipoControle`, `tipoLocal`, `situacao`, `idBag`.
+- Igualdade: `codEstabel`, `codEtiqueta`, `item`, `lote`, `codTipo`, `tipoControle`, `tipoLocal`, `situacao`, `situacaoApresentada`,
+  `requisicao`, `idBag`. `situacaoApresentada` e `requisicao` entraram no Dataset em 30/10 (commit `8b0898a`); `situacaoApresentada`
+  conferido ao vivo no TESTE em 30/10 (estab 10904: com `IMPRESSA` só voltam impressas). `requisicao` ainda não conferido ao vivo.
 - Faixas De/Até: `estabelDe/Ate`, `itemDe/Ate`, `depositoDe/Ate`, `etiquetaDe/Ate`, `loteDe/Ate`, `validadeDe/Ate` (`YYYY-MM-DD`), `familiaDe/Ate`.
 - Nota Fiscal: `modoNotas` = `INTERVALO` (`notaDe/notaAte` = número da nota) ou `ESPECIFICAS` (`documento` repetido, 1 a 20 códigos opacos;
   OR entre notas, sem duplicar etiqueta). Demais filtros em AND; códigos comparados como texto.

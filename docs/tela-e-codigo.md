@@ -9,8 +9,9 @@
 - Cabeçalho "Manutenção Embalagens" / "Consulte, imprima e movimente as embalagens."; aba única (visão ADM).
 - **Filtros** (todos visíveis, faixa De/Até), em 3 linhas: Estabelecimento (**obrigatório**) · Itens · Nota Fiscal (rádio **Intervalo** ×
   **Específicas**, 1 a 20 documentos removíveis); Depósito · Cód Barras · Lote · **Status** (Select2 `data-filtro-status`, "Todos" + os status de
-  `NWM_LEGENDA_STATUS`, montado por `montarOpcoesStatus`; ainda **não entra na busca**); Data Validade (`type=date`) · Família · **Requisições** (campo
-  único `data-filtro="requisicao"`, será autocomplete; ainda sem API, não entra na busca) · **Buscar**.
+  `NWM_LEGENDA_STATUS`, montado por `montarOpcoesStatus`; vai na busca como `situacaoApresentada`, "Todos" não envia); Data Validade (`type=date`) · Família ·
+  **Requisições** (campo único `data-filtro="requisicao"`, autocomplete `apoiarRequisicoes` com `codEstabel` = Estabelecimento De = Até,
+  sem ele a lista explica e não consulta — `recusaContextoApoio`, `faltaEstabelecimentoParaRequisicoes`; a escolhida vai como `requisicao`) · **Buscar**.
   - Autocomplete próprio (2+ caracteres, debounce 350 ms, 20 por página com "Carregar mais resultados") em Estabelecimento, Itens,
     Depósito, Lote, Família e Nota Fiscal; escolher vira **selo** "código - descrição" com × (exceto Específicas). Nos campos de faixa
     preenche só o código. Texto digitado sem escolher na lista conta como campo vazio (`valorFiltroInformado`). Nota Fiscal De/Até usa `apoiarDocumentosEntrada` (exige Estabelecimento De e Até) e grava o número da nota.

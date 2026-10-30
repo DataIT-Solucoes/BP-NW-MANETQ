@@ -56,6 +56,8 @@ var NWM_APOIO_EMBALAGENS = "apoiarEmbalagens";
 var NWM_APOIO_SERIES = "apoiarSeries";
 var NWM_APOIO_NATUREZAS = "apoiarNaturezas";
 var NWM_APOIO_EMITENTES = "apoiarEmitentes";
+var NWM_APOIO_REQUISICOES = "apoiarRequisicoes";
+var NWM_CAMPO_REQUISICAO = "requisicao";
 var NWM_MINIMO_NOME_EMITENTE = 2;
 var NWM_TAMANHO_CODIGO_BARRAS = 10;
 var NWM_CAMPO_DESTINO_OPERACAO = "codEstabelDestino";
@@ -102,6 +104,8 @@ var NWM_PARAMETROS_ETIQUETAS = {
   familiaAte: "familiaAte",
   nfDe: "notaDe",
   nfAte: "notaAte",
+  status: "situacaoApresentada",
+  requisicao: "requisicao",
 };
 
 var NWM_PREFIXOS_FAIXAS = [
@@ -566,6 +570,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     $.each(["nfDe", "nfAte", "nfEspecificas"], function (indice, campo) {
       self.prepararApoioFiltro(campo, NWM_APOIO_DOCUMENTOS);
     });
+    this.prepararApoioFiltro(NWM_CAMPO_REQUISICAO, NWM_APOIO_REQUISICOES);
     this.prepararApoioFiltro(
       NWM_CAMPO_DESTINO_OPERACAO,
       NWM_APOIOS_FILTROS.est,
@@ -807,7 +812,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   apoioAceitaEstabelecimentoExato(acao) {
-    return acao === "apoiarItens" || acao === "apoiarDepositos";
+    return (
+      acao === "apoiarItens" ||
+      acao === "apoiarDepositos" ||
+      acao === NWM_APOIO_REQUISICOES
+    );
   },
 
   montarParametrosCodigoBarras(termo, filtros) {
@@ -842,7 +851,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }
     $.each(this.apoiosFiltros || {}, function (nome, apoio) {
       var dependeEstabelecimento =
-        mudouEstabelecimento && /^(item|dep|nf)/.test(nome);
+        mudouEstabelecimento && /^(item|dep|nf|requisicao)/.test(nome);
       var dependeRecorteLote = mudouRecorteLote && /^lote/.test(nome);
       if (dependeEstabelecimento || dependeRecorteLote)
         self.limparApoioDependente(nome, apoio);
@@ -889,12 +898,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     }
     if (apoio.termo.length < 2) return;
     var filtros = this.filtrosDoApoio(apoio);
-    if (this.faltaEstabelecimentoParaDocumentos(apoio, filtros)) {
-      apoio.erro = this.erroDataset(
-        "CONTEXTO_OBRIGATORIO",
-        "Preencha o estabelecimento antes de buscar Notas Fiscais",
-        NWM_TIPOS_ERRO.FUNCIONAL,
-      );
+    apoio.erro = this.recusaContextoApoio(apoio, filtros);
+    if (apoio.erro) {
       this.renderizarApoioFiltro(apoio);
       return;
     }
@@ -970,9 +975,30 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return null;
   },
 
+  recusaContextoApoio(apoio, filtros) {
+    if (this.faltaEstabelecimentoParaDocumentos(apoio, filtros))
+      return this.erroDataset(
+        "CONTEXTO_OBRIGATORIO",
+        "Preencha o estabelecimento antes de buscar Notas Fiscais",
+        NWM_TIPOS_ERRO.FUNCIONAL,
+      );
+    if (this.faltaEstabelecimentoParaRequisicoes(apoio, filtros))
+      return this.erroDataset(
+        "CONTEXTO_OBRIGATORIO",
+        "Preencha um único estabelecimento (De igual a Até) antes de buscar Requisições",
+        NWM_TIPOS_ERRO.FUNCIONAL,
+      );
+    return null;
+  },
+
   faltaEstabelecimentoParaDocumentos(apoio, filtros) {
     if (!this.apoioDeDocumentos(apoio)) return false;
     return !filtros.estDe || !filtros.estAte;
+  },
+
+  faltaEstabelecimentoParaRequisicoes(apoio, filtros) {
+    if (apoio.acao !== NWM_APOIO_REQUISICOES) return false;
+    return !filtros.estDe || filtros.estDe !== filtros.estAte;
   },
 
   filtrosDoApoio(apoio) {
@@ -3125,6 +3151,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       filtros[campo] = self.valorFiltroInformado(campo, $(this));
     });
     filtros.modoNf = $("[data-nf-modo]:checked", this.DOM).val() || "intervalo";
+    filtros.status = String($("[data-filtro-status]", this.DOM).val() || "");
     return filtros;
   },
 
