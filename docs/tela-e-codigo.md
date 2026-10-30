@@ -118,14 +118,18 @@
 - **Detalhes + Histórico** (27/10): `abrirDetalhes(linha)` preenche os dados atuais (`preencherDetalhes`, grade em colunas automáticas de 220px)
   e carrega o histórico com o carregamento na linha; o modal abre depois da consulta (`concluirAberturaDetalhes`), também se ela falhar
   (o erro aparece no lugar do histórico; cancelada não abre). Foco inicial no X do cabeçalho (`autofocus`), para abrir no topo. Nota fiscal e WT
-  da grade: `registrarDocumentosHistorico` guarda em `historicoAtual` a NF e o WT do evento mais recente das páginas já carregadas
-  (`notaFiscalDoRegistro`, `wtDoRegistro`) e `preencherDetalhes` redesenha (`documentoHistoricoDetalhes`). Seção "Histórico da embalagem" embaixo (título com o mesmo `.nwm-modal-titulo` de "Detalhes da etiqueta"; `thead` fixo no topo do modal, com uma rolagem só, a do modal); paginação por `aposRegistro`;
+  da grade: `registrarDocumentosHistorico` guarda em `historicoAtual` a NF e o WT do evento mais recente de todo o histórico
+  (`notaFiscalDoRegistro`, `wtDoRegistro`) e `preencherDetalhes` redesenha (`documentoHistoricoDetalhes`). Seção "Histórico da embalagem" embaixo (título com o mesmo `.nwm-modal-titulo` de "Detalhes da etiqueta"; `thead` fixo no topo do modal, com uma rolagem só, a do modal);
   Ocorrência (27/10) = `tituloOcorrencia` (`.nwm-historico-titulo`) e `descricaoOcorrencia` embaixo (`.nwm-historico-descricao`), como texto, sem
   badge; sem título, o código `ocorrencia`/`acao`. Anterior/Atual por `quantidadesHistorico`: `conteudoHistorico` com unidade ("10 LT"); sem o objeto,
   `quantidadeAnterior`/`quantidadeAtual`; `null` → "—". Data por `formatarDataHoraHistorico` (sem conversão de fuso). Modal `.nwm-modal-historico.nwm-modal-detalhes`: até 1600px de largura (Justificativa quebra linha, mínimo 240px)
   sem rolagem própria na tabela (27/10: com zoom o cabeçalho fixo saía da tela). Tabela e paginação num quadro com borda; rodapé da paginação
-  no padrão da tabela principal (`.nwm-historico-paginacao`): "Mostrando X–Y eventos" à esquerda e ‹ página › à direita (cursor, sem
-  total nem primeira/última). O rodapé do modal tem só Fechar.
+  no padrão da tabela principal (`.nwm-historico-paginacao`). Desde 30/10 o histórico inteiro é carregado ao abrir (`carregarPaginasHistorico`:
+  `NWM_LIMITE_HISTORICO` = 100 por chamada, segue `aposRegistro`/`proximoRegistro` até `temMais` = false; a 131, com 31 eventos, vem numa chamada)
+  e paginado na tela, 20 por página (`NWM_TAMANHO_PAGINA`), como a tabela principal: "Mostrando X–Y de N eventos" à esquerda e
+  « ‹ números › » à direita (`renderizarPaginacaoHistorico`, `montarBotaoNavegacaoHistorico`, `montarNumerosPaginaHistorico`; até 5 números,
+  `NWM_BOTOES_PAGINA_HISTORICO`, janela como a do Tabulator em `faixaPaginasHistorico`; clique em `[data-historico-ir]` → `irParaPaginaHistorico`
+  → `exibirPaginaHistorico`, sem nova consulta). O rodapé do modal tem só Fechar.
 - **Impressora**: modal com lista do aplicativo local (`NWM_APLICATIVO_IMPRESSAO`), salvar no `localStorage`, imprimir teste
   (`NWM_ETIQUETA_TESTE`, template do GED). A impressora salva aqui é a usada pelo botão Imprimir (linha e lote).
 - **Avisos**: `avisar(tipo, mensagem, duracao)` via `FLUIGC.toast`.

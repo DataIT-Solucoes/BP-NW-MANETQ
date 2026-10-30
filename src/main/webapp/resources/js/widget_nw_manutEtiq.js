@@ -177,6 +177,8 @@ var NWM_TEMPO_LIMITE_CONSULTA_MS = 90000;
 var NWM_ESCALA_QUANTIDADE = 10000;
 var NWM_TOPO_CABECALHO_FIXO = 100;
 var NWM_TAMANHO_PAGINA = 20;
+var NWM_LIMITE_HISTORICO = 100;
+var NWM_BOTOES_PAGINA_HISTORICO = 5;
 var NWM_LIMITE_ATUALIZACAO_LINHAS = 10;
 
 var NWM_GRUPOS_ADMINISTRADORES = ["DefaultGroup-1"];
@@ -3561,7 +3563,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   abrirDetalhes(linha) {
     if (this.historicoAtual && this.historicoAtual.carregando) return;
     var self = this;
-    this.historicoAtual = { etiqueta: linha.getData(), cursor: "", anteriores: [], proximo: "", carregando: false, ultimaNota: "", dataUltimaNota: "", ultimoWt: "", dataUltimoWt: "" };
+    this.historicoAtual = { etiqueta: linha.getData(), registros: [], pagina: 1, carregando: false, ultimaNota: "", dataUltimaNota: "", ultimoWt: "", dataUltimoWt: "" };
     this.preencherDetalhes(linha.getData());
     var historico = this.historicoAtual;
     this.marcarLinhaCarregando(linha, "detalhes");
@@ -4959,8 +4961,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     $("[data-fechar-acao-etiqueta]", this.DOM).on("click", function () { self.fecharAcaoEtiqueta(); });
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-quantidade]").on("input", function () { self.filtrarQuantidadeDigitada($(this)); self.limparErroAcaoEtiqueta(); });
     this.$modalAcaoEtiqueta.find("[data-acao-etiqueta-motivo]").on("input", function () { self.limparErroAcaoEtiqueta(); });
-    $("[data-historico-proximo]", this.DOM).on("click", function () { self.proximaPaginaHistorico(); });
-    $("[data-historico-anterior]", this.DOM).on("click", function () { self.paginaAnteriorHistorico(); });
+    $("[data-historico-paginas]", this.DOM).on("click", "[data-historico-ir]", function () { self.irParaPaginaHistorico(Number($(this).attr("data-historico-ir"))); });
     this.restaurarEtiquetaIncerta();
   },
 
@@ -5452,22 +5453,31 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     if (!historico || historico.carregando) return;
     historico.carregando = true;
     historico.erro = null;
-    this.botoesHistorico();
+    historico.registros = [];
+    this.renderizarPaginacaoHistorico();
     $("[data-historico-estado]", this.DOM).text("Carregando histórico…");
-    var parametros = { codEstabel: historico.etiqueta.codEstabel, idEtiqueta: historico.etiqueta.idEtiqueta, limite: NWM_TAMANHO_PAGINA };
-    if (historico.cursor) parametros.aposRegistro = historico.cursor;
+    return this.carregarPaginasHistorico(historico, "").then(function () {
+      if (self.historicoAtual !== historico) return;
+      self.registrarDocumentosHistorico(historico, historico.registros);
+      self.preencherDetalhes(historico.etiqueta);
+      self.exibirPaginaHistorico(historico, 1);
+      $("[data-historico-estado]", self.DOM).text(historico.registros.length ? "" : "Nenhum evento encontrado.");
+    }, function (erro) {
+      if (self.historicoAtual === historico) { historico.erro = erro; historico.registros = []; $("[data-historico-corpo]", self.DOM).empty(); $("[data-historico-estado]", self.DOM).text(erro.message); }
+    }).always(function () { historico.carregando = false; self.renderizarPaginacaoHistorico(); });
+  },
+
+  carregarPaginasHistorico(historico, cursor) {
+    var self = this;
+    var parametros = { codEstabel: historico.etiqueta.codEstabel, idEtiqueta: historico.etiqueta.idEtiqueta, limite: NWM_LIMITE_HISTORICO };
+    if (cursor) parametros.aposRegistro = cursor;
     return this.consultarDataset("consultarHistoricoEtiqueta", parametros, "historico").then(function (resultado) {
       console.log("[widget_nw_manutEtiq] consultarHistoricoEtiqueta", resultado);
       if (self.historicoAtual !== historico) return;
-      historico.proximo = resultado.temMais ? resultado.proximoRegistro : "";
-      historico.quantidade = resultado.dados.length;
-      self.renderizarHistoricoEtiqueta(resultado.dados);
-      self.registrarDocumentosHistorico(historico, resultado.dados);
-      self.preencherDetalhes(historico.etiqueta);
-      $("[data-historico-estado]", self.DOM).text(resultado.dados.length ? "" : "Nenhum evento encontrado.");
-    }, function (erro) {
-      if (self.historicoAtual === historico) { historico.erro = erro; historico.proximo = ""; historico.quantidade = 0; $("[data-historico-corpo]", self.DOM).empty(); $("[data-historico-estado]", self.DOM).text(erro.message); }
-    }).always(function () { historico.carregando = false; self.botoesHistorico(); });
+      historico.registros = historico.registros.concat(resultado.dados);
+      var proximo = resultado.temMais ? resultado.proximoRegistro : "";
+      if (proximo && proximo !== cursor) return self.carregarPaginasHistorico(historico, proximo);
+    });
   },
 
   wtReservaDaEtiqueta(etiqueta) {
@@ -5539,32 +5549,77 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return (this.formatarQuantidade(quantidade) + " " + String(unidade || "").trim()).trim();
   },
 
-  botoesHistorico() {
+  exibirPaginaHistorico(historico, pagina) {
+    historico.pagina = Math.min(Math.max(pagina || 1, 1), this.totalPaginasHistorico(historico));
+    var inicio = (historico.pagina - 1) * NWM_TAMANHO_PAGINA;
+    this.renderizarHistoricoEtiqueta(historico.registros.slice(inicio, inicio + NWM_TAMANHO_PAGINA));
+    this.renderizarPaginacaoHistorico();
+  },
+
+  irParaPaginaHistorico(pagina) {
     var historico = this.historicoAtual;
-    $("[data-historico-anterior]", this.DOM).prop("disabled", !historico || historico.carregando || !historico.anteriores.length);
-    $("[data-historico-proximo]", this.DOM).prop("disabled", !historico || historico.carregando || !historico.proximo);
-    $("[data-historico-pagina]", this.DOM).text(historico ? historico.anteriores.length + 1 : 1);
-    $("[data-historico-contador]", this.DOM).text(historico && !historico.carregando ? this.textoContadorHistorico(historico) : "");
+    if (!historico || historico.carregando || pagina === historico.pagina) return;
+    this.exibirPaginaHistorico(historico, pagina);
+  },
+
+  totalPaginasHistorico(historico) {
+    return Math.max(1, Math.ceil(historico.registros.length / NWM_TAMANHO_PAGINA));
+  },
+
+  renderizarPaginacaoHistorico() {
+    var historico = this.historicoAtual;
+    var pronto = !!historico && !historico.carregando;
+    var pagina = pronto ? historico.pagina : 1;
+    var total = pronto ? this.totalPaginasHistorico(historico) : 1;
+    var $paginas = $("[data-historico-paginas]", this.DOM).empty();
+    this.montarBotaoNavegacaoHistorico("bi-chevron-double-left", "Primeira página", 1, !pronto || pagina === 1).appendTo($paginas);
+    this.montarBotaoNavegacaoHistorico("bi-chevron-left", "Página anterior", pagina - 1, !pronto || pagina === 1).appendTo($paginas);
+    this.montarNumerosPaginaHistorico(pagina, total, pronto).appendTo($paginas);
+    this.montarBotaoNavegacaoHistorico("bi-chevron-right", "Próxima página", pagina + 1, !pronto || pagina === total).appendTo($paginas);
+    this.montarBotaoNavegacaoHistorico("bi-chevron-double-right", "Última página", total, !pronto || pagina === total).appendTo($paginas);
+    $("[data-historico-contador]", this.DOM).text(pronto ? this.textoContadorHistorico(historico) : "");
+  },
+
+  montarBotaoNavegacaoHistorico(icone, titulo, pagina, desabilitado) {
+    return $("<button>", {
+      type: "button",
+      class: "nwm-historico-pagina",
+      "aria-label": titulo,
+      title: titulo,
+      "data-historico-ir": pagina,
+      disabled: desabilitado,
+    }).append($("<i>", { class: "bi " + icone, "aria-hidden": "true" }));
+  },
+
+  montarNumerosPaginaHistorico(pagina, total, pronto) {
+    var faixa = this.faixaPaginasHistorico(pagina, total);
+    var $numeros = $("<span>", { class: "nwm-historico-numeros" });
+    for (var numero = faixa.inicio; numero <= faixa.fim; numero++) {
+      $("<button>", {
+        type: "button",
+        class: "nwm-historico-pagina" + (numero === pagina ? " is-atual" : ""),
+        "aria-label": "Página " + numero,
+        "aria-current": numero === pagina ? "page" : null,
+        "data-historico-ir": numero,
+        disabled: !pronto,
+        text: numero,
+      }).appendTo($numeros);
+    }
+    return $numeros;
+  },
+
+  faixaPaginasHistorico(pagina, total) {
+    var antes = Math.floor((NWM_BOTOES_PAGINA_HISTORICO - 1) / 2);
+    var inicio = Math.max(1, Math.min(pagina - antes, total - NWM_BOTOES_PAGINA_HISTORICO + 1));
+    return { inicio: inicio, fim: Math.min(total, inicio + NWM_BOTOES_PAGINA_HISTORICO - 1) };
   },
 
   textoContadorHistorico(historico) {
-    if (!historico.quantidade) return "";
-    var primeiro = historico.anteriores.length * NWM_TAMANHO_PAGINA + 1;
-    var ultimo = primeiro + historico.quantidade - 1;
-    return "Mostrando " + primeiro + "–" + ultimo + (ultimo === 1 ? " evento" : " eventos");
-  },
-
-  proximaPaginaHistorico() {
-    var historico = this.historicoAtual;
-    if (!historico || historico.carregando || !historico.proximo) return;
-    historico.anteriores.push(historico.cursor); historico.cursor = historico.proximo;
-    return this.carregarHistoricoEtiqueta();
-  },
-
-  paginaAnteriorHistorico() {
-    var historico = this.historicoAtual;
-    if (!historico || historico.carregando || !historico.anteriores.length) return;
-    historico.cursor = historico.anteriores.pop(); return this.carregarHistoricoEtiqueta();
+    var total = historico.registros.length;
+    if (!total) return "";
+    var primeiro = (historico.pagina - 1) * NWM_TAMANHO_PAGINA + 1;
+    var ultimo = Math.min(primeiro + NWM_TAMANHO_PAGINA - 1, total);
+    return "Mostrando " + primeiro + "–" + ultimo + " de " + total + (total === 1 ? " evento" : " eventos");
   },
 
   obterDadosImpressaoEtiqueta(etiqueta) {

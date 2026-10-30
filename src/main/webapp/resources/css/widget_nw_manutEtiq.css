@@ -1655,6 +1655,11 @@
     margin-left: auto;
 }
 
+.fluig-style-guide.nwm .nwm-historico-numeros {
+    display: inline-flex;
+    align-items: center;
+}
+
 .fluig-style-guide.nwm .nwm-historico-pagina {
     display: inline-flex;
     align-items: center;

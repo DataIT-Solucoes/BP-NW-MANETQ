@@ -218,11 +218,7 @@
             </table></div>
                 <div class="nwm-historico-paginacao">
                     <span class="nwm-tabela-contador" data-historico-contador></span>
-                    <span class="nwm-historico-paginas">
-                        <button type="button" class="nwm-historico-pagina" aria-label="Página anterior" title="Página anterior" data-historico-anterior disabled><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
-                        <span class="nwm-historico-pagina is-atual" aria-current="page" data-historico-pagina>1</span>
-                        <button type="button" class="nwm-historico-pagina" aria-label="Próxima página" title="Próxima página" data-historico-proximo disabled><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
-                    </span>
+                    <span class="nwm-historico-paginas" role="navigation" aria-label="Páginas do histórico" data-historico-paginas></span>
                 </div>
             </div>
         </div>
