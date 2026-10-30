@@ -119,7 +119,7 @@
             </div>
             <div class="nwm-campo">
                 <label class="nwm-campo-rotulo" for="nwm-requisicao-${instanceId}">Requisições</label>
-                <input type="text" maxlength="100" id="nwm-requisicao-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" aria-label="Requisições" autocomplete="off" data-filtro="requisicao">
+                <input type="text" maxlength="100" id="nwm-requisicao-${instanceId}" class="nwm-campo-input nwm-campo-input-simples" placeholder="Buscar requisição" aria-label="Requisições" autocomplete="off" data-filtro="requisicao">
             </div>
             <button type="button" class="nwm-btn nwm-btn-destaque" data-buscar><i class="bi bi-search" aria-hidden="true"></i>Buscar</button>
         </div>
