@@ -4,6 +4,9 @@
 > Pendência registrada não autoriza execução. Conferir o contrato vigente antes de planejar integração.
 
 ## Esperando decisão do usuário
+- Seleção ilimitada (03/11): widget e Dataset sem teto, mas a API Progress ainda recusa mais de 100 (`contr-emb-api-operacoes.i:110`,
+  `contr-emb-operacao-rest.i:112`; Bag: `contr-emb-bags.p:236`) com `LIMITE_SELECAO_INVALIDO`. Falta mudar a API. O Dataset também limita a
+  entrada inteira a `NW_CONFIG.maxEntrada` = 120000 caracteres (~2.000 etiquetas por operação).
 - Requisições (30/10): `apoiarRequisicoes` não está em `NW_CONFIG.regras` do Dataset e volta `SEM_PERMISSAO` no TESTE. Falta incluir a ação
   numa regra (ex.: junto de `apoiarFamilias`, estab 10904/11301) e conferir ao vivo o formato dos registros (a tela supõe `codigo`/`descricao`)
   e o filtro `requisicao` de `consultarEtiquetas`.

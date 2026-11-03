@@ -7,6 +7,7 @@
 ## Dados e regras
 | Data | Decisão | Origem |
 |---|---|---|
+| 03/11 | **Quantidade de etiquetas é ilimitada em qualquer ação** (uma operação só, um documento só). Tirado o teto de 100 do widget (`NWM_LIMITE_EMBALAGENS_OPERACAO` removida; avisos "Selecione ao menos uma embalagem." e "Use um único estabelecimento por operação.") e do Dataset (`nwSelecao` e `nwEtiquetasBag`). O 100 vinha do contrato do backend, não do usuário | Correção do usuário |
 | 21/10 | Dois níveis de acesso na tela: `admin` (usuário em algum grupo de `NWM_GRUPOS_ADMINISTRADORES`, hoje só `DefaultGroup-1`; pode haver mais de um) e `comum` (demais). Por enquanto só identifica e mostra no `console.log`; nada muda na tela. Substitui "sem checagem de permissão no Widget" (02/10) | Pedido do usuário |
 | 19/10 | O `dsNwEmbalagens` publicado no Fluig é sempre o do GitHub `DataIT-Solucoes/BP-NW-DATASET` (decisão registrada no `widget_nw_bags`; substitui a cópia `../widget_nw_embalagens/datasets/dsNwEmbalagens.js` como fonte da verdade) | Usuário |
 | 08/10 | DT124: Itens com `tipoControleEstoque=3`; Nota Fiscal (De/Até **e** Específicas) com `somenteComEmbalagens=true` | `HISTORICO.md` |
@@ -56,7 +57,7 @@
 | 21/10 | Série de saída vira Select2 com uma opção fixa `1` (provisório; depois virá de API). Continua desabilitada até validar a natureza | Pedido do usuário |
 | 21/10 | Estabelecimento de destino do modal de operação é autocomplete de estabelecimento (`apoiarEstabelecimentos`), com selo "código - descrição"; só vale o escolhido na lista | Pedido do usuário |
 | 21/10 | Modal de operação sem "Valor aplicado a cada item do documento" (o backend vai obter o valor; a tela não envia `valorItem`). Série de saída fica no lugar dele, na linha de destino, visível também na Devolução | Pedido do usuário |
-| 21/10 | Ação em lote: Transferir confere antes de abrir o modal (1 a 100 marcadas, mesma regra da linha, inclusive impressão confirmada); Devolução continua abrindo sem marcadas (usa a origem); Aplicar sem ação avisa só "Selecione uma ação disponível." | Pedido do usuário |
+| 21/10 | Ação em lote: Transferir confere antes de abrir o modal (ao menos 1 marcada; o teto de 100 caiu em 03/11, mesma regra da linha, inclusive impressão confirmada); Devolução continua abrindo sem marcadas (usa a origem); Aplicar sem ação avisa só "Selecione uma ação disponível." | Pedido do usuário |
 | 21/10 | Botão de ação não permitido pela regra da embalagem (ex.: Perda em Bag, Imprimir em Encerrada/Descartada) é **removido** da linha, não desabilitado. Bloqueio temporário (operação em andamento/incerta, linha carregando) continua desabilitando | Pedido do usuário |
 | 21/10 | Caixa de mensagem dos modais (ação de etiqueta, operação, impressora) escondida enquanto vazia (`:empty`) | Pedido do usuário |
 | 21/10 | Modal Estornar: quantidade aceita só números, `,` e `.` (filtro ao digitar/colar); Justificativa (textarea) com altura própria, sem os 44px fixos dos inputs | Pedido do usuário |

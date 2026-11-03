@@ -81,7 +81,7 @@
   origem: Emitente, Nota Fiscal de entrada — `NWM_CAMPO_NOTA_ORIGEM`, `apoiarDocumentosEntrada` no estabelecimento da operação
   (`filtrosDoApoio`) —, Série — mesmo autocomplete da série de saída, `NWM_CAMPOS_SERIE` — e Natureza de entrada; `campoOperacao` só devolve a escolhida;
   `consultarEmbalagensOrigem`, sem passar do saldo; checkbox do cabeçalho marca/desmarca as disponíveis — `alterarSelecaoTodaOrigem`,
-  `atualizarCheckTodosOrigem`) → `criarDevolucao`. 1 a 100 embalagens; chave idempotente por tentativa
+  `atualizarCheckTodosOrigem`) → `criarDevolucao`. Ao menos 1 embalagem, sem teto (03/11); chave idempotente por tentativa
   no `sessionStorage` (`guardarOperacaoPendente`/`restaurarOperacaoPendente`); resultado por `consultarResultadoOperacao`.
   Estados em `NWM_ESTADOS_OPERACAO`. A tela nunca muda status ou saldo localmente.
 - **Ação de etiqueta** (imprimir, receber, estornar, inutilizar, perda; `NWM_COMANDOS_ETIQUETA`): uma etiqueta por vez; consulta

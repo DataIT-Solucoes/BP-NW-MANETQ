@@ -165,7 +165,6 @@ var NWM_TIPOS_TODOS = "todos";
 var NWM_LIMITE_DOCUMENTOS = 20;
 var NWM_LIMITE_PAGINA = 100;
 var NWM_LIMITE_PAGINA_ETIQUETAS = 1000;
-var NWM_LIMITE_EMBALAGENS_OPERACAO = 100;
 var NWM_LIMITE_TEXTO = 100;
 var NWM_ATRASO_APOIO_MS = 350;
 var NWM_TEMPO_MARCACAO_INVALIDO_MS = 2000;
@@ -3705,8 +3704,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   recusarEtiquetasIndisponiveis(acao, etiquetas) {
     var self = this;
-    if (!etiquetas.length || etiquetas.length > NWM_LIMITE_EMBALAGENS_OPERACAO) {
-      this.avisar("warning", "Selecione de 1 a 100 embalagens.");
+    if (!etiquetas.length) {
+      this.avisar("warning", "Selecione ao menos uma embalagem.");
       return true;
     }
     if (!$.grep(etiquetas, function (etiqueta) { return !self.acaoDisponivel(acao, etiqueta); }).length) return false;
@@ -3774,14 +3773,8 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var estabelecimento = this.estabelecimentoDaOperacao(
       selecao.estabelecimentos,
     );
-    if (
-      !estabelecimento ||
-      selecao.dados.length > NWM_LIMITE_EMBALAGENS_OPERACAO
-    ) {
-      this.avisar(
-        "warning",
-        "Use um único estabelecimento e no máximo 100 embalagens por operação.",
-      );
+    if (!estabelecimento) {
+      this.avisar("warning", "Use um único estabelecimento por operação.");
       return;
     }
     this.operacaoAtual = {
@@ -4619,8 +4612,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
 
   validarSelecaoComando(selecao) {
     var self = this;
-    if (!selecao.length || selecao.length > NWM_LIMITE_EMBALAGENS_OPERACAO)
-      throw new Error("Selecione de 1 a 100 embalagens.");
+    if (!selecao.length) throw new Error("Selecione ao menos uma embalagem.");
     $.each(selecao, function (indice, item) {
       if (!self.itemSelecaoValido(item))
         throw new Error("Confira os IDs, versões e quantidades selecionados.");
@@ -4916,11 +4908,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       !/^[A-Za-z0-9_-]{1,64}$/.test(parametros.chaveIdempotente)
     )
       return false;
-    return (
-      Array.isArray(parametros.selecao) &&
-      parametros.selecao.length >= 1 &&
-      parametros.selecao.length <= NWM_LIMITE_EMBALAGENS_OPERACAO
-    );
+    return Array.isArray(parametros.selecao) && parametros.selecao.length >= 1;
   },
 
   reabrirOperacaoSalva(salvo) {
