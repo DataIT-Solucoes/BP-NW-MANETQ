@@ -23,6 +23,9 @@
     Código só do Cód Barras: os outros autocompletes (inclusive Estabelecimento) não mudaram.
   - Validação (`validarFiltros`): Estabelecimento De **e** Até; Itens **ou** Nota Fiscal; De ≤ Até (texto); até 100 caracteres, sem
     caractere de controle; data válida. Aviso em toast `warning`; só os erros de conteúdo marcam o campo em vermelho (obrigatório vazio não marca).
+  - Filtros só valem na próxima busca (05/11): alterar um campo (`reagirAlteracaoFiltro`), trocar o modo da NF (`trocarModoNf`) ou remover
+    documento só mexe nos autocompletes dependentes; não cancela a busca, não limpa a seleção nem a tabela. O que já foi buscado usa
+    `consultaEtiquetas.parametros` (inclusive `estabelecimentoDaOperacao` sem seleção).
 - **Barra de seleção**: tabela "Itens selecionados" (Código | Descrição | Qtde Sel.) · Escolher item + Quantidade + **Executar** (marca
   embalagens inteiras do item — ativas, no estabelecimento, sem Bag, saldo = quantidade inicial — até a quantidade pedida) ·
   **Código de barras** (Enter: localiza o número entre as linhas carregadas, marca e vai à página; `lerCodigoBarras`) ·

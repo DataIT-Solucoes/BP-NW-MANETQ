@@ -553,9 +553,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   reagirAlteracaoFiltro($campo) {
-    this.cancelarConsultaEtiquetas();
-    this.cancelarConsultaDataset("tabela");
-    if (this.tabela) this.limparSelecao();
     this.invalidarApoiosDependentes($campo.data("filtro"));
     $campo.removeClass("is-invalido").removeAttr("aria-invalid");
   },
@@ -1347,8 +1344,6 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         return documento.codigo !== codigo;
       },
     );
-    this.cancelarConsultaEtiquetas();
-    if (this.tabela) this.limparSelecao();
     this.renderizarDocumentosSelecionados();
   },
 
@@ -1706,11 +1701,16 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   invalidarConsultasDataset() {
     var self = this;
     this.cancelarConsultaEtiquetas();
-    $.each(this.apoiosFiltros || {}, function (campo, apoio) {
-      self.cancelarApoioFiltro(apoio);
-    });
+    this.cancelarApoiosFiltros();
     $.each(this.consultasDataset || {}, function (canal) {
       self.cancelarConsultaDataset(canal);
+    });
+  },
+
+  cancelarApoiosFiltros() {
+    var self = this;
+    $.each(this.apoiosFiltros || {}, function (campo, apoio) {
+      self.cancelarApoioFiltro(apoio);
     });
   },
 
@@ -2499,8 +2499,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
   },
 
   trocarModoNf(htmlElement, event) {
-    this.invalidarConsultasDataset();
-    this.limparSelecao();
+    this.cancelarApoiosFiltros();
     var especificas = $(htmlElement).val() === "especificas";
     $("[data-nf-intervalo]", this.DOM).prop("hidden", especificas);
     $("[data-nf-especificas]", this.DOM).prop("hidden", !especificas);
@@ -3812,8 +3811,10 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var codigos = Object.keys(estabelecimentos);
     if (codigos.length === 1) return codigos[0];
     if (codigos.length) return "";
-    var filtros = this.lerFiltros();
-    return filtros.estDe === filtros.estAte ? filtros.estDe : "";
+    var parametros = (this.consultaEtiquetas || {}).parametros || {};
+    return parametros.estabelDe === parametros.estabelAte
+      ? parametros.estabelDe || ""
+      : "";
   },
 
   prepararFormularioOperacao(estabelecimento) {

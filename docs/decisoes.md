@@ -31,6 +31,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 05/11 | **Mexer nos filtros só vale para a próxima busca**: digitar/escolher num filtro, trocar Intervalo × Específicas ou remover documento não cancela a busca (nem a que está carregando), não limpa a seleção e não muda a tabela. Paginação, reconsulta após ação e estabelecimento da operação sem seleção usam os filtros da busca (`consultaEtiquetas.parametros`). Substitui "filtro alterado cancela a consulta" | Correção do usuário |
 | 30/10 | Requisições e Status entram na busca: Status → `situacaoApresentada`, Requisição escolhida → `requisicao`. Autocomplete de Requisições por `apoiarRequisicoes`, com um estabelecimento (De = Até) e 2+ caracteres; só vale a escolhida | Pedido do usuário |
 | 30/10 | Campo **Requisições** (um campo só, sem De/Até), autocomplete, à direita de Família | Pedido do usuário |
 | 30/10 | Filtros: Data Validade e Família vão para a linha do Buscar; no lugar deles, campo **Status** (Select2 com os status da legenda) | Pedido do usuário |
