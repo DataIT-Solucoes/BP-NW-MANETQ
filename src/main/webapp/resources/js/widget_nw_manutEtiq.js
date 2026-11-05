@@ -284,6 +284,8 @@ var NWM_SOMENTE_DIGITOS = /^[0-9]+$/;
 var NWM_CARACTERE_CONTROLE = /[\x00-\x1f]/;
 var NWM_DECIMAL_ATE_QUATRO_CASAS = /^[0-9]+(?:\.[0-9]{1,4})?$/;
 var NWM_FORA_DE_QUANTIDADE = /[^0-9.,]/g;
+var NWM_CANAL_AUTOCOMPLETE = /^apoio:/;
+var NWM_PREFIXO_CONSOLE = "[widget_nw_manutEtiq]";
 
 var NWM_APLICATIVO_IMPRESSAO = "http://localhost:32478";
 var NWM_URL_TEMPLATE_ETIQUETA =
@@ -1387,7 +1389,7 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     return erro;
   },
 
-  chamarEmbalagens(acao, parametros) {
+  chamarEmbalagens(acao, parametros, semConsole) {
     var corpo;
     try {
       corpo = this.montarCorpoDataset(acao, parametros);
@@ -1410,11 +1412,37 @@ var widget_nw_manutEtiq = SuperWidget.extend({
       timeout: NWM_TEMPO_LIMITE_CONSULTA_MS,
       data: corpo,
     });
+    if (!semConsole)
+      this.registrarRespostaApi(requisicao, "dsNwEmbalagens " + acao, parametros);
     var resultado = this.tratarRespostaDataset(requisicao, acao);
     resultado.abort = function () {
       requisicao.abort();
     };
     return resultado;
+  },
+
+  registrarRespostaApi(requisicao, chamada, parametros) {
+    var self = this;
+    requisicao.then(
+      function (resposta) {
+        self.escreverRespostaApi(chamada, parametros, resposta);
+      },
+      function (xhr, status) {
+        self.escreverRespostaApi(chamada, parametros, {
+          status: status,
+          httpStatus: xhr && xhr.status,
+          resposta: xhr && (xhr.responseJSON || xhr.responseText),
+        });
+      },
+    );
+  },
+
+  escreverRespostaApi(chamada, parametros, resposta) {
+    if (!window.console || !console.log) return;
+    console.log(NWM_PREFIXO_CONSOLE + " Resposta da API " + chamada + ":", {
+      parametros: parametros,
+      resposta: resposta,
+    });
   },
 
   montarCorpoDataset(acao, parametros) {
@@ -1604,7 +1632,11 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     this.consultasDataset[canal] = consulta;
     if (canal === "tabela") this.definirCarregamentoConsulta(true);
     try {
-      consulta.requisicao = this.chamarEmbalagens(acao, parametros);
+      consulta.requisicao = this.chamarEmbalagens(
+        acao,
+        parametros,
+        NWM_CANAL_AUTOCOMPLETE.test(canal),
+      );
       consulta.requisicao.then(
         function (resultado) {
           self.receberConsultaDataset(canal, consulta, resultado);
@@ -5720,7 +5752,9 @@ var widget_nw_manutEtiq = SuperWidget.extend({
         processData: false,
         data: JSON.stringify(corpo),
       });
-    return $.ajax(opcoes);
+    var requisicao = $.ajax(opcoes);
+    this.registrarRespostaApi(requisicao, metodo + " " + opcoes.url, corpo);
+    return requisicao;
   },
 
   preencherImpressoras(resposta) {
@@ -5852,11 +5886,13 @@ var widget_nw_manutEtiq = SuperWidget.extend({
     var self = this;
     if (this.templateEtiqueta !== null)
       return $.Deferred().resolve(this.templateEtiqueta).promise();
-    return $.ajax({
+    var requisicao = $.ajax({
       url: NWM_URL_TEMPLATE_ETIQUETA,
       method: "GET",
       timeout: NWM_TEMPO_LIMITE_IMPRESSAO_MS,
-    }).then(
+    });
+    this.registrarRespostaApi(requisicao, "GET " + NWM_URL_TEMPLATE_ETIQUETA, {});
+    return requisicao.then(
       function (template) {
         self.templateEtiqueta = template;
         return template;

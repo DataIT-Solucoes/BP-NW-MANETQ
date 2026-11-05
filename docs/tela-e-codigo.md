@@ -65,6 +65,10 @@
 - **Nível de acesso** (`identificarNivelAcesso`, no `init`): `WCMAPI.getUserCode()` + dataset `colleagueGroup` (`consultarGruposUsuario`);
   grupo em `NWM_GRUPOS_ADMINISTRADORES` (hoje só `DefaultGroup-1`; outro grupo admin = acrescentar na lista) → `nivelAcesso = admin`, senão `comum` (também em falha ou sem usuário). Só `console.log`.
 - Arquivo único: constantes `NWM_*` no topo e o SuperWidget `widget_nw_manutEtiq` (padrão de código no `AGENTS.md`).
+- **Resposta das APIs no console** (05/11, `registrarRespostaApi` → `escreverRespostaApi`): toda chamada ao Dataset (`chamarEmbalagens`),
+  ao aplicativo de impressão local (`chamarAplicativoImpressao`) e ao modelo do GED (`obterTemplateEtiqueta`) escreve
+  `[widget_nw_manutEtiq] Resposta da API <chamada>:` com `{ parametros, resposta }` (resposta bruta completa; em falha, `status`,
+  `httpStatus` e o corpo). Fora: autocomplete ao digitar (canal `apoio:*`, `NWM_CANAL_AUTOCOMPLETE`) e o `colleagueGroup` do `init`.
 - **Transporte** (`chamarEmbalagens`, `consultarDataset`): `$.ajax` ao Dataset; valida envelope (`extrairEnvelopeDataset`,
   `envelopeComandoValido`, `envelopePaginadoValido`…); consultas por canal (`consultasDataset`), resposta antiga é descartada;
   erros classificados em `NWM_TIPOS_ERRO` (técnico, funcional, autorização, cancelamento). Tempo limite 90 s.

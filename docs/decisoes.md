@@ -31,6 +31,7 @@
 ## Tela e comportamento
 | Data | Decisão | Origem |
 |---|---|---|
+| 05/11 | Nas ações dos botões, toda chamada de API escreve a resposta completa no `console.log` (Dataset, aplicativo de impressão local, modelo do GED). Autocomplete ao digitar e o `colleagueGroup` do `init` ficam fora (não são ação de botão) | Pedido do usuário |
 | 05/11 | **Mexer nos filtros só vale para a próxima busca**: digitar/escolher num filtro, trocar Intervalo × Específicas ou remover documento não cancela a busca (nem a que está carregando), não limpa a seleção e não muda a tabela. Paginação, reconsulta após ação e estabelecimento da operação sem seleção usam os filtros da busca (`consultaEtiquetas.parametros`). Substitui "filtro alterado cancela a consulta" | Correção do usuário |
 | 30/10 | Requisições e Status entram na busca: Status → `situacaoApresentada`, Requisição escolhida → `requisicao`. Autocomplete de Requisições por `apoiarRequisicoes`, com um estabelecimento (De = Até) e 2+ caracteres; só vale a escolhida | Pedido do usuário |
 | 30/10 | Campo **Requisições** (um campo só, sem De/Até), autocomplete, à direita de Família | Pedido do usuário |
